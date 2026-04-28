@@ -34,7 +34,6 @@ migrate_working_dir/
 # Generated files - build_runner output
 *.g.dart
 *.freezed.dart
-injection.config.dart
 
 # Environment variables - never commit these
 .env
