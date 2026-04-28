@@ -1,5 +1,5 @@
-import 'package:beauty_center_app/features/splash/presentation/bloc/splash_cubit.dart';
-import 'package:beauty_center_app/features/splash/presentation/bloc/splash_state.dart';
+import 'package:beauty_center_app/features/splash/cubit/splash_cubit.dart';
+import 'package:beauty_center_app/features/splash/cubit/splash_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';

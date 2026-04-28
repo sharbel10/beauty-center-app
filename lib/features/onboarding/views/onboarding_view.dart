@@ -1,6 +1,6 @@
 import 'package:beauty_center_app/core/router/route_names.dart';
-import 'package:beauty_center_app/features/onboarding/presentation/bloc/onboarding_cubit.dart';
-import 'package:beauty_center_app/features/onboarding/presentation/bloc/onboarding_state.dart';
+import 'package:beauty_center_app/features/onboarding/cubit/onboarding_cubit.dart';
+import 'package:beauty_center_app/features/onboarding/cubit/onboarding_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';

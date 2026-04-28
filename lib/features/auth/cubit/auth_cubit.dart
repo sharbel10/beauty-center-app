@@ -1,5 +1,5 @@
 import 'package:beauty_center_app/core/storage/preference_manager.dart';
-import 'package:beauty_center_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:beauty_center_app/features/auth/cubit/auth_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 

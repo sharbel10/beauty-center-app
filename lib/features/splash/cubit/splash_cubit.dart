@@ -1,6 +1,6 @@
 import 'package:beauty_center_app/core/router/route_names.dart';
 import 'package:beauty_center_app/core/storage/preference_manager.dart';
-import 'package:beauty_center_app/features/splash/presentation/bloc/splash_state.dart';
+import 'package:beauty_center_app/features/splash/cubit/splash_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
