@@ -34,9 +34,7 @@ class _SplashViewState extends State<SplashView> {
             context.goNamed(routeName);
           }
         },
-        child: const Scaffold(
-          body: Center(child: Text('Splash Page')),
-        ),
+        child: const Scaffold(body: Center(child: Text('Splash Page'))),
       ),
     );
   }

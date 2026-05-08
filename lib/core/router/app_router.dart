@@ -1,7 +1,11 @@
 import 'package:beauty_center_app/core/router/route_names.dart';
-import 'package:beauty_center_app/core/storage/preference_manager.dart';
 import 'package:beauty_center_app/features/auth/cubit/auth_cubit.dart';
+import 'package:beauty_center_app/features/auth/views/forgot_password_view.dart';
 import 'package:beauty_center_app/features/auth/views/login_view.dart';
+import 'package:beauty_center_app/features/auth/views/otp_view.dart';
+import 'package:beauty_center_app/features/auth/views/register_otp_view.dart';
+import 'package:beauty_center_app/features/auth/views/register_view.dart';
+import 'package:beauty_center_app/features/auth/views/reset_password_view.dart';
 import 'package:beauty_center_app/features/home/views/home_view.dart';
 import 'package:beauty_center_app/features/onboarding/cubit/onboarding_cubit.dart';
 import 'package:beauty_center_app/features/onboarding/views/onboarding_view.dart';
@@ -15,7 +19,6 @@ import 'package:injectable/injectable.dart';
 class AppRouter {
   // Single app-level router that centralizes navigation and auth guards.
   AppRouter(
-    this._preferenceManager,
     this._splashCubitFactory,
     this._onboardingCubitFactory,
     this._authCubitFactory,
@@ -24,23 +27,16 @@ class AppRouter {
       navigatorKey: navigatorKey,
       initialLocation: RouteNames.splashPath,
       redirect: (BuildContext context, GoRouterState state) {
-        // Redirect runs before each navigation and decides whether user
-        // can access the requested route based on auth state.
-        final bool isLoggedIn = _preferenceManager.isLoggedIn();
+        // Auth persistence is disabled for now, so protected routes stay closed.
         final String currentPath = state.matchedLocation;
-        final bool isAuthRoute = _authPaths.contains(currentPath);
         final bool isProtectedRoute = !_publicPaths.contains(currentPath);
 
-        if (!isLoggedIn && isProtectedRoute) {
+        if (isProtectedRoute) {
           return RouteNames.loginPath;
-        }
-        if (isLoggedIn && isAuthRoute) {
-          return RouteNames.homePath;
         }
         return null;
       },
       routes: <RouteBase>[
-        // TODO: Replace placeholders with feature pages as they are built.
         GoRoute(
           name: RouteNames.splash,
           path: RouteNames.splashPath,
@@ -60,22 +56,30 @@ class AppRouter {
         GoRoute(
           name: RouteNames.register,
           path: RouteNames.registerPath,
-          builder: (context, state) => _placeholderPage('Register'),
+          builder: (context, state) => RegisterView(cubit: _authCubitFactory()),
+        ),
+        GoRoute(
+          name: RouteNames.registerOtp,
+          path: RouteNames.registerOtpPath,
+          builder: (context, state) =>
+              RegisterOtpView(cubit: _authCubitFactory()),
         ),
         GoRoute(
           name: RouteNames.forgotPassword,
           path: RouteNames.forgotPasswordPath,
-          builder: (context, state) => _placeholderPage('Forgot Password'),
+          builder: (context, state) =>
+              ForgotPasswordView(cubit: _authCubitFactory()),
         ),
         GoRoute(
           name: RouteNames.verifyOtp,
           path: RouteNames.verifyOtpPath,
-          builder: (context, state) => _placeholderPage('Verify OTP'),
+          builder: (context, state) => OtpView(cubit: _authCubitFactory()),
         ),
         GoRoute(
           name: RouteNames.resetPassword,
           path: RouteNames.resetPasswordPath,
-          builder: (context, state) => _placeholderPage('Reset Password'),
+          builder: (context, state) =>
+              ResetPasswordView(cubit: _authCubitFactory()),
         ),
         GoRoute(
           name: RouteNames.home,
@@ -87,7 +91,6 @@ class AppRouter {
     _routerRef = _router;
   }
 
-  final PreferenceManager _preferenceManager;
   final SplashCubit Function() _splashCubitFactory;
   final OnboardingCubit Function() _onboardingCubitFactory;
   final AuthCubit Function() _authCubitFactory;
@@ -102,6 +105,7 @@ class AppRouter {
   static const Set<String> _authPaths = <String>{
     RouteNames.loginPath,
     RouteNames.registerPath,
+    RouteNames.registerOtpPath,
     RouteNames.forgotPasswordPath,
     RouteNames.verifyOtpPath,
     RouteNames.resetPasswordPath,
@@ -118,17 +122,5 @@ class AppRouter {
   static void redirectToLogin() {
     // Used by network layer when token expires or 401 is received.
     _routerRef?.goNamed(RouteNames.login);
-  }
-
-  static Widget _placeholderPage(String title) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Text(
-          '$title Page',
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
   }
 }

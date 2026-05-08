@@ -1,50 +1,65 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format width=80
+
+// **************************************************************************
+// InjectableConfigGenerator
+// **************************************************************************
+
 // ignore_for_file: type=lint
+// coverage:ignore-file
 
-import 'package:beauty_center_app/core/network/dio_client.dart';
-import 'package:beauty_center_app/core/network/header_interceptor.dart';
-import 'package:beauty_center_app/core/router/app_router.dart';
-import 'package:beauty_center_app/core/storage/preference_manager.dart';
-import 'package:beauty_center_app/core/storage/secure_storage.dart';
-import 'package:beauty_center_app/features/auth/cubit/auth_cubit.dart';
-import 'package:beauty_center_app/features/onboarding/cubit/onboarding_cubit.dart';
-import 'package:beauty_center_app/features/splash/cubit/splash_cubit.dart';
-import 'package:get_it/get_it.dart';
-import 'package:injectable/injectable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:beauty_center_app/core/di/injection.dart' as _i606;
+import 'package:beauty_center_app/core/network/dio_client.dart' as _i1058;
+import 'package:beauty_center_app/core/network/header_interceptor.dart'
+    as _i719;
+import 'package:beauty_center_app/core/router/app_router.dart' as _i977;
+import 'package:beauty_center_app/core/storage/preference_manager.dart'
+    as _i333;
+import 'package:beauty_center_app/core/storage/secure_storage.dart' as _i925;
+import 'package:beauty_center_app/features/auth/cubit/auth_cubit.dart' as _i196;
+import 'package:beauty_center_app/features/onboarding/cubit/onboarding_cubit.dart'
+    as _i328;
+import 'package:beauty_center_app/features/splash/cubit/splash_cubit.dart'
+    as _i420;
+import 'package:get_it/get_it.dart' as _i174;
+import 'package:injectable/injectable.dart' as _i526;
+import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
-import 'injection.dart' as i1;
-
-extension GetItInjectableX on GetIt {
-  Future<GetIt> init({
+extension GetItInjectableX on _i174.GetIt {
+  // initializes the registration of main-scope dependencies inside of GetIt
+  Future<_i174.GetIt> init({
     String? environment,
-    EnvironmentFilter? environmentFilter,
+    _i526.EnvironmentFilter? environmentFilter,
   }) async {
-    final gh = GetItHelper(this, environment, environmentFilter);
+    final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final registerModule = _$RegisterModule();
-    final sharedPreferences = await registerModule.sharedPreferences;
-    gh.singleton<SharedPreferences>(() => sharedPreferences);
-    gh.singleton<SecureStorage>(() => SecureStorage());
-    gh.singleton<HeaderInterceptor>(
-      () => HeaderInterceptor(gh<SecureStorage>()),
+    await gh.factoryAsync<_i460.SharedPreferences>(
+      () => registerModule.sharedPreferences,
+      preResolve: true,
     );
-    gh.singleton<DioClient>(() => DioClient(gh<HeaderInterceptor>()));
-    gh.singleton<PreferenceManager>(
-      () => PreferenceManager(gh<SharedPreferences>()),
+    gh.singleton<_i925.SecureStorage>(() => _i925.SecureStorage());
+    gh.singleton<_i333.PreferenceManager>(
+      () => _i333.PreferenceManager(gh<_i460.SharedPreferences>()),
     );
-    gh.factory<AuthCubit>(() => AuthCubit(gh<PreferenceManager>()));
-    gh.factory<OnboardingCubit>(() => OnboardingCubit());
-    gh.factory<SplashCubit>(() => SplashCubit(gh<PreferenceManager>()));
-    gh.singleton<AppRouter>(
-      () => AppRouter(
-        gh<PreferenceManager>(),
-        () => gh<SplashCubit>(),
-        () => gh<OnboardingCubit>(),
-        () => gh<AuthCubit>(),
+    gh.singleton<_i719.HeaderInterceptor>(
+      () => _i719.HeaderInterceptor(gh<_i925.SecureStorage>()),
+    );
+    gh.singleton<_i1058.DioClient>(
+      () => _i1058.DioClient(gh<_i719.HeaderInterceptor>()),
+    );
+    gh.factory<_i196.AuthCubit>(() => _i196.AuthCubit());
+    gh.factory<_i328.OnboardingCubit>(() => _i328.OnboardingCubit());
+    gh.factory<_i420.SplashCubit>(() => _i420.SplashCubit());
+    gh.singleton<_i977.AppRouter>(
+      () => _i977.AppRouter(
+        () => gh<_i420.SplashCubit>(),
+        () => gh<_i328.OnboardingCubit>(),
+        () => gh<_i196.AuthCubit>(),
       ),
     );
     return this;
   }
 }
 
-class _$RegisterModule extends i1.RegisterModule {}
+class _$RegisterModule extends _i606.RegisterModule {}
