@@ -1,13 +1,14 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = 'https://your-api.com/api/';
+  static const String baseUrl = "http://192.168.1.104:8000/api/";
 
   // Auth endpoints.
-  static const String login = 'auth/login';
-  static const String register = 'auth/register';
-  static const String logout = 'auth/logout';
-  static const String forgotPassword = 'auth/forgot-password';
-  static const String verifyOtp = 'auth/verify-otp';
-  static const String resetPassword = 'auth/reset-password';
+  static const String login = 'customer/login';
+  static const String register = 'customer/register';
+  static const String logout = 'customer/logout';
+  static const String forgotPassword = 'customer/forgot-password';
+  static const String verifyOtp = 'customer/verify-email-otp';
+  static const String resendOtp = 'customer/resend-email-otp';
+  static const String resetPassword = 'customer/reset-password';
 }

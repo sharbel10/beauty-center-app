@@ -6,7 +6,7 @@ class AuthHeader extends StatelessWidget {
   const AuthHeader({
     required this.title,
     required this.subtitle,
-    this.logoSize = 82,
+    this.logoSize = 100,
     super.key,
   });
 
@@ -37,7 +37,7 @@ class AuthHeader extends StatelessWidget {
 }
 
 class BeautyLogoMark extends StatelessWidget {
-  const BeautyLogoMark({this.size = 82, super.key});
+  const BeautyLogoMark({this.size = 100, super.key});
 
   final double size;
 
@@ -47,16 +47,27 @@ class BeautyLogoMark extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: AppColors.neutral,
-        border: Border.all(color: AppColors.secondary),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
       ),
-      alignment: Alignment.center,
-      child: Text(
-        'BC',
-        style: AppTextStyles.titleLarge.copyWith(
-          color: AppColors.secondary,
-          fontWeight: FontWeight.w700,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.asset(
+          'assets/images/logo.png',
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              color: AppColors.neutral,
+              alignment: Alignment.center,
+              child: Text(
+                'BC',
+                style: AppTextStyles.titleLarge.copyWith(
+                  color: AppColors.secondary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

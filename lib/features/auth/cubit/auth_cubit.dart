@@ -1,48 +1,353 @@
+import 'package:beauty_center_app/core/failures/failure.dart';
+import 'package:beauty_center_app/core/storage/preference_manager.dart';
+import 'package:beauty_center_app/core/storage/secure_storage.dart';
 import 'package:beauty_center_app/features/auth/cubit/auth_state.dart';
+import 'package:beauty_center_app/features/auth/repository/auth_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
-@injectable
+@singleton
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit() : super(const AuthState(isAuthenticated: false));
+  AuthCubit(this._authRepository, this._secureStorage, this._preferenceManager)
+    : super(const AuthState(isAuthenticated: false));
 
-  Future<void> login() async {
-    await _completeFormStep();
+  final AuthRepository _authRepository;
+  final SecureStorage _secureStorage;
+  final PreferenceManager _preferenceManager;
+
+  Future<void> register({
+    required String name,
+    required String phone,
+    required String email,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    emit(
+      state.copyWith(
+        status: AuthStatus.submitting,
+        clearMessage: true,
+        clearErrors: true,
+      ),
+    );
+    final result = await _authRepository.register(
+      name: name,
+      phone: phone,
+      email: email,
+      password: password,
+      passwordConfirmation: passwordConfirmation,
+    );
+    result.fold(
+      (failure) {
+        if (failure is ValidationFailure) {
+          emit(
+            state.copyWith(
+              status: AuthStatus.failure,
+              message: failure.message,
+              errors: failure.errors,
+            ),
+          );
+        } else {
+          emit(
+            state.copyWith(
+              status: AuthStatus.failure,
+              message: failure.message,
+            ),
+          );
+        }
+      },
+      (response) {
+        emit(
+          state.copyWith(
+            status: AuthStatus.success,
+            message: response.message,
+            customer: response.customer,
+          ),
+        );
+      },
+    );
   }
 
-  Future<void> register() async {
-    await _completeFormStep();
+  Future<void> verifyOtp({required String email, required String otp}) async {
+    emit(
+      state.copyWith(
+        status: AuthStatus.submitting,
+        clearMessage: true,
+        clearErrors: true,
+      ),
+    );
+    final result = await _authRepository.verifyOtp(email: email, otp: otp);
+    result.fold(
+      (failure) {
+        if (failure is ValidationFailure) {
+          emit(
+            state.copyWith(
+              status: AuthStatus.failure,
+              message: failure.message,
+              errors: failure.errors,
+            ),
+          );
+        } else {
+          emit(
+            state.copyWith(
+              status: AuthStatus.failure,
+              message: failure.message,
+            ),
+          );
+        }
+      },
+      (response) async {
+        if (response.token != null) {
+          await _secureStorage.saveToken(
+            response.token!.accessToken,
+            expiry: response.token!.expiresAt,
+          );
+          await _preferenceManager.setLoggedIn(true);
+          emit(
+            state.copyWith(
+              status: AuthStatus.success,
+              isAuthenticated: true,
+              message: response.message,
+              customer: response.customer,
+              token: response.token!.accessToken,
+            ),
+          );
+        } else {
+          emit(
+            state.copyWith(
+              status: AuthStatus.success,
+              message: response.message,
+              customer: response.customer,
+            ),
+          );
+        }
+      },
+    );
   }
 
-  Future<void> resendRegistrationCode() async {
-    await _completeFormStep();
+  Future<void> resendOtp({required String email}) async {
+    emit(
+      state.copyWith(
+        status: AuthStatus.submitting,
+        clearMessage: true,
+        clearErrors: true,
+      ),
+    );
+    final result = await _authRepository.resendOtp(email: email);
+    result.fold(
+      (failure) {
+        emit(
+          state.copyWith(status: AuthStatus.failure, message: failure.message),
+        );
+      },
+      (response) {
+        emit(
+          state.copyWith(status: AuthStatus.success, message: response.message),
+        );
+      },
+    );
   }
 
-  Future<void> verifyRegistrationOtp() async {
-    await _completeFormStep();
-  }
-
-  Future<void> sendPasswordResetCode() async {
-    await _completeFormStep();
-  }
-
-  Future<void> verifyOtp() async {
-    await _completeFormStep();
-  }
-
-  Future<void> resetPassword() async {
-    await _completeFormStep();
+  Future<void> login({required String login, required String password}) async {
+    emit(
+      state.copyWith(
+        status: AuthStatus.submitting,
+        clearMessage: true,
+        clearErrors: true,
+      ),
+    );
+    final result = await _authRepository.login(
+      login: login,
+      password: password,
+    );
+    result.fold(
+      (failure) {
+        if (failure is ValidationFailure) {
+          emit(
+            state.copyWith(
+              status: AuthStatus.failure,
+              message: failure.message,
+              errors: failure.errors,
+            ),
+          );
+        } else {
+          emit(
+            state.copyWith(
+              status: AuthStatus.failure,
+              message: failure.message,
+            ),
+          );
+        }
+      },
+      (response) async {
+        if (response.token != null) {
+          await _secureStorage.saveToken(
+            response.token!.accessToken,
+            expiry: response.token!.expiresAt,
+          );
+          await _preferenceManager.setLoggedIn(true);
+          emit(
+            state.copyWith(
+              status: AuthStatus.success,
+              isAuthenticated: true,
+              message: response.message,
+              customer: response.customer,
+              token: response.token!.accessToken,
+            ),
+          );
+        } else {
+          emit(
+            state.copyWith(
+              status: AuthStatus.success,
+              message: response.message,
+            ),
+          );
+        }
+      },
+    );
   }
 
   Future<void> logout() async {
-    emit(state.copyWith(isSubmitting: true));
-    await Future<void>.value();
-    emit(state.copyWith(isSubmitting: false, isAuthenticated: false));
+    emit(
+      state.copyWith(
+        status: AuthStatus.submitting,
+        clearMessage: true,
+        clearErrors: true,
+      ),
+    );
+    final result = await _authRepository.logout();
+    result.fold(
+      (failure) {
+        emit(
+          state.copyWith(status: AuthStatus.failure, message: failure.message),
+        );
+      },
+      (response) async {
+        await _secureStorage.clearAll();
+        await _preferenceManager.setLoggedIn(false);
+        emit(
+          state.copyWith(
+            status: AuthStatus.success,
+            isAuthenticated: false,
+            message: response.message,
+            clearCustomer: true,
+            clearToken: true,
+          ),
+        );
+      },
+    );
   }
 
-  Future<void> _completeFormStep() async {
-    emit(state.copyWith(isSubmitting: true));
-    await Future<void>.value();
-    emit(state.copyWith(isSubmitting: false));
+  Future<void> checkAuthStatus() async {
+    final token = await _secureStorage.getToken();
+    final expiry = await _secureStorage.getExpiry();
+    final bool isLoggedIn = _preferenceManager.isLoggedIn();
+
+    if (token != null && token.isNotEmpty) {
+      bool isExpired = false;
+      if (expiry != null) {
+        final expiryDate = DateTime.tryParse(expiry);
+        if (expiryDate != null && expiryDate.isBefore(DateTime.now())) {
+          isExpired = true;
+        }
+      }
+
+      if (isExpired) {
+        await _secureStorage.clearToken();
+        await _preferenceManager.setLoggedIn(false);
+        emit(state.copyWith(isAuthenticated: false, clearToken: true));
+      } else {
+        if (!isLoggedIn) {
+          await _preferenceManager.setLoggedIn(true);
+        }
+        emit(state.copyWith(isAuthenticated: true, token: token));
+      }
+    } else {
+      if (isLoggedIn) {
+        await _preferenceManager.setLoggedIn(false);
+      }
+      emit(state.copyWith(isAuthenticated: false, clearToken: true));
+    }
+  }
+
+  Future<void> forgotPassword({required String login}) async {
+    emit(
+      state.copyWith(
+        status: AuthStatus.submitting,
+        clearMessage: true,
+        clearErrors: true,
+      ),
+    );
+    final result = await _authRepository.forgotPassword(login: login);
+    result.fold(
+      (failure) {
+        if (failure is ValidationFailure) {
+          emit(
+            state.copyWith(
+              status: AuthStatus.failure,
+              message: failure.message,
+              errors: failure.errors,
+            ),
+          );
+        } else {
+          emit(
+            state.copyWith(
+              status: AuthStatus.failure,
+              message: failure.message,
+            ),
+          );
+        }
+      },
+      (response) {
+        emit(
+          state.copyWith(status: AuthStatus.success, message: response.message),
+        );
+      },
+    );
+  }
+
+  Future<void> resetPassword({
+    required String login,
+    required String otp,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    emit(
+      state.copyWith(
+        status: AuthStatus.submitting,
+        clearMessage: true,
+        clearErrors: true,
+      ),
+    );
+    final result = await _authRepository.resetPassword(
+      login: login,
+      otp: otp,
+      password: password,
+      passwordConfirmation: passwordConfirmation,
+    );
+    result.fold(
+      (failure) {
+        if (failure is ValidationFailure) {
+          emit(
+            state.copyWith(
+              status: AuthStatus.failure,
+              message: failure.message,
+              errors: failure.errors,
+            ),
+          );
+        } else {
+          emit(
+            state.copyWith(
+              status: AuthStatus.failure,
+              message: failure.message,
+            ),
+          );
+        }
+      },
+      (response) {
+        emit(
+          state.copyWith(status: AuthStatus.success, message: response.message),
+        );
+      },
+    );
   }
 }

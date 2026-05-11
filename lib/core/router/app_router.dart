@@ -18,20 +18,15 @@ import 'package:injectable/injectable.dart';
 @singleton
 class AppRouter {
   // Single app-level router that centralizes navigation and auth guards.
-  AppRouter(
-    this._splashCubitFactory,
-    this._onboardingCubitFactory,
-    this._authCubitFactory,
-  ) {
+  AppRouter(this._splashCubit, this._onboardingCubit, this._authCubit) {
     _router = GoRouter(
       navigatorKey: navigatorKey,
       initialLocation: RouteNames.splashPath,
       redirect: (BuildContext context, GoRouterState state) {
-        // Auth persistence is disabled for now, so protected routes stay closed.
         final String currentPath = state.matchedLocation;
         final bool isProtectedRoute = !_publicPaths.contains(currentPath);
 
-        if (isProtectedRoute) {
+        if (isProtectedRoute && !_authCubit.state.isAuthenticated) {
           return RouteNames.loginPath;
         }
         return null;
@@ -40,60 +35,70 @@ class AppRouter {
         GoRoute(
           name: RouteNames.splash,
           path: RouteNames.splashPath,
-          builder: (context, state) => SplashView(cubit: _splashCubitFactory()),
+          builder: (context, state) => SplashView(cubit: _splashCubit),
         ),
         GoRoute(
           name: RouteNames.onboarding,
           path: RouteNames.onboardingPath,
-          builder: (context, state) =>
-              OnboardingView(cubit: _onboardingCubitFactory()),
+          builder: (context, state) => OnboardingView(cubit: _onboardingCubit),
         ),
         GoRoute(
           name: RouteNames.login,
           path: RouteNames.loginPath,
-          builder: (context, state) => LoginView(cubit: _authCubitFactory()),
+          builder: (context, state) => LoginView(cubit: _authCubit),
         ),
         GoRoute(
           name: RouteNames.register,
           path: RouteNames.registerPath,
-          builder: (context, state) => RegisterView(cubit: _authCubitFactory()),
+          builder: (context, state) => RegisterView(cubit: _authCubit),
         ),
         GoRoute(
           name: RouteNames.registerOtp,
           path: RouteNames.registerOtpPath,
-          builder: (context, state) =>
-              RegisterOtpView(cubit: _authCubitFactory()),
+          builder: (context, state) {
+            final String? email = state.extra as String?;
+            return RegisterOtpView(cubit: _authCubit, email: email);
+          },
         ),
         GoRoute(
           name: RouteNames.forgotPassword,
           path: RouteNames.forgotPasswordPath,
-          builder: (context, state) =>
-              ForgotPasswordView(cubit: _authCubitFactory()),
+          builder: (context, state) => ForgotPasswordView(cubit: _authCubit),
         ),
         GoRoute(
           name: RouteNames.verifyOtp,
           path: RouteNames.verifyOtpPath,
-          builder: (context, state) => OtpView(cubit: _authCubitFactory()),
+          builder: (context, state) {
+            final String? initialEmail = state.extra as String?;
+            return OtpView(cubit: _authCubit, initialEmail: initialEmail);
+          },
         ),
         GoRoute(
           name: RouteNames.resetPassword,
           path: RouteNames.resetPasswordPath,
-          builder: (context, state) =>
-              ResetPasswordView(cubit: _authCubitFactory()),
+          builder: (context, state) {
+            final Map<String, dynamic> data =
+                state.extra as Map<String, dynamic>;
+            return ResetPasswordView(
+              cubit: _authCubit,
+              email: data['email'] as String,
+              otp: data['otp'] as String,
+            );
+          },
         ),
         GoRoute(
           name: RouteNames.home,
           path: RouteNames.homePath,
-          builder: (context, state) => HomeView(cubit: _authCubitFactory()),
+          builder: (context, state) => HomeView(cubit: _authCubit),
         ),
       ],
     );
     _routerRef = _router;
   }
 
-  final SplashCubit Function() _splashCubitFactory;
-  final OnboardingCubit Function() _onboardingCubitFactory;
-  final AuthCubit Function() _authCubitFactory;
+  final SplashCubit _splashCubit;
+  final OnboardingCubit _onboardingCubit;
+  final AuthCubit _authCubit;
   late final GoRouter _router;
 
   // Navigator key is shared so non-UI layers (e.g. interceptors) can trigger

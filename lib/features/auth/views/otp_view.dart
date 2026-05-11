@@ -15,9 +15,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class OtpView extends StatefulWidget {
-  const OtpView({required AuthCubit cubit, super.key}) : _cubit = cubit;
+  const OtpView({required AuthCubit cubit, super.key, this.initialEmail})
+    : _cubit = cubit;
 
   final AuthCubit _cubit;
+  final String? initialEmail;
 
   @override
   State<OtpView> createState() => _OtpViewState();
@@ -28,9 +30,31 @@ class _OtpViewState extends State<OtpView> {
   String? _otpError;
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.initialEmail == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showAuthSnackBar(
+          context,
+          message: 'Email is required to proceed.',
+          isError: true,
+        );
+        context.pop();
+      });
+    }
+  }
+
+  @override
   void dispose() {
     _otpController.dispose();
     super.dispose();
+  }
+
+  void _clearFields() {
+    _otpController.clear();
+    setState(() {
+      _otpError = null;
+    });
   }
 
   Future<void> _submit() async {
@@ -38,24 +62,32 @@ class _OtpViewState extends State<OtpView> {
       return;
     }
 
-    await widget._cubit.verifyOtp();
-
-    if (!mounted) {
-      return;
-    }
-
-    showAuthSnackBar(context, message: 'Verification completed.');
-    context.pushNamed(RouteNames.resetPassword);
+    await widget._cubit.verifyOtp(
+      email: widget.initialEmail!,
+      otp: _otpController.text,
+    );
   }
 
   Future<void> _resendCode() async {
-    await widget._cubit.sendPasswordResetCode();
+    await widget._cubit.resendOtp(email: widget.initialEmail!);
 
     if (!mounted) {
       return;
     }
 
-    showAuthSnackBar(context, message: 'Verification code sent.');
+    final AuthState state = widget._cubit.state;
+    if (state.status == AuthStatus.success) {
+      showAuthSnackBar(
+        context,
+        message: state.message ?? 'OTP sent successfully.',
+      );
+    } else if (state.status == AuthStatus.failure) {
+      showAuthSnackBar(
+        context,
+        message: state.message ?? 'Failed to resend OTP.',
+        isError: true,
+      );
+    }
   }
 
   bool _validate() {
@@ -77,92 +109,118 @@ class _OtpViewState extends State<OtpView> {
   Widget build(BuildContext context) {
     return BlocProvider<AuthCubit>.value(
       value: widget._cubit,
-      child: Scaffold(
-        body: SafeArea(
-          child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-              return SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(24, 44, 24, 28),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 430),
-                      child: BlocBuilder<AuthCubit, AuthState>(
-                        builder: (BuildContext context, AuthState state) {
-                          return Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              const AuthHeader(
-                                title: 'OTP Verification',
-                                subtitle: 'Secure account recovery',
-                              ),
-                              const SizedBox(height: 34),
-                              AuthCard(
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: <Widget>[
-                                    Text(
-                                      'Enter Code',
-                                      style: AppTextStyles.headlineSmall,
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      'Use the 6-digit code sent to your email or phone.',
-                                      style: AppTextStyles.bodyMedium.copyWith(
-                                        color: AppColors.textLight,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 28),
-                                    AppTextField(
-                                      label: 'Verification Code',
-                                      hintText: '000000',
-                                      controller: _otpController,
-                                      prefixIcon: Icons.pin_rounded,
-                                      errorText: _otpError,
-                                      keyboardType: TextInputType.number,
-                                      textInputAction: TextInputAction.done,
-                                      maxLength: 6,
-                                      inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.digitsOnly,
-                                      ],
-                                      onSubmitted: (_) {
-                                        _submit();
-                                      },
-                                    ),
-                                    const SizedBox(height: 28),
-                                    AppButton(
-                                      text: 'Verify Code',
-                                      isLoading: state.isSubmitting,
-                                      onPressed: _submit,
-                                    ),
-                                    const SizedBox(height: 14),
-                                    TextButton(
-                                      onPressed: state.isSubmitting
-                                          ? null
-                                          : _resendCode,
-                                      child: const Text('Resend code'),
-                                    ),
-                                  ],
+      child: BlocListener<AuthCubit, AuthState>(
+        listenWhen: (previous, current) => previous.status != current.status,
+        listener: (context, state) {
+          if (state.status == AuthStatus.success) {
+            if (state.message != null) {
+              showAuthSnackBar(context, message: state.message!);
+            }
+            final otp = _otpController.text;
+            _clearFields();
+            context.pushReplacementNamed(
+              RouteNames.resetPassword,
+              extra: {'email': widget.initialEmail!, 'otp': otp},
+            );
+          } else if (state.status == AuthStatus.failure) {
+            final String message = state.errors != null
+                ? state.errors!.values.first.first as String
+                : state.message ?? 'Verification failed';
+            showAuthSnackBar(context, message: message, isError: true);
+          }
+        },
+        child: Scaffold(
+          body: SafeArea(
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(24, 44, 24, 28),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 430),
+                        child: BlocBuilder<AuthCubit, AuthState>(
+                          builder: (BuildContext context, AuthState state) {
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                const AuthHeader(
+                                  title: 'OTP Verification',
+                                  subtitle: 'Secure account recovery',
                                 ),
-                              ),
-                              const SizedBox(height: 24),
-                              TextButton(
-                                onPressed: () {
-                                  context.goNamed(RouteNames.login);
-                                },
-                                child: const Text('Back to Login'),
-                              ),
-                            ],
-                          );
-                        },
+                                const SizedBox(height: 34),
+                                AuthCard(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: <Widget>[
+                                      Text(
+                                        'Enter Code',
+                                        style: AppTextStyles.headlineSmall,
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        'Enter the 6-digit code sent to ${widget.initialEmail ?? "your email"}.',
+                                        style: AppTextStyles.bodyMedium
+                                            .copyWith(
+                                              color: AppColors.textLight,
+                                            ),
+                                      ),
+                                      const SizedBox(height: 28),
+                                      AppTextField(
+                                        label: 'Verification Code',
+                                        hintText: '000000',
+                                        controller: _otpController,
+                                        prefixIcon: Icons.pin_rounded,
+                                        errorText: _otpError,
+                                        keyboardType: TextInputType.number,
+                                        textInputAction: TextInputAction.done,
+                                        maxLength: 6,
+                                        inputFormatters: <TextInputFormatter>[
+                                          FilteringTextInputFormatter
+                                              .digitsOnly,
+                                        ],
+                                        onSubmitted: (_) {
+                                          _submit();
+                                        },
+                                      ),
+                                      const SizedBox(height: 28),
+                                      AppButton(
+                                        text: 'Verify Code',
+                                        isLoading: state.isSubmitting,
+                                        onPressed: _submit,
+                                      ),
+                                      const SizedBox(height: 14),
+                                      TextButton(
+                                        onPressed: state.isSubmitting
+                                            ? null
+                                            : _resendCode,
+                                        child: const Text('Resend code'),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                TextButton(
+                                  onPressed: () {
+                                    _clearFields();
+                                    context.goNamed(RouteNames.login);
+                                  },
+                                  child: const Text('Back to Login'),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),

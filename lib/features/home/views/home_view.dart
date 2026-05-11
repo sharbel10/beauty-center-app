@@ -23,11 +23,17 @@ class HomeView extends StatelessWidget {
         },
         child: Scaffold(
           appBar: AppBar(title: const Text('Home')),
-          body: Center(
-            child: ElevatedButton(
-              onPressed: () => context.read<AuthCubit>().logout(),
-              child: const Text('Logout (Placeholder)'),
-            ),
+          body: BlocBuilder<AuthCubit, AuthState>(
+            builder: (context, state) {
+              return Center(
+                child: state.isSubmitting
+                    ? CircularProgressIndicator()
+                    : ElevatedButton(
+                        onPressed: () => _cubit.logout(),
+                        child: const Text('Logout'),
+                      ),
+              );
+            },
           ),
         ),
       ),

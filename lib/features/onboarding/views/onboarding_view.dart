@@ -27,24 +27,21 @@ class _OnboardingViewState extends State<OnboardingView> {
   static const List<_OnboardingData> _pages = <_OnboardingData>[
     _OnboardingData(
       navTitle: 'Discover Clinics',
-      imageUrl:
-          'https://images.pexels.com/photos/3997988/pexels-photo-3997988.jpeg?auto=compress&cs=tinysrgb&w=1400',
+      imageUrl: 'assets/images/onboarding_1.jpeg',
       title: 'Find trusted beauty centers near you.',
       subtitle:
           'Explore services, specialists, and available appointments from one place.',
     ),
     _OnboardingData(
       navTitle: 'Book Visits',
-      imageUrl:
-          'https://images.pexels.com/photos/3985360/pexels-photo-3985360.jpeg?auto=compress&cs=tinysrgb&w=1400',
+      imageUrl: 'assets/images/onboarding_2.jpeg',
       title: 'Schedule your care without extra calls.',
       subtitle:
           'Choose your treatment, pick a time, and keep your booking details organized.',
     ),
     _OnboardingData(
       navTitle: 'Personal Care',
-      imageUrl:
-          'https://images.pexels.com/photos/5069432/pexels-photo-5069432.jpeg?auto=compress&cs=tinysrgb&w=1400',
+      imageUrl: 'assets/images/onboarding_3.jpeg',
       title: 'Track your beauty journey clearly.',
       subtitle:
           'Review appointments and follow-up notes in a simple patient experience.',
@@ -238,7 +235,7 @@ class _ClinicImageCard extends StatelessWidget {
         child: SizedBox(
           width: double.infinity,
           height: height,
-          child: Image.network(
+          child: Image.asset(
             imageUrl,
             fit: BoxFit.cover,
             errorBuilder: (_, _, _) {

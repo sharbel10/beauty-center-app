@@ -27,12 +27,16 @@ class _RegisterViewState extends State<RegisterView> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   String? _fullNameError;
   String? _emailError;
   String? _phoneError;
   String? _passwordError;
+  String? _confirmPasswordError;
 
   @override
   void dispose() {
@@ -40,7 +44,23 @@ class _RegisterViewState extends State<RegisterView> {
     _emailController.dispose();
     _phoneController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  void _clearFields() {
+    _fullNameController.clear();
+    _emailController.clear();
+    _phoneController.clear();
+    _passwordController.clear();
+    _confirmPasswordController.clear();
+    setState(() {
+      _fullNameError = null;
+      _emailError = null;
+      _phoneError = null;
+      _passwordError = null;
+      _confirmPasswordError = null;
+    });
   }
 
   Future<void> _submit() async {
@@ -48,17 +68,13 @@ class _RegisterViewState extends State<RegisterView> {
       return;
     }
 
-    await widget._cubit.register();
-
-    if (!mounted) {
-      return;
-    }
-
-    showAuthSnackBar(
-      context,
-      message: 'Account created. Verification code sent.',
+    await widget._cubit.register(
+      name: _fullNameController.text.trim(),
+      phone: _phoneController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+      passwordConfirmation: _confirmPasswordController.text,
     );
-    context.pushNamed(RouteNames.registerOtp);
   }
 
   bool _validate() {
@@ -70,16 +86,25 @@ class _RegisterViewState extends State<RegisterView> {
     final String? passwordError = AuthValidation.password(
       _passwordController.text,
     );
+    final String? confirmPasswordError = AuthValidation.confirmPassword(
+      _passwordController.text,
+      _confirmPasswordController.text,
+    );
 
     setState(() {
       _fullNameError = fullNameError;
       _emailError = emailError;
       _phoneError = phoneError;
       _passwordError = passwordError;
+      _confirmPasswordError = confirmPasswordError;
     });
 
     final String? firstError =
-        fullNameError ?? emailError ?? phoneError ?? passwordError;
+        fullNameError ??
+        emailError ??
+        phoneError ??
+        passwordError ??
+        confirmPasswordError;
     if (firstError != null) {
       showAuthSnackBar(context, message: firstError, isError: true);
       return false;
@@ -92,122 +117,168 @@ class _RegisterViewState extends State<RegisterView> {
   Widget build(BuildContext context) {
     return BlocProvider<AuthCubit>.value(
       value: widget._cubit,
-      child: Scaffold(
-        body: SafeArea(
-          child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-              return SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(24, 34, 24, 28),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 430),
-                      child: BlocBuilder<AuthCubit, AuthState>(
-                        builder: (BuildContext context, AuthState state) {
-                          return Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              const AuthHeader(
-                                title: 'Create Account',
-                                subtitle: 'Join Beauty Center',
-                              ),
-                              const SizedBox(height: 34),
-                              AuthCard(
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: <Widget>[
-                                    AppTextField(
-                                      label: 'Full Name',
-                                      hintText: 'Jane Doe',
-                                      controller: _fullNameController,
-                                      prefixIcon: Icons.person_rounded,
-                                      errorText: _fullNameError,
-                                      textInputAction: TextInputAction.next,
-                                    ),
-                                    const SizedBox(height: 22),
-                                    AppTextField(
-                                      label: 'Email Address',
-                                      hintText: 'jane@example.com',
-                                      controller: _emailController,
-                                      prefixIcon: Icons.email_rounded,
-                                      errorText: _emailError,
-                                      keyboardType: TextInputType.emailAddress,
-                                      textInputAction: TextInputAction.next,
-                                    ),
-                                    const SizedBox(height: 22),
-                                    AppTextField(
-                                      label: 'Phone Number',
-                                      hintText: '+1 (555) 000-0000',
-                                      controller: _phoneController,
-                                      prefixIcon: Icons.phone_rounded,
-                                      errorText: _phoneError,
-                                      keyboardType: TextInputType.phone,
-                                      textInputAction: TextInputAction.next,
-                                    ),
-                                    const SizedBox(height: 22),
-                                    AppTextField(
-                                      label: 'Password',
-                                      hintText: 'Create a password',
-                                      controller: _passwordController,
-                                      prefixIcon: Icons.lock_rounded,
-                                      obscureText: _obscurePassword,
-                                      errorText: _passwordError,
-                                      textInputAction: TextInputAction.done,
-                                      onSubmitted: (_) {
-                                        _submit();
-                                      },
-                                      suffixIcon: IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            _obscurePassword =
-                                                !_obscurePassword;
-                                          });
-                                        },
-                                        icon: Icon(
-                                          _obscurePassword
-                                              ? Icons.visibility_rounded
-                                              : Icons.visibility_off_rounded,
-                                          color: AppColors.textLight,
+      child: BlocListener<AuthCubit, AuthState>(
+        listenWhen: (previous, current) => previous.status != current.status,
+        listener: (context, state) {
+          if (state.status == AuthStatus.success) {
+            if (state.message != null) {
+              showAuthSnackBar(context, message: state.message!);
+            }
+            final String email = _emailController.text.trim();
+            _clearFields();
+            context.pushReplacementNamed(RouteNames.registerOtp, extra: email);
+          } else if (state.status == AuthStatus.failure) {
+            final String message = state.errors != null
+                ? state.errors!.values.first.first as String
+                : state.message ?? 'Registration failed';
+            showAuthSnackBar(context, message: message, isError: true);
+          }
+        },
+        child: Scaffold(
+          body: SafeArea(
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(24, 34, 24, 28),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 430),
+                        child: BlocBuilder<AuthCubit, AuthState>(
+                          builder: (BuildContext context, AuthState state) {
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                const AuthHeader(
+                                  title: 'Create Account',
+                                  subtitle: 'Join Lumina',
+                                ),
+                                const SizedBox(height: 34),
+                                AuthCard(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: <Widget>[
+                                      AppTextField(
+                                        label: 'Full Name',
+                                        hintText: 'Jane Doe',
+                                        controller: _fullNameController,
+                                        prefixIcon: Icons.person_rounded,
+                                        errorText: _fullNameError,
+                                        textInputAction: TextInputAction.next,
+                                      ),
+                                      const SizedBox(height: 22),
+                                      AppTextField(
+                                        label: 'Email Address',
+                                        hintText: 'jane@example.com',
+                                        controller: _emailController,
+                                        prefixIcon: Icons.email_rounded,
+                                        errorText: _emailError,
+                                        keyboardType:
+                                            TextInputType.emailAddress,
+                                        textInputAction: TextInputAction.next,
+                                      ),
+                                      const SizedBox(height: 22),
+                                      AppTextField(
+                                        label: 'Phone Number',
+                                        hintText: '+1 (555) 000-0000',
+                                        controller: _phoneController,
+                                        prefixIcon: Icons.phone_rounded,
+                                        errorText: _phoneError,
+                                        keyboardType: TextInputType.phone,
+                                        textInputAction: TextInputAction.next,
+                                      ),
+                                      const SizedBox(height: 22),
+                                      AppTextField(
+                                        label: 'Password',
+                                        hintText: 'Create a password',
+                                        controller: _passwordController,
+                                        prefixIcon: Icons.lock_rounded,
+                                        obscureText: _obscurePassword,
+                                        errorText: _passwordError,
+                                        textInputAction: TextInputAction.next,
+                                        suffixIcon: IconButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              _obscurePassword =
+                                                  !_obscurePassword;
+                                            });
+                                          },
+                                          icon: Icon(
+                                            _obscurePassword
+                                                ? Icons.visibility_rounded
+                                                : Icons.visibility_off_rounded,
+                                            color: AppColors.textLight,
+                                          ),
                                         ),
                                       ),
+                                      const SizedBox(height: 22),
+                                      AppTextField(
+                                        label: 'Confirm Password',
+                                        hintText: 'Confirm your password',
+                                        controller: _confirmPasswordController,
+                                        prefixIcon: Icons.lock_rounded,
+                                        obscureText: _obscureConfirmPassword,
+                                        errorText: _confirmPasswordError,
+                                        textInputAction: TextInputAction.next,
+                                        onSubmitted: (_) {
+                                          _submit();
+                                        },
+                                        suffixIcon: IconButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              _obscureConfirmPassword =
+                                                  !_obscureConfirmPassword;
+                                            });
+                                          },
+                                          icon: Icon(
+                                            _obscureConfirmPassword
+                                                ? Icons.visibility_rounded
+                                                : Icons.visibility_off_rounded,
+                                            color: AppColors.textLight,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 28),
+                                      AppButton(
+                                        text: 'Create Account',
+                                        isLoading: state.isSubmitting,
+                                        onPressed: _submit,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                Wrap(
+                                  alignment: WrapAlignment.center,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      'Already have an account? ',
+                                      style: AppTextStyles.bodyMedium,
                                     ),
-                                    const SizedBox(height: 28),
-                                    AppButton(
-                                      text: 'Create Account',
-                                      isLoading: state.isSubmitting,
-                                      onPressed: _submit,
+                                    TextButton(
+                                      onPressed: () {
+                                        _clearFields();
+                                        context.goNamed(RouteNames.login);
+                                      },
+                                      child: const Text('Login'),
                                     ),
                                   ],
                                 ),
-                              ),
-                              const SizedBox(height: 24),
-                              Wrap(
-                                alignment: WrapAlignment.center,
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                children: <Widget>[
-                                  Text(
-                                    'Already have an account? ',
-                                    style: AppTextStyles.bodyMedium,
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      context.goNamed(RouteNames.login);
-                                    },
-                                    child: const Text('Login'),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          );
-                        },
+                              ],
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),

@@ -17,7 +17,7 @@ class BeautyCenterApp extends StatelessWidget {
     final AppRouter appRouter = getIt<AppRouter>();
 
     return MaterialApp.router(
-      title: 'Beauty Center App',
+      title: 'Lumina App',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       routerConfig: appRouter.router,

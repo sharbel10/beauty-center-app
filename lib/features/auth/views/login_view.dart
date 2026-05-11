@@ -38,18 +38,24 @@ class _LoginViewState extends State<LoginView> {
     super.dispose();
   }
 
+  void _clearFields() {
+    _emailController.clear();
+    _passwordController.clear();
+    setState(() {
+      _emailError = null;
+      _passwordError = null;
+    });
+  }
+
   Future<void> _submit() async {
     if (!_validate()) {
       return;
     }
 
-    await widget._cubit.login();
-
-    if (!mounted) {
-      return;
-    }
-
-    showAuthSnackBar(context, message: 'Login completed successfully.');
+    await widget._cubit.login(
+      login: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
   }
 
   bool _validate() {
@@ -81,10 +87,34 @@ class _LoginViewState extends State<LoginView> {
       value: widget._cubit,
       child: BlocListener<AuthCubit, AuthState>(
         listenWhen: (AuthState previous, AuthState current) =>
-            previous.isAuthenticated != current.isAuthenticated &&
-            current.isAuthenticated,
+            previous.status != current.status ||
+            previous.isAuthenticated != current.isAuthenticated,
         listener: (BuildContext context, AuthState state) {
-          showAuthSnackBar(context, message: 'Login completed successfully.');
+          if (state.status == AuthStatus.success) {
+            if (state.message != null) {
+              showAuthSnackBar(context, message: state.message!);
+            }
+            if (state.isAuthenticated) {
+              context.goNamed(RouteNames.home);
+            }
+          } else if (state.status == AuthStatus.failure) {
+            final String message = state.errors != null
+                ? state.errors!.values.first.first as String
+                : state.message ?? 'Login failed';
+
+            if (message == 'Email verification is required before login.') {
+              final String email = _emailController.text.trim();
+
+              showAuthSnackBar(context, message: message);
+              _clearFields();
+              context.pushReplacementNamed(
+                RouteNames.registerOtp,
+                extra: email,
+              );
+            } else {
+              showAuthSnackBar(context, message: message, isError: true);
+            }
+          }
         },
         child: Scaffold(
           body: SafeArea(
@@ -105,7 +135,7 @@ class _LoginViewState extends State<LoginView> {
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
                                 const AuthHeader(
-                                  title: 'Beauty Center',
+                                  title: 'Lumina',
                                   subtitle: 'Sign in to continue',
                                 ),
                                 const SizedBox(height: 36),
@@ -120,7 +150,7 @@ class _LoginViewState extends State<LoginView> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        'Access your beauty center account.',
+                                        'Access your Lumina account.',
                                         style: AppTextStyles.bodyMedium
                                             .copyWith(
                                               color: AppColors.textLight,
@@ -146,11 +176,12 @@ class _LoginViewState extends State<LoginView> {
                                         obscureText: _obscurePassword,
                                         errorText: _passwordError,
                                         textInputAction: TextInputAction.done,
-                                        onSubmitted: (_) {
-                                          _submit();
-                                        },
+                                        // onSubmitted: (_) {
+                                        //   _submit();
+                                        // },
                                         trailingLabel: TextButton(
                                           onPressed: () {
+                                            _clearFields();
                                             context.pushNamed(
                                               RouteNames.forgotPassword,
                                             );
@@ -222,6 +253,7 @@ class _LoginViewState extends State<LoginView> {
                                     ),
                                     TextButton(
                                       onPressed: () {
+                                        _clearFields();
                                         context.pushNamed(RouteNames.register);
                                       },
                                       child: const Text('Register'),

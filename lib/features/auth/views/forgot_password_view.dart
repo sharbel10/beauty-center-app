@@ -24,13 +24,20 @@ class ForgotPasswordView extends StatefulWidget {
 }
 
 class _ForgotPasswordViewState extends State<ForgotPasswordView> {
-  final TextEditingController _phoneOrEmailController = TextEditingController();
-  String? _phoneOrEmailError;
+  final TextEditingController _emailController = TextEditingController();
+  String? _emailError;
 
   @override
   void dispose() {
-    _phoneOrEmailController.dispose();
+    _emailController.dispose();
     super.dispose();
+  }
+
+  void _clearFields() {
+    _emailController.clear();
+    setState(() {
+      _emailError = null;
+    });
   }
 
   Future<void> _submit() async {
@@ -38,27 +45,35 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
       return;
     }
 
-    await widget._cubit.sendPasswordResetCode();
+    await widget._cubit.forgotPassword(login: _emailController.text.trim());
 
     if (!mounted) {
       return;
     }
 
-    showAuthSnackBar(context, message: 'Verification code sent.');
-    context.pushNamed(RouteNames.verifyOtp);
+    final AuthState state = widget._cubit.state;
+    if (state.status == AuthStatus.success) {
+      showAuthSnackBar(context, message: state.message!);
+      final email = _emailController.text.trim();
+      _clearFields();
+      context.pushReplacementNamed(RouteNames.verifyOtp, extra: email);
+    } else if (state.status == AuthStatus.failure) {
+      final String message = state.errors != null
+          ? state.errors!.values.first.first as String
+          : state.message ?? 'Request failed';
+      showAuthSnackBar(context, message: message, isError: true);
+    }
   }
 
   bool _validate() {
-    final String? phoneOrEmailError = AuthValidation.emailOrPhone(
-      _phoneOrEmailController.text,
-    );
+    final String? emailError = AuthValidation.email(_emailController.text);
 
     setState(() {
-      _phoneOrEmailError = phoneOrEmailError;
+      _emailError = emailError;
     });
 
-    if (phoneOrEmailError != null) {
-      showAuthSnackBar(context, message: phoneOrEmailError, isError: true);
+    if (emailError != null) {
+      showAuthSnackBar(context, message: emailError, isError: true);
       return false;
     }
 
@@ -101,18 +116,18 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                     ),
                                     const SizedBox(height: 10),
                                     Text(
-                                      'Enter your email address or phone number.',
+                                      'Enter your email address.',
                                       style: AppTextStyles.bodyMedium.copyWith(
                                         color: AppColors.textLight,
                                       ),
                                     ),
                                     const SizedBox(height: 28),
                                     AppTextField(
-                                      label: 'Email or Phone',
+                                      label: 'Email Address',
                                       hintText: 'name@example.com',
-                                      controller: _phoneOrEmailController,
+                                      controller: _emailController,
                                       prefixIcon: Icons.alternate_email_rounded,
-                                      errorText: _phoneOrEmailError,
+                                      errorText: _emailError,
                                       keyboardType: TextInputType.emailAddress,
                                       textInputAction: TextInputAction.done,
                                       onSubmitted: (_) {
@@ -131,6 +146,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                               const SizedBox(height: 24),
                               TextButton(
                                 onPressed: () {
+                                  _clearFields();
                                   context.goNamed(RouteNames.login);
                                 },
                                 child: const Text('Back to Login'),
