@@ -1,5 +1,3 @@
-import 'package:beauty_center_app/core/theme/app_colors.dart';
-import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/features/splash/cubit/splash_cubit.dart';
 import 'package:beauty_center_app/features/splash/cubit/splash_state.dart';
 import 'package:flutter/material.dart';
@@ -75,6 +73,8 @@ class _SplashViewState extends State<SplashView>
                       'assets/images/logo.png',
                       width: 80,
                       height: 80,
+                      cacheWidth: 80,
+                      cacheHeight: 80,
                     ),
                   ),
                 ),
@@ -113,31 +113,42 @@ class _SplashViewState extends State<SplashView>
                 // Middle Image
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Stack(
-                    alignment: Alignment.bottomLeft,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: Image.asset(
-                          'assets/images/splash.png',
-                          height: 220,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Text(
-                          'EXCELLENCE IN CARE',
-                          style: GoogleFonts.inter(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 1.5,
+                  child: LayoutBuilder(
+                    builder: (BuildContext context, BoxConstraints constraints) {
+                      final int? splashDecodeWidth =
+                          constraints.maxWidth.isFinite &&
+                              constraints.maxWidth > 0
+                          ? constraints.maxWidth.round().clamp(1, 8192)
+                          : null;
+                      return Stack(
+                        alignment: Alignment.bottomLeft,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(24),
+                            child: Image.asset(
+                              'assets/images/splash.png',
+                              height: 220,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              cacheWidth: splashDecodeWidth,
+                              cacheHeight: 220,
+                            ),
                           ),
-                        ),
-                      ),
-                    ],
+                          Padding(
+                            padding: const EdgeInsets.all(24.0),
+                            child: Text(
+                              'EXCELLENCE IN CARE',
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ),
                 const Spacer(),

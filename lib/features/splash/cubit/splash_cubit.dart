@@ -15,9 +15,11 @@ class SplashCubit extends Cubit<SplashState> {
 
   Future<void> resolveStartupRoute() async {
     emit(state.copyWith(isLoading: true));
-    await Future<void>.delayed(const Duration(seconds: 3));
-
-    await _authCubit.checkAuthStatus();
+    await Future.wait<void>(<Future<void>>[
+      _authCubit.checkAuthStatus(),
+      Future<void>.delayed(const Duration(milliseconds: 2000
+      )),
+    ]);
 
     String nextRoute;
     if (_authCubit.state.isAuthenticated || _preferenceManager.isLoggedIn()) {

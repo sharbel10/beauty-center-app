@@ -76,8 +76,8 @@ class AuthCubit extends Cubit<AuthState> {
       ),
     );
     final result = await _authRepository.verifyOtp(email: email, otp: otp);
-    result.fold(
-      (failure) {
+    await result.fold<Future<void>>(
+      (failure) async {
         if (failure is ValidationFailure) {
           emit(
             state.copyWith(
@@ -159,8 +159,8 @@ class AuthCubit extends Cubit<AuthState> {
       login: login,
       password: password,
     );
-    result.fold(
-      (failure) {
+    await result.fold<Future<void>>(
+      (failure) async {
         if (failure is ValidationFailure) {
           emit(
             state.copyWith(
@@ -215,8 +215,8 @@ class AuthCubit extends Cubit<AuthState> {
       ),
     );
     final result = await _authRepository.logout();
-    result.fold(
-      (failure) {
+    await result.fold<Future<void>>(
+      (failure) async {
         emit(
           state.copyWith(status: AuthStatus.failure, message: failure.message),
         );

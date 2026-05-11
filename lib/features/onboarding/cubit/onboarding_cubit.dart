@@ -9,7 +9,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
 
   final PreferenceManager _preferenceManager;
 
-  void completeOnboarding() async {
+  Future<void> completeOnboarding() async {
     await _preferenceManager.markFirstLaunchCompleted();
     emit(state.copyWith(isCompleted: true));
   }

@@ -137,6 +137,8 @@ class _RegisterOtpViewState extends State<RegisterOtpView> {
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 430),
                         child: BlocBuilder<AuthCubit, AuthState>(
+                          buildWhen: (AuthState previous, AuthState current) =>
+                              previous.isSubmitting != current.isSubmitting,
                           builder: (BuildContext context, AuthState state) {
                             return Column(
                               mainAxisSize: MainAxisSize.min,

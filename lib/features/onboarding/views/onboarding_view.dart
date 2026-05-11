@@ -187,7 +187,11 @@ class _OnboardingPage extends StatelessWidget {
           physics: const BouncingScrollPhysics(),
           child: Column(
             children: <Widget>[
-              _ClinicImageCard(imageUrl: data.imageUrl, height: imageHeight),
+              _ClinicImageCard(
+                imageUrl: data.imageUrl,
+                height: imageHeight,
+                displayWidth: constraints.maxWidth,
+              ),
               const SizedBox(height: 32),
               Text(
                 data.title,
@@ -212,13 +216,25 @@ class _OnboardingPage extends StatelessWidget {
 }
 
 class _ClinicImageCard extends StatelessWidget {
-  const _ClinicImageCard({required this.imageUrl, required this.height});
+  const _ClinicImageCard({
+    required this.imageUrl,
+    required this.height,
+    required this.displayWidth,
+  });
 
   final String imageUrl;
   final double height;
+  final double displayWidth;
 
   @override
   Widget build(BuildContext context) {
+    final int? cacheWidth = displayWidth.isFinite && displayWidth > 0
+        ? displayWidth.round().clamp(1, 8192)
+        : null;
+    final int? cacheHeight = height.isFinite && height > 0
+        ? height.round().clamp(1, 8192)
+        : null;
+
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -238,6 +254,8 @@ class _ClinicImageCard extends StatelessWidget {
           child: Image.asset(
             imageUrl,
             fit: BoxFit.cover,
+            cacheWidth: cacheWidth,
+            cacheHeight: cacheHeight,
             errorBuilder: (_, _, _) {
               return Container(
                 color: AppColors.neutral,

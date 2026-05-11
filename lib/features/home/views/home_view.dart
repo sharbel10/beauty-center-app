@@ -24,6 +24,8 @@ class HomeView extends StatelessWidget {
         child: Scaffold(
           appBar: AppBar(title: const Text('Home')),
           body: BlocBuilder<AuthCubit, AuthState>(
+            buildWhen: (AuthState previous, AuthState current) =>
+                previous.isSubmitting != current.isSubmitting,
             builder: (context, state) {
               return Center(
                 child: state.isSubmitting
