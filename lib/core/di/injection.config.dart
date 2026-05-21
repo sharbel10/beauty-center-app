@@ -20,6 +20,13 @@ import 'package:beauty_center_app/core/storage/secure_storage.dart' as _i925;
 import 'package:beauty_center_app/features/auth/cubit/auth_cubit.dart' as _i196;
 import 'package:beauty_center_app/features/auth/repository/auth_repository.dart'
     as _i609;
+import 'package:beauty_center_app/features/explore/cubit/explore_cubit.dart'
+    as _i901;
+import 'package:beauty_center_app/features/explore/repository/explore_repository.dart'
+    as _i902;
+import 'package:beauty_center_app/features/home/cubit/home_cubit.dart' as _i701;
+import 'package:beauty_center_app/features/home/repository/home_repository.dart'
+    as _i702;
 import 'package:beauty_center_app/features/onboarding/cubit/onboarding_cubit.dart'
     as _i328;
 import 'package:beauty_center_app/features/splash/cubit/splash_cubit.dart'
@@ -55,6 +62,18 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i609.AuthRepository>(
       () => _i609.AuthRepository(gh<_i1058.DioClient>()),
+    );
+    gh.factory<_i702.HomeRepository>(
+      () => _i702.HomeRepository(gh<_i1058.DioClient>()),
+    );
+    gh.factory<_i902.ExploreRepository>(
+      () => _i902.ExploreRepository(gh<_i1058.DioClient>()),
+    );
+    gh.factory<_i701.HomeCubit>(
+      () => _i701.HomeCubit(gh<_i702.HomeRepository>()),
+    );
+    gh.factory<_i901.ExploreCubit>(
+      () => _i901.ExploreCubit(gh<_i902.ExploreRepository>()),
     );
     gh.singleton<_i196.AuthCubit>(
       () => _i196.AuthCubit(

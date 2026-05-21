@@ -1,7 +1,7 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = "http://192.168.1.104:8000/api/";
+  static const String baseUrl = "http://192.168.1.6:8000/api/";
 
   // Auth endpoints.
   static const String login = 'customer/login';
@@ -11,4 +11,23 @@ class ApiEndpoints {
   static const String verifyOtp = 'customer/verify-email-otp';
   static const String resendOtp = 'customer/resend-email-otp';
   static const String resetPassword = 'customer/reset-password';
+
+  // Home
+  static const String home = 'customer/home';
+
+  // Explore
+  static const String categories = 'customer/categories';
+  static const String centers = 'customer/centers';
+
+  static const String storageUrl = 'http://192.168.1.6:8000/storage/';
+
+  static String mediaUrl(String? path) {
+    if (path == null || path.isEmpty) {
+      return '';
+    }
+    if (path.startsWith('http')) {
+      return path;
+    }
+    return '$storageUrl$path';
+  }
 }

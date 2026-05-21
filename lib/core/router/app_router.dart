@@ -1,5 +1,9 @@
+import 'package:beauty_center_app/core/di/injection.dart';
 import 'package:beauty_center_app/core/router/route_names.dart';
 import 'package:beauty_center_app/features/auth/cubit/auth_cubit.dart';
+import 'package:beauty_center_app/features/explore/cubit/explore_cubit.dart';
+import 'package:beauty_center_app/features/explore/views/explore_view.dart';
+import 'package:beauty_center_app/features/home/cubit/home_cubit.dart';
 import 'package:beauty_center_app/features/auth/views/forgot_password_view.dart';
 import 'package:beauty_center_app/features/auth/views/login_view.dart';
 import 'package:beauty_center_app/features/auth/views/otp_view.dart';
@@ -89,7 +93,17 @@ class AppRouter {
         GoRoute(
           name: RouteNames.home,
           path: RouteNames.homePath,
-          builder: (context, state) => HomeView(cubit: _authCubit),
+          builder: (context, state) => HomeView(
+            authCubit: _authCubit,
+            homeCubit: getIt<HomeCubit>(),
+          ),
+        ),
+        GoRoute(
+          name: RouteNames.explore,
+          path: RouteNames.explorePath,
+          builder: (context, state) => ExploreView(
+            cubit: getIt<ExploreCubit>(),
+          ),
         ),
       ],
     );

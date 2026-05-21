@@ -10,6 +10,7 @@ class RouteNames {
   static const String resetPassword = 'resetPassword';
   static const String onboarding = 'onboarding';
   static const String home = 'home';
+  static const String explore = 'explore';
 
   static const String splashPath = '/splash';
   static const String loginPath = '/login';
@@ -20,4 +21,5 @@ class RouteNames {
   static const String resetPasswordPath = '/reset-password';
   static const String onboardingPath = '/onboarding';
   static const String homePath = '/home';
+  static const String explorePath = '/explore';
 }

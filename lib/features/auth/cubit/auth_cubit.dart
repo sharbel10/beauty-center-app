@@ -102,6 +102,9 @@ class AuthCubit extends Cubit<AuthState> {
             expiry: response.token!.expiresAt,
           );
           await _preferenceManager.setLoggedIn(true);
+          if (response.customer != null) {
+            await _preferenceManager.saveCustomer(response.customer!);
+          }
           emit(
             state.copyWith(
               status: AuthStatus.success,
@@ -185,6 +188,9 @@ class AuthCubit extends Cubit<AuthState> {
             expiry: response.token!.expiresAt,
           );
           await _preferenceManager.setLoggedIn(true);
+          if (response.customer != null) {
+            await _preferenceManager.saveCustomer(response.customer!);
+          }
           emit(
             state.copyWith(
               status: AuthStatus.success,
@@ -206,6 +212,9 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
+  String get userDisplayName =>
+      state.customer?.name ?? _preferenceManager.getCustomerName() ?? 'Guest';
+
   Future<void> logout() async {
     emit(
       state.copyWith(
@@ -224,6 +233,7 @@ class AuthCubit extends Cubit<AuthState> {
       (response) async {
         await _secureStorage.clearAll();
         await _preferenceManager.setLoggedIn(false);
+        await _preferenceManager.clearCustomer();
         emit(
           state.copyWith(
             status: AuthStatus.success,
@@ -254,12 +264,25 @@ class AuthCubit extends Cubit<AuthState> {
       if (isExpired) {
         await _secureStorage.clearToken();
         await _preferenceManager.setLoggedIn(false);
-        emit(state.copyWith(isAuthenticated: false, clearToken: true));
+        await _preferenceManager.clearCustomer();
+        emit(
+          state.copyWith(
+            isAuthenticated: false,
+            clearToken: true,
+            clearCustomer: true,
+          ),
+        );
       } else {
         if (!isLoggedIn) {
           await _preferenceManager.setLoggedIn(true);
         }
-        emit(state.copyWith(isAuthenticated: true, token: token));
+        emit(
+          state.copyWith(
+            isAuthenticated: true,
+            token: token,
+            customer: state.customer ?? _preferenceManager.getCustomer(),
+          ),
+        );
       }
     } else {
       if (isLoggedIn) {
