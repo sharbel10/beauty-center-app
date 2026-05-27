@@ -4,6 +4,7 @@ import 'package:beauty_center_app/core/utils/extensions.dart';
 import 'package:beauty_center_app/core/utils/map_launcher.dart';
 import 'package:beauty_center_app/features/home/models/home_clinic_ui.dart';
 import 'package:beauty_center_app/features/home/widgets/clinic_network_image.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class NearbyClinicCard extends StatefulWidget {
@@ -45,14 +46,14 @@ class _NearbyClinicCardState extends State<NearbyClinicCard> {
 
       if (!launched && mounted) {
         context.showSnackbar(
-          'Could not open maps for this location.',
+          AppLocalizations.of(context).couldNotOpenMapsForLocation,
           isError: true,
         );
       }
     } catch (_) {
       if (mounted) {
         context.showSnackbar(
-          'Could not open maps for this location.',
+          AppLocalizations.of(context).couldNotOpenMapsForLocation,
           isError: true,
         );
       }
@@ -62,7 +63,7 @@ class _NearbyClinicCardState extends State<NearbyClinicCard> {
   Future<void> _onNavigationPressed() async {
     if (!clinic.hasCoordinates) {
       context.showSnackbar(
-        'Location is not available for this clinic.',
+        AppLocalizations.of(context).locationUnavailableForClinic,
         isError: true,
       );
       return;
@@ -75,6 +76,7 @@ class _NearbyClinicCardState extends State<NearbyClinicCard> {
   Widget build(BuildContext context) {
     final String? description = _shortDescription;
     final String? region = clinic.cityAreaLabel;
+    final AppLocalizations l10n = AppLocalizations.of(context);
 
     return InkWell(
       onTap: widget.onCardTap ?? () {},
@@ -163,7 +165,7 @@ class _NearbyClinicCardState extends State<NearbyClinicCard> {
                     ],
                     const SizedBox(height: 6),
                     Text(
-                      clinic.reviewsLabel,
+                      l10n.reviewsCount(clinic.ratingsCount),
                       style: AppTextStyles.smallCaps.copyWith(
                         fontSize: 9,
                         color: AppColors.textMuted,
@@ -234,7 +236,7 @@ class _NearbyClinicCardState extends State<NearbyClinicCard> {
                             ),
                           ),
                           child: Text(
-                            'BOOK',
+                            l10n.book,
                             style: AppTextStyles.button.copyWith(
                               fontSize: 12,
                               color: AppColors.surface,
@@ -267,7 +269,7 @@ class _FeaturedBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        'TOP',
+        AppLocalizations.of(context).top,
         style: AppTextStyles.smallCaps.copyWith(
           color: AppColors.primary,
           fontSize: 8,

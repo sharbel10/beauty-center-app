@@ -13,6 +13,10 @@ class ExploreCubit extends Cubit<ExploreState> {
   final ExploreRepository _exploreRepository;
 
   Future<void> loadInitial() async {
+    if (state.isLoading || state.categories.isNotEmpty || state.hasCenters) {
+      return;
+    }
+
     emit(
       state.copyWith(
         status: ExploreStatus.loading,
@@ -35,10 +39,7 @@ class ExploreCubit extends Cubit<ExploreState> {
 
     categoriesResult.fold(
       (failure) => emit(
-        state.copyWith(
-          status: ExploreStatus.failure,
-          message: failure.message,
-        ),
+        state.copyWith(status: ExploreStatus.failure, message: failure.message),
       ),
       (categoriesResponse) {
         centersResult.fold(
@@ -84,10 +85,7 @@ class ExploreCubit extends Cubit<ExploreState> {
 
     result.fold(
       (failure) => emit(
-        state.copyWith(
-          status: ExploreStatus.failure,
-          message: failure.message,
-        ),
+        state.copyWith(status: ExploreStatus.failure, message: failure.message),
       ),
       (response) => emit(
         state.copyWith(
@@ -118,10 +116,7 @@ class ExploreCubit extends Cubit<ExploreState> {
 
     result.fold(
       (failure) => emit(
-        state.copyWith(
-          status: ExploreStatus.failure,
-          message: failure.message,
-        ),
+        state.copyWith(status: ExploreStatus.failure, message: failure.message),
       ),
       (response) => emit(
         state.copyWith(
@@ -158,8 +153,7 @@ class ExploreCubit extends Cubit<ExploreState> {
         minPrice: minPrice,
         maxPrice: maxPrice,
         clearCategory: categoryId == null,
-        clearPrice:
-            minPrice == 0 && maxPrice == ExploreState.defaultMaxPrice,
+        clearPrice: minPrice == 0 && maxPrice == ExploreState.defaultMaxPrice,
       ),
     );
     await refreshCenters();

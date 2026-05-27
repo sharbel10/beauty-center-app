@@ -17,8 +17,7 @@ class SplashCubit extends Cubit<SplashState> {
     emit(state.copyWith(isLoading: true));
     await Future.wait<void>(<Future<void>>[
       _authCubit.checkAuthStatus(),
-      Future<void>.delayed(const Duration(milliseconds: 2000
-      )),
+      Future<void>.delayed(const Duration(milliseconds: 2000)),
     ]);
 
     String nextRoute;

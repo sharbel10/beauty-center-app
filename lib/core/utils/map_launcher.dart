@@ -32,10 +32,7 @@ abstract final class MapLauncher {
         return true;
       }
 
-      return await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
+      return await launchUrl(uri, mode: LaunchMode.externalApplication);
     } on PlatformException catch (error, stackTrace) {
       debugPrint('url_launcher PlatformException: $error\n$stackTrace');
       if (!kIsWeb && Platform.isAndroid) {

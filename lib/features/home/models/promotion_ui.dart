@@ -16,15 +16,17 @@ class PromotionUiModel {
     Offer offer, {
     required bool isDark,
     required String badge,
+    required String cta,
+    required String offLabel,
   }) {
     return PromotionUiModel(
       badge: badge,
       title: offer.title,
       subtitle: offer.center?.name ?? '',
       description: offer.description ?? '',
-      price: _formatPrice(offer),
+      price: _formatPrice(offer, offLabel),
       oldPrice: '',
-      cta: 'CLAIM OFFER',
+      cta: cta,
       isDark: isDark,
     );
   }
@@ -38,14 +40,14 @@ class PromotionUiModel {
   final String cta;
   final bool isDark;
 
-  static String _formatPrice(Offer offer) {
+  static String _formatPrice(Offer offer, String offLabel) {
     if (offer.discountType == 'percentage') {
-      final String value = offer.discountValue.truncateToDouble() ==
-              offer.discountValue
+      final String value =
+          offer.discountValue.truncateToDouble() == offer.discountValue
           ? offer.discountValue.toStringAsFixed(0)
           : offer.discountValue.toStringAsFixed(1);
-      return '$value% OFF';
+      return '$value% $offLabel';
     }
-    return '${offer.discountValue.toStringAsFixed(0)} OFF';
+    return '${offer.discountValue.toStringAsFixed(0)} $offLabel';
   }
 }

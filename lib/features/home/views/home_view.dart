@@ -19,6 +19,7 @@ import 'package:beauty_center_app/features/home/widgets/home_header.dart';
 import 'package:beauty_center_app/features/home/widgets/home_search_bar.dart';
 import 'package:beauty_center_app/features/home/widgets/nearby_clinic_card.dart';
 import 'package:beauty_center_app/features/home/widgets/promotion_card.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -90,13 +91,15 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget _buildBody(BuildContext context, HomeState state) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     if (state.isLoading && !state.hasData) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (!state.hasData) {
       return _HomeErrorBody(
-        message: state.message ?? 'Unable to load home data.',
+        message: state.message ?? l10n.unableToLoadHomeData,
         onRetry: widget._homeCubit.loadHome,
       );
     }
@@ -112,13 +115,15 @@ class _HomeViewState extends State<HomeView> {
           (MapEntry<int, Offer> entry) => PromotionUiModel.fromOffer(
             entry.value,
             isDark: entry.key.isEven,
-            badge: entry.key == 0 ? 'EXCLUSIVE' : 'HOT DEAL',
+            badge: entry.key == 0 ? l10n.exclusive : l10n.hotDeal,
+            cta: l10n.claimOffer,
+            offLabel: l10n.off,
           ),
         )
         .toList();
 
     return RefreshIndicator(
-      onRefresh: widget._homeCubit.loadHome,
+      onRefresh: () => widget._homeCubit.loadHome(forceRefresh: true),
       child: CustomScrollView(
         slivers: <Widget>[
           SliverPadding(
@@ -130,15 +135,16 @@ class _HomeViewState extends State<HomeView> {
                       previous.customer?.name != current.customer?.name ||
                       previous.isAuthenticated != current.isAuthenticated,
                   builder: (BuildContext context, AuthState authState) {
+                    final String userName = widget._authCubit.userDisplayName;
                     return HomeHeader(
-                      userName: widget._authCubit.userDisplayName,
+                      userName: userName == 'Guest' ? l10n.guest : userName,
                     );
                   },
                 ),
                 const SizedBox(height: 20),
                 const HomeSearchBar(),
                 const SizedBox(height: 28),
-                const _SectionHeader(title: 'Nearby Clinics'),
+                _SectionHeader(title: l10n.nearbyClinics),
                 const SizedBox(height: 14),
                 HomeCategoryChips(
                   categories: data.topLevelCategories,
@@ -166,7 +172,7 @@ class _HomeViewState extends State<HomeView> {
                 ],
                 const _DiscoverMoreButton(),
                 const SizedBox(height: 32),
-                const _SectionHeader(title: 'Special Promotions'),
+                _SectionHeader(title: l10n.specialPromotions),
                 const SizedBox(height: 14),
                 _PromotionsCarousel(promotions: promotions),
                 SizedBox(
@@ -205,7 +211,7 @@ class _DiscoverMoreButton extends StatelessWidget {
         iconAlignment: IconAlignment.end,
         icon: const Icon(Icons.arrow_forward_rounded),
         label: Text(
-          'DISCOVER MORE CLINICS',
+          AppLocalizations.of(context).discoverMoreClinics,
           style: AppTextStyles.link.copyWith(fontSize: 13),
         ),
         style: TextButton.styleFrom(
@@ -307,7 +313,10 @@ class _HomeErrorBody extends StatelessWidget {
           children: <Widget>[
             Text(message, textAlign: TextAlign.center),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: onRetry, child: const Text('Retry')),
+            ElevatedButton(
+              onPressed: onRetry,
+              child: Text(AppLocalizations.of(context).retry),
+            ),
           ],
         ),
       ),

@@ -4,11 +4,7 @@ import 'package:equatable/equatable.dart';
 enum HomeStatus { initial, loading, success, failure }
 
 class HomeState extends Equatable {
-  const HomeState({
-    this.status = HomeStatus.initial,
-    this.data,
-    this.message,
-  });
+  const HomeState({this.status = HomeStatus.initial, this.data, this.message});
 
   final HomeStatus status;
   final HomeData? data;

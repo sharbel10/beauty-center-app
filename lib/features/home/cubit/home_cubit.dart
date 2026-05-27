@@ -10,28 +10,20 @@ class HomeCubit extends Cubit<HomeState> {
 
   final HomeRepository _homeRepository;
 
-  Future<void> loadHome() async {
-    emit(
-      state.copyWith(
-        status: HomeStatus.loading,
-        clearMessage: true,
-      ),
-    );
+  Future<void> loadHome({bool forceRefresh = false}) async {
+    if (!forceRefresh && (state.isLoading || state.hasData)) {
+      return;
+    }
+
+    emit(state.copyWith(status: HomeStatus.loading, clearMessage: true));
 
     final result = await _homeRepository.getHome();
     result.fold(
       (Failure failure) => emit(
-        state.copyWith(
-          status: HomeStatus.failure,
-          message: failure.message,
-        ),
+        state.copyWith(status: HomeStatus.failure, message: failure.message),
       ),
-      (response) => emit(
-        state.copyWith(
-          status: HomeStatus.success,
-          data: response.data,
-        ),
-      ),
+      (response) =>
+          emit(state.copyWith(status: HomeStatus.success, data: response.data)),
     );
   }
 }
