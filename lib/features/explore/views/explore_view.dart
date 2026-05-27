@@ -1,3 +1,4 @@
+import 'package:beauty_center_app/core/di/injection.dart';
 import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:beauty_center_app/core/router/route_names.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
@@ -6,6 +7,8 @@ import 'package:beauty_center_app/core/utils/extensions.dart';
 import 'package:beauty_center_app/core/utils/map_launcher.dart';
 import 'package:beauty_center_app/core/widgets/app_bottom_navigation.dart';
 import 'package:beauty_center_app/core/widgets/app_button.dart';
+import 'package:beauty_center_app/features/clinic/cubit/clinic_details_cubit.dart';
+import 'package:beauty_center_app/features/clinic/views/clinic_details_view.dart';
 import 'package:beauty_center_app/features/explore/cubit/explore_cubit.dart';
 import 'package:beauty_center_app/features/explore/cubit/explore_state.dart';
 import 'package:beauty_center_app/features/home/models/category.dart';
@@ -143,7 +146,8 @@ class _ExploreViewState extends State<ExploreView> {
                           24 + AppBottomNavigation.contentOverlap(context),
                         ),
                         sliver: SliverList.separated(
-                          itemCount: state.centers.length +
+                          itemCount:
+                              state.centers.length +
                               (state.canLoadMore ? 1 : 0),
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 16),
@@ -424,9 +428,7 @@ class _ClinicCardState extends State<_ClinicCard> {
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
-                  ClinicNetworkImage(
-                    imageUrl: _mediaUrl(clinic.coverPath),
-                  ),
+                  ClinicNetworkImage(imageUrl: _mediaUrl(clinic.coverPath)),
                   Align(
                     alignment: Alignment.topRight,
                     child: Container(
@@ -512,8 +514,13 @@ class _ClinicCardState extends State<_ClinicCard> {
                     icon: Icons.chevron_right_rounded,
                     height: 48,
                     onPressed: () {
-                      context.showSnackbar(
-                        'Clinic details will be connected next.',
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ClinicDetailsView(
+                            centerId: clinic.id,
+                            cubit: getIt<ClinicDetailsCubit>(),
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -547,10 +554,10 @@ class _ClinicStats extends StatelessWidget {
     final String areaValue = clinic.area?.isNotEmpty == true
         ? clinic.area!
         : clinic.city?.isNotEmpty == true
-            ? clinic.city!
-            : clinic.isFeatured
-                ? 'Top Pick'
-                : 'Clinic';
+        ? clinic.city!
+        : clinic.isFeatured
+        ? 'Top Pick'
+        : 'Clinic';
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -562,10 +569,7 @@ class _ClinicStats extends StatelessWidget {
       child: Row(
         children: <Widget>[
           Expanded(
-            child: _StatItem(
-              label: 'AREA',
-              value: areaValue,
-            ),
+            child: _StatItem(label: 'AREA', value: areaValue),
           ),
           Container(width: 1, height: 30, color: AppColors.divider),
           Expanded(
@@ -813,8 +817,8 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                       child: AppButton(
                         text: 'Apply',
                         onPressed: () async {
-                          final ExploreCubit cubit =
-                              context.read<ExploreCubit>();
+                          final ExploreCubit cubit = context
+                              .read<ExploreCubit>();
                           Navigator.of(context).pop();
                           await cubit.applyFilters(
                             categoryId: _selectedCategoryId,
@@ -892,9 +896,13 @@ class _PriceRangeSlider extends StatelessWidget {
       children: <Widget>[
         Row(
           children: <Widget>[
-            Expanded(child: _PricePill(label: 'Min', value: min)),
+            Expanded(
+              child: _PricePill(label: 'Min', value: min),
+            ),
             const SizedBox(width: 10),
-            Expanded(child: _PricePill(label: 'Max', value: max)),
+            Expanded(
+              child: _PricePill(label: 'Max', value: max),
+            ),
           ],
         ),
         const SizedBox(height: 14),
@@ -964,10 +972,7 @@ class _PricePill extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 3),
-            Text(
-              '\$$value',
-              style: AppTextStyles.link.copyWith(fontSize: 14),
-            ),
+            Text('\$$value', style: AppTextStyles.link.copyWith(fontSize: 14)),
           ],
         ),
       ),
@@ -999,9 +1004,7 @@ class _FilterChoice extends StatelessWidget {
       ),
       selectedColor: AppColors.primary,
       backgroundColor: AppColors.surface,
-      side: BorderSide(
-        color: selected ? AppColors.primary : AppColors.divider,
-      ),
+      side: BorderSide(color: selected ? AppColors.primary : AppColors.divider),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
     );

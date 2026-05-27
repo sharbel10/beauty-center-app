@@ -10,11 +10,13 @@ class NearbyClinicCard extends StatefulWidget {
   const NearbyClinicCard({
     required this.clinic,
     this.onBookPressed,
+    this.onCardTap,
     super.key,
   });
 
   final HomeClinicUiModel clinic;
   final VoidCallback? onBookPressed;
+  final VoidCallback? onCardTap;
 
   static const double cardHeight = 188;
   static const double imageWidth = 108;
@@ -74,175 +76,180 @@ class _NearbyClinicCardState extends State<NearbyClinicCard> {
     final String? description = _shortDescription;
     final String? region = clinic.cityAreaLabel;
 
-    return Container(
-      height: NearbyClinicCard.cardHeight,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.divider.withValues(alpha: 0.6)),
-        boxShadow: const <BoxShadow>[
-          BoxShadow(
-            color: Color(0x080A2A55),
-            blurRadius: 12,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Row(
-        children: <Widget>[
-          SizedBox(
-            width: NearbyClinicCard.imageWidth,
-            child: Stack(
-              fit: StackFit.expand,
-              children: <Widget>[
-                ClinicNetworkImage(imageUrl: clinic.imageUrl),
-                Positioned(
-                  top: 8,
-                  left: 8,
-                  child: _IconCircle(
-                    child: const Icon(
-                      Icons.favorite_rounded,
-                      color: Color(0xFFFF4D4D),
-                      size: 16,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  right: 8,
-                  bottom: 8,
-                  child: _RatingBadge(rating: clinic.rating),
-                ),
-              ],
+    return InkWell(
+      onTap: widget.onCardTap ?? () {},
+      child: Container(
+        height: NearbyClinicCard.cardHeight,
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.divider.withValues(alpha: 0.6)),
+          boxShadow: const <BoxShadow>[
+            BoxShadow(
+              color: Color(0x080A2A55),
+              blurRadius: 12,
+              offset: Offset(0, 4),
             ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Row(
+          children: <Widget>[
+            SizedBox(
+              width: NearbyClinicCard.imageWidth,
+              child: Stack(
+                fit: StackFit.expand,
                 children: <Widget>[
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          clinic.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.title.copyWith(
-                            fontSize: 16,
-                            height: 1.2,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textDark,
-                          ),
-                        ),
+                  ClinicNetworkImage(imageUrl: clinic.imageUrl),
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: _IconCircle(
+                      child: const Icon(
+                        Icons.favorite_rounded,
+                        color: Color(0xFFFF4D4D),
+                        size: 16,
                       ),
-                      if (clinic.isFeatured) ...<Widget>[
-                        const SizedBox(width: 8),
-                        const _FeaturedBadge(),
-                      ],
-                    ],
-                  ),
-                  if (description != null) ...<Widget>[
-                    const SizedBox(height: 4),
-                    Text(
-                      description,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.subtitle.copyWith(
-                        fontSize: 11,
-                        height: 1.3,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 6),
-                  Text(
-                    clinic.reviewsLabel,
-                    style: AppTextStyles.smallCaps.copyWith(
-                      fontSize: 9,
-                      color: AppColors.textMuted,
-                      letterSpacing: 0.4,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  if (region != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: Text(
-                        region,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.subtitle.copyWith(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  Row(
-                    children: <Widget>[
-                      const Icon(
-                        Icons.location_on_outlined,
-                        size: 15,
-                        color: AppColors.textMuted,
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          clinic.location,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.subtitle.copyWith(fontSize: 12),
-                        ),
-                      ),
-                      _NavigationButton(
-                        enabled: clinic.hasCoordinates,
-                        onPressed: _onNavigationPressed,
-                      ),
-                      const SizedBox(width: 2),
-                      Text(
-                        clinic.distance,
-                        style: AppTextStyles.link.copyWith(
-                          fontSize: 11,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: SizedBox(
-                      height: 36,
-                      width: 92,
-                      child: ElevatedButton(
-                        onPressed: widget.onBookPressed ?? () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: AppColors.surface,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          'BOOK',
-                          style: AppTextStyles.button.copyWith(
-                            fontSize: 12,
-                            color: AppColors.surface,
-                            letterSpacing: 0.6,
-                          ),
-                        ),
-                      ),
-                    ),
+                  Positioned(
+                    right: 8,
+                    bottom: 8,
+                    child: _RatingBadge(rating: clinic.rating),
                   ),
                 ],
               ),
             ),
-          ),
-        ],
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          child: Text(
+                            clinic.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.title.copyWith(
+                              fontSize: 16,
+                              height: 1.2,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textDark,
+                            ),
+                          ),
+                        ),
+                        if (clinic.isFeatured) ...<Widget>[
+                          const SizedBox(width: 8),
+                          const _FeaturedBadge(),
+                        ],
+                      ],
+                    ),
+                    if (description != null) ...<Widget>[
+                      const SizedBox(height: 4),
+                      Text(
+                        description,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.subtitle.copyWith(
+                          fontSize: 11,
+                          height: 1.3,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 6),
+                    Text(
+                      clinic.reviewsLabel,
+                      style: AppTextStyles.smallCaps.copyWith(
+                        fontSize: 9,
+                        color: AppColors.textMuted,
+                        letterSpacing: 0.4,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    if (region != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Text(
+                          region,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.subtitle.copyWith(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    Row(
+                      children: <Widget>[
+                        const Icon(
+                          Icons.location_on_outlined,
+                          size: 15,
+                          color: AppColors.textMuted,
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            clinic.location,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.subtitle.copyWith(
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        _NavigationButton(
+                          enabled: clinic.hasCoordinates,
+                          onPressed: _onNavigationPressed,
+                        ),
+                        const SizedBox(width: 2),
+                        Text(
+                          clinic.distance,
+                          style: AppTextStyles.link.copyWith(
+                            fontSize: 11,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: SizedBox(
+                        height: 36,
+                        width: 92,
+                        child: ElevatedButton(
+                          onPressed: widget.onBookPressed ?? () {},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: AppColors.surface,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Text(
+                            'BOOK',
+                            style: AppTextStyles.button.copyWith(
+                              fontSize: 12,
+                              color: AppColors.surface,
+                              letterSpacing: 0.6,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -329,10 +336,7 @@ class _RatingBadge extends StatelessWidget {
 }
 
 class _NavigationButton extends StatelessWidget {
-  const _NavigationButton({
-    required this.enabled,
-    required this.onPressed,
-  });
+  const _NavigationButton({required this.enabled, required this.onPressed});
 
   final bool enabled;
   final VoidCallback onPressed;
