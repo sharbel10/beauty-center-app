@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:beauty_center_app/features/auth/models/customer.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,6 +11,7 @@ class PreferenceManager {
   static const String _firstLaunchKey = 'is_first_launch';
   static const String _languageKey = 'language';
   static const String _loggedInKey = 'is_logged_in';
+  static const String _customerKey = 'customer_profile';
 
   final SharedPreferences _sharedPreferences;
 
@@ -37,6 +41,27 @@ class PreferenceManager {
 
   Future<void> setLoggedIn(bool value) async {
     await _sharedPreferences.setBool(_loggedInKey, value);
+  }
+
+  Future<void> saveCustomer(Customer customer) async {
+    await _sharedPreferences.setString(
+      _customerKey,
+      jsonEncode(customer.toJson()),
+    );
+  }
+
+  Customer? getCustomer() {
+    final String? raw = _sharedPreferences.getString(_customerKey);
+    if (raw == null || raw.isEmpty) {
+      return null;
+    }
+    return Customer.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+  }
+
+  String? getCustomerName() => getCustomer()?.name;
+
+  Future<void> clearCustomer() async {
+    await _sharedPreferences.remove(_customerKey);
   }
 
   Future<void> clear() async {

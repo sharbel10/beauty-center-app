@@ -33,4 +33,38 @@ class AppTextStyles {
       GoogleFonts.inter(color: AppColors.textDark, fontSize: 14);
   static TextStyle get labelSmall =>
       GoogleFonts.inter(color: AppColors.textDark, fontSize: 11);
+
+  // Home UI text styles.
+  static TextStyle get smallCaps => GoogleFonts.inter(
+    color: AppColors.textMuted,
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 1.4,
+  );
+
+  static TextStyle get headline => headlineLarge;
+
+  static TextStyle get title => titleLarge;
+
+  static TextStyle get hint =>
+      GoogleFonts.inter(color: AppColors.textMuted, fontSize: 14);
+
+  static TextStyle get link => GoogleFonts.inter(
+    color: AppColors.primary,
+    fontSize: 13,
+    fontWeight: FontWeight.w700,
+  );
+
+  static TextStyle get subtitle => GoogleFonts.inter(
+    color: AppColors.textSecondary,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+  );
+
+  static TextStyle get button => GoogleFonts.inter(
+    color: AppColors.white,
+    fontSize: 14,
+    fontWeight: FontWeight.w800,
+    letterSpacing: 0.5,
+  );
 }

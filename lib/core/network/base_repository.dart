@@ -19,21 +19,35 @@ abstract class BaseRepository {
   // - maps errors into typed Failures
   // - returns Either<Failure, T> to keep calling layers explicit
   Future<Either<Failure, T>> callApiWithErrorParser<T>(
-    Future<Response<T>> apiCall,
-    T Function(dynamic json) parser,
+    Future<Response<dynamic>> apiCall,
+    T Function(Map<String, dynamic> json) parser,
   ) async {
     try {
-      final Response<T> response = await apiCall;
+      final Response<dynamic> response = await apiCall;
       final dynamic payload = response.data;
 
-      // Common Laravel shape: { "data": ... }. Fallback to raw body otherwise.
-      if (payload is Map<String, dynamic> && payload['data'] != null) {
-        return Right(parser(payload['data']));
+      // Prefer passing the full response payload (envelope) to the parser.
+      // The auth API returns the envelope: { success, message, data }
+      if (payload is Map<String, dynamic>) {
+        final bool success = payload['success'] as bool? ?? true;
+        if (!success) {
+          final String message = payload['message']?.toString() ?? 'Error';
+          final Map<String, dynamic>? errors =
+              payload['errors'] as Map<String, dynamic>?;
+          return Left(ValidationFailure(message, errors: errors));
+        }
+        return Right(parser(payload));
       }
 
-      return Right(parser(payload));
+      // If payload is not a Map (rare), wrap it under `data` so parser
+      // implementations that expect a map won't crash.
+      return Right(parser(<String, dynamic>{'data': payload}));
     } on DioException catch (error, stackTrace) {
-      AppLogger.e('DioException on ${error.requestOptions.path}', error, stackTrace);
+      AppLogger.e(
+        'DioException on ${error.requestOptions.path}',
+        error,
+        stackTrace,
+      );
       final Response<dynamic>? response = error.response;
       final dynamic body = response?.data;
       // Extract backend message when available to show meaningful feedback.
