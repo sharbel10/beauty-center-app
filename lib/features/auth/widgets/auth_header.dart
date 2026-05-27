@@ -1,5 +1,6 @@
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
+import 'package:beauty_center_app/core/widgets/language_toggle_button.dart';
 import 'package:flutter/material.dart';
 
 class AuthHeader extends StatelessWidget {
@@ -18,6 +19,11 @@ class AuthHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
+        const Align(
+          alignment: AlignmentDirectional.centerEnd,
+          child: LanguageToggleButton(),
+        ),
+        const SizedBox(height: 12),
         BeautyLogoMark(size: logoSize),
         const SizedBox(height: 24),
         Text(

@@ -93,17 +93,13 @@ class AppRouter {
         GoRoute(
           name: RouteNames.home,
           path: RouteNames.homePath,
-          builder: (context, state) => HomeView(
-            authCubit: _authCubit,
-            homeCubit: getIt<HomeCubit>(),
-          ),
+          builder: (context, state) =>
+              HomeView(authCubit: _authCubit, homeCubit: _homeCubit),
         ),
         GoRoute(
           name: RouteNames.explore,
           path: RouteNames.explorePath,
-          builder: (context, state) => ExploreView(
-            cubit: getIt<ExploreCubit>(),
-          ),
+          builder: (context, state) => ExploreView(cubit: _exploreCubit),
         ),
       ],
     );
@@ -113,6 +109,8 @@ class AppRouter {
   final SplashCubit _splashCubit;
   final OnboardingCubit _onboardingCubit;
   final AuthCubit _authCubit;
+  final HomeCubit _homeCubit = getIt<HomeCubit>();
+  final ExploreCubit _exploreCubit = getIt<ExploreCubit>();
   late final GoRouter _router;
 
   // Navigator key is shared so non-UI layers (e.g. interceptors) can trigger

@@ -1,5 +1,6 @@
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 enum AppNavItem { home, explore, aiScan, bookings, profile }
@@ -20,13 +21,13 @@ class AppBottomNavigation extends StatelessWidget {
 
   /// Extra scroll padding so list content clears the elevated center button.
   static double contentOverlap(BuildContext context) {
-    return _centerButtonLift +
-        MediaQuery.paddingOf(context).bottom;
+    return _centerButtonLift + MediaQuery.paddingOf(context).bottom;
   }
 
   @override
   Widget build(BuildContext context) {
     final double bottomInset = MediaQuery.paddingOf(context).bottom;
+    final AppLocalizations l10n = AppLocalizations.of(context);
 
     return SizedBox(
       height: _barHeight + bottomInset + _centerButtonLift,
@@ -58,7 +59,7 @@ class AppBottomNavigation extends StatelessWidget {
                       Expanded(
                         child: _NavItem(
                           icon: Icons.home_rounded,
-                          label: 'HOME',
+                          label: l10n.home,
                           isActive: currentItem == AppNavItem.home,
                           onTap: () => onItemSelected?.call(AppNavItem.home),
                         ),
@@ -66,7 +67,7 @@ class AppBottomNavigation extends StatelessWidget {
                       Expanded(
                         child: _NavItem(
                           icon: Icons.explore_outlined,
-                          label: 'EXPLORE',
+                          label: l10n.explore,
                           isActive: currentItem == AppNavItem.explore,
                           onTap: () => onItemSelected?.call(AppNavItem.explore),
                         ),
@@ -75,7 +76,7 @@ class AppBottomNavigation extends StatelessWidget {
                       Expanded(
                         child: _NavItem(
                           icon: Icons.calendar_month_outlined,
-                          label: 'BOOKINGS',
+                          label: l10n.bookings,
                           isActive: currentItem == AppNavItem.bookings,
                           onTap: () =>
                               onItemSelected?.call(AppNavItem.bookings),
@@ -84,7 +85,7 @@ class AppBottomNavigation extends StatelessWidget {
                       Expanded(
                         child: _NavItem(
                           icon: Icons.person_outline_rounded,
-                          label: 'PROFILE',
+                          label: l10n.profile,
                           isActive: currentItem == AppNavItem.profile,
                           onTap: () => onItemSelected?.call(AppNavItem.profile),
                         ),
@@ -187,7 +188,7 @@ class _CenterScanButton extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          'AI SCAN',
+          AppLocalizations.of(context).aiScan,
           style: AppTextStyles.smallCaps.copyWith(
             color: isActive ? AppColors.primary : AppColors.textMuted,
             fontSize: 8,
