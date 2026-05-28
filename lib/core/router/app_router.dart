@@ -1,5 +1,6 @@
 import 'package:beauty_center_app/core/di/injection.dart';
 import 'package:beauty_center_app/core/router/route_names.dart';
+import 'package:beauty_center_app/core/utils/app_logger.dart';
 import 'package:beauty_center_app/features/auth/cubit/auth_cubit.dart';
 import 'package:beauty_center_app/features/explore/cubit/explore_cubit.dart';
 import 'package:beauty_center_app/features/explore/views/explore_view.dart';
@@ -139,5 +140,11 @@ class AppRouter {
   static void redirectToLogin() {
     // Used by network layer when token expires or 401 is received.
     _routerRef?.goNamed(RouteNames.login);
+  }
+
+  static void navigateFromNotification({required String type, String? id}) {
+    AppLogger.d('Notification tap: type=$type id=$id');
+    // v1: route to home; extend with type-specific routes when screens exist.
+    _routerRef?.goNamed(RouteNames.home);
   }
 }

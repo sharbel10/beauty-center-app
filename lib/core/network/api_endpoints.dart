@@ -12,6 +12,9 @@ class ApiEndpoints {
   static const String resendOtp = 'customer/resend-email-otp';
   static const String resetPassword = 'customer/reset-password';
 
+  // Devices (FCM)
+  static const String devices = 'customer/devices';
+
   // Home
   static const String home = 'customer/home';
 

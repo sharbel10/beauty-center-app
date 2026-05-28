@@ -14,9 +14,15 @@ import 'package:beauty_center_app/core/network/dio_client.dart' as _i1058;
 import 'package:beauty_center_app/core/network/header_interceptor.dart'
     as _i719;
 import 'package:beauty_center_app/core/router/app_router.dart' as _i329;
+import 'package:beauty_center_app/core/services/device_registration_service.dart'
+    as _i501;
+import 'package:beauty_center_app/core/services/firebase_messaging_service.dart'
+    as _i502;
 import 'package:beauty_center_app/core/storage/preference_manager.dart'
     as _i333;
 import 'package:beauty_center_app/core/storage/secure_storage.dart' as _i925;
+import 'package:beauty_center_app/features/device/repository/device_repository.dart'
+    as _i503;
 import 'package:beauty_center_app/features/auth/cubit/auth_cubit.dart' as _i196;
 import 'package:beauty_center_app/features/auth/repository/auth_repository.dart'
     as _i609;
@@ -69,6 +75,19 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i1058.DioClient>(
       () => _i1058.DioClient(gh<_i719.HeaderInterceptor>()),
     );
+    gh.singleton<_i502.FirebaseMessagingService>(
+      () => _i502.FirebaseMessagingService(),
+    );
+    gh.factory<_i503.DeviceRepository>(
+      () => _i503.DeviceRepository(gh<_i1058.DioClient>()),
+    );
+    gh.singleton<_i501.DeviceRegistrationService>(
+      () => _i501.DeviceRegistrationService(
+        gh<_i502.FirebaseMessagingService>(),
+        gh<_i503.DeviceRepository>(),
+        gh<_i925.SecureStorage>(),
+      ),
+    );
     gh.factory<_i328.OnboardingCubit>(
       () => _i328.OnboardingCubit(gh<_i333.PreferenceManager>()),
     );
@@ -104,6 +123,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i609.AuthRepository>(),
         gh<_i925.SecureStorage>(),
         gh<_i333.PreferenceManager>(),
+        gh<_i501.DeviceRegistrationService>(),
       ),
     );
     gh.factory<_i92.HomeCubit>(

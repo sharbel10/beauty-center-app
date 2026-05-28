@@ -1,4 +1,5 @@
 import 'package:beauty_center_app/core/failures/failure.dart';
+import 'package:beauty_center_app/core/services/device_registration_service.dart';
 import 'package:beauty_center_app/core/storage/preference_manager.dart';
 import 'package:beauty_center_app/core/storage/secure_storage.dart';
 import 'package:beauty_center_app/features/auth/cubit/auth_state.dart';
@@ -8,12 +9,17 @@ import 'package:injectable/injectable.dart';
 
 @singleton
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit(this._authRepository, this._secureStorage, this._preferenceManager)
-    : super(const AuthState(isAuthenticated: false));
+  AuthCubit(
+    this._authRepository,
+    this._secureStorage,
+    this._preferenceManager,
+    this._deviceRegistrationService,
+  ) : super(const AuthState(isAuthenticated: false));
 
   final AuthRepository _authRepository;
   final SecureStorage _secureStorage;
   final PreferenceManager _preferenceManager;
+  final DeviceRegistrationService _deviceRegistrationService;
 
   Future<void> register({
     required String name,
@@ -114,6 +120,7 @@ class AuthCubit extends Cubit<AuthState> {
               token: response.token!.accessToken,
             ),
           );
+          await _deviceRegistrationService.syncDeviceToken();
         } else {
           emit(
             state.copyWith(
@@ -200,6 +207,7 @@ class AuthCubit extends Cubit<AuthState> {
               token: response.token!.accessToken,
             ),
           );
+          await _deviceRegistrationService.syncDeviceToken();
         } else {
           emit(
             state.copyWith(
@@ -223,6 +231,7 @@ class AuthCubit extends Cubit<AuthState> {
         clearErrors: true,
       ),
     );
+    await _deviceRegistrationService.unregisterDeviceToken();
     final result = await _authRepository.logout();
     await result.fold<Future<void>>(
       (failure) async {
@@ -283,6 +292,7 @@ class AuthCubit extends Cubit<AuthState> {
             customer: state.customer ?? _preferenceManager.getCustomer(),
           ),
         );
+        await _deviceRegistrationService.syncDeviceToken();
       }
     } else {
       if (isLoggedIn) {
