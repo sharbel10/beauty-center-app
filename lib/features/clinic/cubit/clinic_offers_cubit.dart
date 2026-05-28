@@ -10,6 +10,13 @@ class ClinicOffersCubit extends Cubit<ClinicOffersState> {
 
   ClinicOffersCubit(this._repository) : super(ClinicOffersInitial());
 
+  Future<void> fetchClinicOffersIfNeeded(int centerId) async {
+    if (state is ClinicOffersLoading || state is ClinicOffersSuccess) {
+      return;
+    }
+    await fetchClinicOffers(centerId);
+  }
+
   Future<void> fetchClinicOffers(int centerId) async {
     emit(ClinicOffersLoading());
 

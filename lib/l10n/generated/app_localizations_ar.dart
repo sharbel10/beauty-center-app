@@ -313,6 +313,21 @@ class AppLocalizationsAr extends AppLocalizations {
   String get guest => 'ضيف';
 
   @override
+  String get changeLanguage => 'تغيير اللغة';
+
+  @override
+  String get languageEnglish => 'الإنجليزية';
+
+  @override
+  String get languageArabic => 'العربية';
+
+  @override
+  String get logout => 'تسجيل الخروج';
+
+  @override
+  String get settings => 'الإعدادات';
+
+  @override
   String get searchClinicsOrTreatments => 'ابحث عن عيادات أو علاجات...';
 
   @override
@@ -412,4 +427,240 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pricing => 'الأسعار';
+
+  @override
+  String get clinicGalleryExperienceEyebrow => 'التجربة';
+
+  @override
+  String get clinicGalleryInteriorTitle => 'داخل العيادة';
+
+  @override
+  String get clinicGalleryNoInteriorPhotos => 'لا توجد صور داخلية';
+
+  @override
+  String get clinicGalleryResultsEyebrow => 'نتائج حقيقية';
+
+  @override
+  String get clinicGalleryTransformationsTitle => 'التحولات';
+
+  @override
+  String get clinicGalleryDefaultTransformationCaption => 'نتيجة تحول سريري';
+
+  @override
+  String get clinicGalleryResultBadge => 'النتيجة';
+
+  @override
+  String get clinicGalleryBeforeLabel => 'قبل';
+
+  @override
+  String get clinicGalleryAfterLabel => 'بعد';
+
+  @override
+  String get clinicGalleryNoTransformations => 'لا توجد تحولات مسجلة بعد';
+
+  @override
+  String get clinicGalleryPrecisionEyebrow => 'دقة سريرية';
+
+  @override
+  String get clinicGalleryProceduresTitle => 'إجراءات البشرة';
+
+  @override
+  String get clinicGalleryNoProcedures => 'لا توجد إجراءات متاحة';
+
+  @override
+  String get clinicDetailsTitle => 'تفاصيل العيادة';
+
+  @override
+  String get clinicDetailsLoadFailed => 'تعذر تحميل تفاصيل العيادة.';
+
+  @override
+  String get clinicTabOverview => 'نظرة عامة';
+
+  @override
+  String get clinicTabServices => 'الخدمات';
+
+  @override
+  String get clinicTabGallery => 'المعرض';
+
+  @override
+  String get clinicTabInfo => 'معلومات';
+
+  @override
+  String get clinicTopRated => 'الأعلى تقييماً';
+
+  @override
+  String clinicHeroRatingReviews(String rating, String reviews) {
+    return '$rating ($reviews)';
+  }
+
+  @override
+  String get clinicAbout => 'عن العيادة';
+
+  @override
+  String get clinicLocation => 'الموقع';
+
+  @override
+  String get clinicSpecialOffers => 'عروض خاصة';
+
+  @override
+  String get clinicOurSpecialists => 'أخصائيونا';
+
+  @override
+  String get clinicNoOffersTitle => 'لا توجد عروض حالياً';
+
+  @override
+  String get clinicNoOffersSubtitle =>
+      'ترقّب! ستظهر خصومات حصرية من العيادة هنا.';
+
+  @override
+  String get clinicNoSpecialists => 'لا يوجد أخصائيون متاحون حالياً.';
+
+  @override
+  String get clinicNoServices => 'لا توجد خدمات متاحة لهذا المركز.';
+
+  @override
+  String clinicServicesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count خدمات',
+      one: 'خدمة واحدة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get clinicServiceBadgeOffer => 'عرض';
+
+  @override
+  String get clinicServiceBadgeBestSeller => 'الأكثر مبيعاً';
+
+  @override
+  String get clinicServiceBadgeFeatured => 'مميز';
+
+  @override
+  String get clinicBookAppointment => 'احجز موعداً';
+
+  @override
+  String get clinicInstantConfirmation => 'تأكيد فوري';
+
+  @override
+  String get clinicRequiresApproval => 'يتطلب موافقة';
+
+  @override
+  String get clinicNoDepositRequired => 'لا يُطلب عربون';
+
+  @override
+  String clinicDepositPercentage(int value) {
+    return 'عربون مطلوب: $value%';
+  }
+
+  @override
+  String clinicDepositAmount(int value) {
+    return 'عربون: $value ل.س';
+  }
+
+  @override
+  String get clinicHours => 'ساعات العمل';
+
+  @override
+  String get clinicClosedToday => 'مغلق اليوم';
+
+  @override
+  String clinicOpenTodayUntil(String time) {
+    return 'مفتوح اليوم | حتى $time';
+  }
+
+  @override
+  String get clinicClosed => 'مغلق';
+
+  @override
+  String get clinicNoWorkingHours => 'لم يتم توفير ساعات العمل.';
+
+  @override
+  String get dayMonday => 'الاثنين';
+
+  @override
+  String get dayTuesday => 'الثلاثاء';
+
+  @override
+  String get dayWednesday => 'الأربعاء';
+
+  @override
+  String get dayThursday => 'الخميس';
+
+  @override
+  String get dayFriday => 'الجمعة';
+
+  @override
+  String get daySaturday => 'السبت';
+
+  @override
+  String get daySunday => 'الأحد';
+
+  @override
+  String get dayUnknown => 'غير معروف';
+
+  @override
+  String get dayTodayMarker => '(اليوم)';
+
+  @override
+  String get clinicContact => 'تواصل';
+
+  @override
+  String get clinicPhone => 'الهاتف';
+
+  @override
+  String get clinicEmail => 'البريد الإلكتروني';
+
+  @override
+  String get clinicWebsite => 'الموقع الإلكتروني';
+
+  @override
+  String get clinicCallNow => 'اتصل الآن';
+
+  @override
+  String get clinicCancellationPolicy => 'سياسة الإلغاء';
+
+  @override
+  String clinicCancellationIntro(String policyType) {
+    return 'نقدّر وقتك وخبرة ممارسينا. يطبّق هذا المركز سياسة إلغاء من نوع $policyType.';
+  }
+
+  @override
+  String clinicCancellationFree(int hours) {
+    return 'الإلغاء مجاني بالكامل إذا تم قبل $hours ساعة على الأقل من موعدك.';
+  }
+
+  @override
+  String clinicCancellationFee(int hours, int percentage) {
+    return 'الإلغاء المتأخر خلال $hours ساعة يخضع لرسوم بنسبة $percentage% من سعر الخدمة. عدم الحضور يُحاسب بنسبة 100%.';
+  }
+
+  @override
+  String get clinicPolicyStandard => 'قياسي';
+
+  @override
+  String get limitedTime => 'لفترة محدودة';
+
+  @override
+  String get limitedTimeLower => 'لفترة محدودة';
+
+  @override
+  String offerUntilDate(String date) {
+    return 'حتى $date';
+  }
+
+  @override
+  String offerDiscountPercent(int value) {
+    return 'خصم $value%';
+  }
+
+  @override
+  String offerDiscountAmount(int value) {
+    return 'خصم $value ل.س';
+  }
+
+  @override
+  String get clinicOfferClaim => 'احصل عليه';
 }

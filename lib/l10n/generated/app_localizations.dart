@@ -686,6 +686,36 @@ abstract class AppLocalizations {
   /// **'Guest'**
   String get guest;
 
+  /// No description provided for @changeLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Change language'**
+  String get changeLanguage;
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// No description provided for @languageArabic.
+  ///
+  /// In en, this message translates to:
+  /// **'Arabic'**
+  String get languageArabic;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out'**
+  String get logout;
+
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
   /// No description provided for @searchClinicsOrTreatments.
   ///
   /// In en, this message translates to:
@@ -859,6 +889,420 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pricing'**
   String get pricing;
+
+  /// No description provided for @clinicGalleryExperienceEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'THE EXPERIENCE'**
+  String get clinicGalleryExperienceEyebrow;
+
+  /// No description provided for @clinicGalleryInteriorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic Interior'**
+  String get clinicGalleryInteriorTitle;
+
+  /// No description provided for @clinicGalleryNoInteriorPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'No interior photos available'**
+  String get clinicGalleryNoInteriorPhotos;
+
+  /// No description provided for @clinicGalleryResultsEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'REAL RESULTS'**
+  String get clinicGalleryResultsEyebrow;
+
+  /// No description provided for @clinicGalleryTransformationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transformations'**
+  String get clinicGalleryTransformationsTitle;
+
+  /// No description provided for @clinicGalleryDefaultTransformationCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical Transformation Result'**
+  String get clinicGalleryDefaultTransformationCaption;
+
+  /// No description provided for @clinicGalleryResultBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'RESULT'**
+  String get clinicGalleryResultBadge;
+
+  /// No description provided for @clinicGalleryBeforeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'BEFORE'**
+  String get clinicGalleryBeforeLabel;
+
+  /// No description provided for @clinicGalleryAfterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'AFTER'**
+  String get clinicGalleryAfterLabel;
+
+  /// No description provided for @clinicGalleryNoTransformations.
+  ///
+  /// In en, this message translates to:
+  /// **'No Transformations Logged Yet'**
+  String get clinicGalleryNoTransformations;
+
+  /// No description provided for @clinicGalleryPrecisionEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'CLINICAL PRECISION'**
+  String get clinicGalleryPrecisionEyebrow;
+
+  /// No description provided for @clinicGalleryProceduresTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Skin Procedures'**
+  String get clinicGalleryProceduresTitle;
+
+  /// No description provided for @clinicGalleryNoProcedures.
+  ///
+  /// In en, this message translates to:
+  /// **'No Procedures Available'**
+  String get clinicGalleryNoProcedures;
+
+  /// No description provided for @clinicDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic Details'**
+  String get clinicDetailsTitle;
+
+  /// No description provided for @clinicDetailsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load clinic details.'**
+  String get clinicDetailsLoadFailed;
+
+  /// No description provided for @clinicTabOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get clinicTabOverview;
+
+  /// No description provided for @clinicTabServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Services'**
+  String get clinicTabServices;
+
+  /// No description provided for @clinicTabGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get clinicTabGallery;
+
+  /// No description provided for @clinicTabInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Info'**
+  String get clinicTabInfo;
+
+  /// No description provided for @clinicTopRated.
+  ///
+  /// In en, this message translates to:
+  /// **'TOP RATED'**
+  String get clinicTopRated;
+
+  /// No description provided for @clinicHeroRatingReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'{rating} ({reviews})'**
+  String clinicHeroRatingReviews(String rating, String reviews);
+
+  /// No description provided for @clinicAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About Clinic'**
+  String get clinicAbout;
+
+  /// No description provided for @clinicLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get clinicLocation;
+
+  /// No description provided for @clinicSpecialOffers.
+  ///
+  /// In en, this message translates to:
+  /// **'Special Offers'**
+  String get clinicSpecialOffers;
+
+  /// No description provided for @clinicOurSpecialists.
+  ///
+  /// In en, this message translates to:
+  /// **'Our Specialists'**
+  String get clinicOurSpecialists;
+
+  /// No description provided for @clinicNoOffersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Offers Available Right Now'**
+  String get clinicNoOffersTitle;
+
+  /// No description provided for @clinicNoOffersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay tuned! Exclusive clinic discounts will appear here.'**
+  String get clinicNoOffersSubtitle;
+
+  /// No description provided for @clinicNoSpecialists.
+  ///
+  /// In en, this message translates to:
+  /// **'No specialists available right now.'**
+  String get clinicNoSpecialists;
+
+  /// No description provided for @clinicNoServices.
+  ///
+  /// In en, this message translates to:
+  /// **'No services available for this center.'**
+  String get clinicNoServices;
+
+  /// No description provided for @clinicServicesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 SERVICE} other{{count} SERVICES}}'**
+  String clinicServicesCount(int count);
+
+  /// No description provided for @clinicServiceBadgeOffer.
+  ///
+  /// In en, this message translates to:
+  /// **'OFFER'**
+  String get clinicServiceBadgeOffer;
+
+  /// No description provided for @clinicServiceBadgeBestSeller.
+  ///
+  /// In en, this message translates to:
+  /// **'BEST SELLER'**
+  String get clinicServiceBadgeBestSeller;
+
+  /// No description provided for @clinicServiceBadgeFeatured.
+  ///
+  /// In en, this message translates to:
+  /// **'FEATURED'**
+  String get clinicServiceBadgeFeatured;
+
+  /// No description provided for @clinicBookAppointment.
+  ///
+  /// In en, this message translates to:
+  /// **'BOOK APPOINTMENT'**
+  String get clinicBookAppointment;
+
+  /// No description provided for @clinicInstantConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Instant Confirmation'**
+  String get clinicInstantConfirmation;
+
+  /// No description provided for @clinicRequiresApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires Approval'**
+  String get clinicRequiresApproval;
+
+  /// No description provided for @clinicNoDepositRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'No Deposit Required'**
+  String get clinicNoDepositRequired;
+
+  /// No description provided for @clinicDepositPercentage.
+  ///
+  /// In en, this message translates to:
+  /// **'Required Deposit: {value}%'**
+  String clinicDepositPercentage(int value);
+
+  /// No description provided for @clinicDepositAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit: SP {value}'**
+  String clinicDepositAmount(int value);
+
+  /// No description provided for @clinicHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic Hours'**
+  String get clinicHours;
+
+  /// No description provided for @clinicClosedToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed Today'**
+  String get clinicClosedToday;
+
+  /// No description provided for @clinicOpenTodayUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Today | Until {time}'**
+  String clinicOpenTodayUntil(String time);
+
+  /// No description provided for @clinicClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'CLOSED'**
+  String get clinicClosed;
+
+  /// No description provided for @clinicNoWorkingHours.
+  ///
+  /// In en, this message translates to:
+  /// **'No working hours provided.'**
+  String get clinicNoWorkingHours;
+
+  /// No description provided for @dayMonday.
+  ///
+  /// In en, this message translates to:
+  /// **'Monday'**
+  String get dayMonday;
+
+  /// No description provided for @dayTuesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuesday'**
+  String get dayTuesday;
+
+  /// No description provided for @dayWednesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Wednesday'**
+  String get dayWednesday;
+
+  /// No description provided for @dayThursday.
+  ///
+  /// In en, this message translates to:
+  /// **'Thursday'**
+  String get dayThursday;
+
+  /// No description provided for @dayFriday.
+  ///
+  /// In en, this message translates to:
+  /// **'Friday'**
+  String get dayFriday;
+
+  /// No description provided for @daySaturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday'**
+  String get daySaturday;
+
+  /// No description provided for @daySunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday'**
+  String get daySunday;
+
+  /// No description provided for @dayUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get dayUnknown;
+
+  /// No description provided for @dayTodayMarker.
+  ///
+  /// In en, this message translates to:
+  /// **'(Today)'**
+  String get dayTodayMarker;
+
+  /// No description provided for @clinicContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get clinicContact;
+
+  /// No description provided for @clinicPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get clinicPhone;
+
+  /// No description provided for @clinicEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get clinicEmail;
+
+  /// No description provided for @clinicWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Website'**
+  String get clinicWebsite;
+
+  /// No description provided for @clinicCallNow.
+  ///
+  /// In en, this message translates to:
+  /// **'CALL NOW'**
+  String get clinicCallNow;
+
+  /// No description provided for @clinicCancellationPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation Policy'**
+  String get clinicCancellationPolicy;
+
+  /// No description provided for @clinicCancellationIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'We value your time and our practitioners\' expertise. This center applies a {policyType} cancellation policy.'**
+  String clinicCancellationIntro(String policyType);
+
+  /// No description provided for @clinicCancellationFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellations are completely free of charge if made at least {hours} hours prior to your appointment window.'**
+  String clinicCancellationFree(int hours);
+
+  /// No description provided for @clinicCancellationFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Late cancellations within {hours} hours are subject to a fee equal to {percentage}% of the scheduled service price. No-shows will be charged at 100%.'**
+  String clinicCancellationFee(int hours, int percentage);
+
+  /// No description provided for @clinicPolicyStandard.
+  ///
+  /// In en, this message translates to:
+  /// **'STANDARD'**
+  String get clinicPolicyStandard;
+
+  /// No description provided for @limitedTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Limited Time'**
+  String get limitedTime;
+
+  /// No description provided for @limitedTimeLower.
+  ///
+  /// In en, this message translates to:
+  /// **'Limited time'**
+  String get limitedTimeLower;
+
+  /// No description provided for @offerUntilDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Until {date}'**
+  String offerUntilDate(String date);
+
+  /// No description provided for @offerDiscountPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'{value}% OFF'**
+  String offerDiscountPercent(int value);
+
+  /// No description provided for @offerDiscountAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'SP{value} OFF'**
+  String offerDiscountAmount(int value);
+
+  /// No description provided for @clinicOfferClaim.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim'**
+  String get clinicOfferClaim;
 }
 
 class _AppLocalizationsDelegate

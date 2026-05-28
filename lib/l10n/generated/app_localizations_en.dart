@@ -311,6 +311,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get guest => 'Guest';
 
   @override
+  String get changeLanguage => 'Change language';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageArabic => 'Arabic';
+
+  @override
+  String get logout => 'Log out';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
   String get searchClinicsOrTreatments => 'Search clinics or treatments...';
 
   @override
@@ -410,4 +425,241 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pricing => 'Pricing';
+
+  @override
+  String get clinicGalleryExperienceEyebrow => 'THE EXPERIENCE';
+
+  @override
+  String get clinicGalleryInteriorTitle => 'Clinic Interior';
+
+  @override
+  String get clinicGalleryNoInteriorPhotos => 'No interior photos available';
+
+  @override
+  String get clinicGalleryResultsEyebrow => 'REAL RESULTS';
+
+  @override
+  String get clinicGalleryTransformationsTitle => 'Transformations';
+
+  @override
+  String get clinicGalleryDefaultTransformationCaption =>
+      'Clinical Transformation Result';
+
+  @override
+  String get clinicGalleryResultBadge => 'RESULT';
+
+  @override
+  String get clinicGalleryBeforeLabel => 'BEFORE';
+
+  @override
+  String get clinicGalleryAfterLabel => 'AFTER';
+
+  @override
+  String get clinicGalleryNoTransformations => 'No Transformations Logged Yet';
+
+  @override
+  String get clinicGalleryPrecisionEyebrow => 'CLINICAL PRECISION';
+
+  @override
+  String get clinicGalleryProceduresTitle => 'Skin Procedures';
+
+  @override
+  String get clinicGalleryNoProcedures => 'No Procedures Available';
+
+  @override
+  String get clinicDetailsTitle => 'Clinic Details';
+
+  @override
+  String get clinicDetailsLoadFailed => 'Failed to load clinic details.';
+
+  @override
+  String get clinicTabOverview => 'Overview';
+
+  @override
+  String get clinicTabServices => 'Services';
+
+  @override
+  String get clinicTabGallery => 'Gallery';
+
+  @override
+  String get clinicTabInfo => 'Info';
+
+  @override
+  String get clinicTopRated => 'TOP RATED';
+
+  @override
+  String clinicHeroRatingReviews(String rating, String reviews) {
+    return '$rating ($reviews)';
+  }
+
+  @override
+  String get clinicAbout => 'About Clinic';
+
+  @override
+  String get clinicLocation => 'Location';
+
+  @override
+  String get clinicSpecialOffers => 'Special Offers';
+
+  @override
+  String get clinicOurSpecialists => 'Our Specialists';
+
+  @override
+  String get clinicNoOffersTitle => 'No Offers Available Right Now';
+
+  @override
+  String get clinicNoOffersSubtitle =>
+      'Stay tuned! Exclusive clinic discounts will appear here.';
+
+  @override
+  String get clinicNoSpecialists => 'No specialists available right now.';
+
+  @override
+  String get clinicNoServices => 'No services available for this center.';
+
+  @override
+  String clinicServicesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count SERVICES',
+      one: '1 SERVICE',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get clinicServiceBadgeOffer => 'OFFER';
+
+  @override
+  String get clinicServiceBadgeBestSeller => 'BEST SELLER';
+
+  @override
+  String get clinicServiceBadgeFeatured => 'FEATURED';
+
+  @override
+  String get clinicBookAppointment => 'BOOK APPOINTMENT';
+
+  @override
+  String get clinicInstantConfirmation => 'Instant Confirmation';
+
+  @override
+  String get clinicRequiresApproval => 'Requires Approval';
+
+  @override
+  String get clinicNoDepositRequired => 'No Deposit Required';
+
+  @override
+  String clinicDepositPercentage(int value) {
+    return 'Required Deposit: $value%';
+  }
+
+  @override
+  String clinicDepositAmount(int value) {
+    return 'Deposit: SP $value';
+  }
+
+  @override
+  String get clinicHours => 'Clinic Hours';
+
+  @override
+  String get clinicClosedToday => 'Closed Today';
+
+  @override
+  String clinicOpenTodayUntil(String time) {
+    return 'Open Today | Until $time';
+  }
+
+  @override
+  String get clinicClosed => 'CLOSED';
+
+  @override
+  String get clinicNoWorkingHours => 'No working hours provided.';
+
+  @override
+  String get dayMonday => 'Monday';
+
+  @override
+  String get dayTuesday => 'Tuesday';
+
+  @override
+  String get dayWednesday => 'Wednesday';
+
+  @override
+  String get dayThursday => 'Thursday';
+
+  @override
+  String get dayFriday => 'Friday';
+
+  @override
+  String get daySaturday => 'Saturday';
+
+  @override
+  String get daySunday => 'Sunday';
+
+  @override
+  String get dayUnknown => 'Unknown';
+
+  @override
+  String get dayTodayMarker => '(Today)';
+
+  @override
+  String get clinicContact => 'Contact';
+
+  @override
+  String get clinicPhone => 'Phone';
+
+  @override
+  String get clinicEmail => 'Email';
+
+  @override
+  String get clinicWebsite => 'Website';
+
+  @override
+  String get clinicCallNow => 'CALL NOW';
+
+  @override
+  String get clinicCancellationPolicy => 'Cancellation Policy';
+
+  @override
+  String clinicCancellationIntro(String policyType) {
+    return 'We value your time and our practitioners\' expertise. This center applies a $policyType cancellation policy.';
+  }
+
+  @override
+  String clinicCancellationFree(int hours) {
+    return 'Cancellations are completely free of charge if made at least $hours hours prior to your appointment window.';
+  }
+
+  @override
+  String clinicCancellationFee(int hours, int percentage) {
+    return 'Late cancellations within $hours hours are subject to a fee equal to $percentage% of the scheduled service price. No-shows will be charged at 100%.';
+  }
+
+  @override
+  String get clinicPolicyStandard => 'STANDARD';
+
+  @override
+  String get limitedTime => 'Limited Time';
+
+  @override
+  String get limitedTimeLower => 'Limited time';
+
+  @override
+  String offerUntilDate(String date) {
+    return 'Until $date';
+  }
+
+  @override
+  String offerDiscountPercent(int value) {
+    return '$value% OFF';
+  }
+
+  @override
+  String offerDiscountAmount(int value) {
+    return 'SP$value OFF';
+  }
+
+  @override
+  String get clinicOfferClaim => 'Claim';
 }

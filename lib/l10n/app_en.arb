@@ -105,6 +105,11 @@
   "getStarted": "Get Started",
   "welcomeBack": "WELCOME BACK",
   "guest": "Guest",
+  "changeLanguage": "Change language",
+  "languageEnglish": "English",
+  "languageArabic": "Arabic",
+  "logout": "Log out",
+  "settings": "Settings",
   "searchClinicsOrTreatments": "Search clinics or treatments...",
   "nearbyClinics": "Nearby Clinics",
   "specialPromotions": "Special Promotions",
@@ -150,5 +155,131 @@
   "notAvailable": "N/A",
   "noClinicsFound": "No clinics found.",
   "categories": "Categories",
-  "pricing": "Pricing"
+  "pricing": "Pricing",
+  "clinicGalleryExperienceEyebrow": "THE EXPERIENCE",
+  "clinicGalleryInteriorTitle": "Clinic Interior",
+  "clinicGalleryNoInteriorPhotos": "No interior photos available",
+  "clinicGalleryResultsEyebrow": "REAL RESULTS",
+  "clinicGalleryTransformationsTitle": "Transformations",
+  "clinicGalleryDefaultTransformationCaption": "Clinical Transformation Result",
+  "clinicGalleryResultBadge": "RESULT",
+  "clinicGalleryBeforeLabel": "BEFORE",
+  "clinicGalleryAfterLabel": "AFTER",
+  "clinicGalleryNoTransformations": "No Transformations Logged Yet",
+  "clinicGalleryPrecisionEyebrow": "CLINICAL PRECISION",
+  "clinicGalleryProceduresTitle": "Skin Procedures",
+  "clinicGalleryNoProcedures": "No Procedures Available",
+  "clinicDetailsTitle": "Clinic Details",
+  "clinicDetailsLoadFailed": "Failed to load clinic details.",
+  "clinicTabOverview": "Overview",
+  "clinicTabServices": "Services",
+  "clinicTabGallery": "Gallery",
+  "clinicTabInfo": "Info",
+  "clinicTopRated": "TOP RATED",
+  "clinicHeroRatingReviews": "{rating} ({reviews})",
+  "@clinicHeroRatingReviews": {
+    "placeholders": {
+      "rating": {"type": "String"},
+      "reviews": {"type": "String"}
+    }
+  },
+  "clinicAbout": "About Clinic",
+  "clinicLocation": "Location",
+  "clinicSpecialOffers": "Special Offers",
+  "clinicOurSpecialists": "Our Specialists",
+  "clinicNoOffersTitle": "No Offers Available Right Now",
+  "clinicNoOffersSubtitle": "Stay tuned! Exclusive clinic discounts will appear here.",
+  "clinicNoSpecialists": "No specialists available right now.",
+  "clinicNoServices": "No services available for this center.",
+  "clinicServicesCount": "{count, plural, one{1 SERVICE} other{{count} SERVICES}}",
+  "@clinicServicesCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "clinicServiceBadgeOffer": "OFFER",
+  "clinicServiceBadgeBestSeller": "BEST SELLER",
+  "clinicServiceBadgeFeatured": "FEATURED",
+  "clinicBookAppointment": "BOOK APPOINTMENT",
+  "clinicInstantConfirmation": "Instant Confirmation",
+  "clinicRequiresApproval": "Requires Approval",
+  "clinicNoDepositRequired": "No Deposit Required",
+  "clinicDepositPercentage": "Required Deposit: {value}%",
+  "@clinicDepositPercentage": {
+    "placeholders": {
+      "value": {"type": "int"}
+    }
+  },
+  "clinicDepositAmount": "Deposit: SP {value}",
+  "@clinicDepositAmount": {
+    "placeholders": {
+      "value": {"type": "int"}
+    }
+  },
+  "clinicHours": "Clinic Hours",
+  "clinicClosedToday": "Closed Today",
+  "clinicOpenTodayUntil": "Open Today | Until {time}",
+  "@clinicOpenTodayUntil": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "clinicClosed": "CLOSED",
+  "clinicNoWorkingHours": "No working hours provided.",
+  "dayMonday": "Monday",
+  "dayTuesday": "Tuesday",
+  "dayWednesday": "Wednesday",
+  "dayThursday": "Thursday",
+  "dayFriday": "Friday",
+  "daySaturday": "Saturday",
+  "daySunday": "Sunday",
+  "dayUnknown": "Unknown",
+  "dayTodayMarker": "(Today)",
+  "clinicContact": "Contact",
+  "clinicPhone": "Phone",
+  "clinicEmail": "Email",
+  "clinicWebsite": "Website",
+  "clinicCallNow": "CALL NOW",
+  "clinicCancellationPolicy": "Cancellation Policy",
+  "clinicCancellationIntro": "We value your time and our practitioners' expertise. This center applies a {policyType} cancellation policy.",
+  "@clinicCancellationIntro": {
+    "placeholders": {
+      "policyType": {"type": "String"}
+    }
+  },
+  "clinicCancellationFree": "Cancellations are completely free of charge if made at least {hours} hours prior to your appointment window.",
+  "@clinicCancellationFree": {
+    "placeholders": {
+      "hours": {"type": "int"}
+    }
+  },
+  "clinicCancellationFee": "Late cancellations within {hours} hours are subject to a fee equal to {percentage}% of the scheduled service price. No-shows will be charged at 100%.",
+  "@clinicCancellationFee": {
+    "placeholders": {
+      "hours": {"type": "int"},
+      "percentage": {"type": "int"}
+    }
+  },
+  "clinicPolicyStandard": "STANDARD",
+  "limitedTime": "Limited Time",
+  "limitedTimeLower": "Limited time",
+  "offerUntilDate": "Until {date}",
+  "@offerUntilDate": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "offerDiscountPercent": "{value}% OFF",
+  "@offerDiscountPercent": {
+    "placeholders": {
+      "value": {"type": "int"}
+    }
+  },
+  "offerDiscountAmount": "SP{value} OFF",
+  "@offerDiscountAmount": {
+    "placeholders": {
+      "value": {"type": "int"}
+    }
+  },
+  "clinicOfferClaim": "Claim"
 }

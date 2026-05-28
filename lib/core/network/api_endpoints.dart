@@ -1,7 +1,7 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = "http://192.168.1.105:8000/api/";
+  static const String baseUrl = "http://192.168.1.11:8000/api/";
 
   // Auth endpoints.
   static const String login = 'customer/login';
@@ -19,7 +19,7 @@ class ApiEndpoints {
   static const String categories = 'customer/categories';
   static const String centers = 'customer/centers';
 
-  static const String storageUrl = 'http://192.168.1.105:8000/storage/';
+  static const String storageUrl = 'http://192.168.1.11:8000/storage/';
 
   static String mediaUrl(String? path) {
     if (path == null || path.isEmpty) {

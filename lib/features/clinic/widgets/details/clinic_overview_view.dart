@@ -1,4 +1,3 @@
-import 'package:beauty_center_app/core/di/injection.dart';
 import 'package:beauty_center_app/features/clinic/cubit/clinic_employees_cubit.dart';
 import 'package:beauty_center_app/features/clinic/cubit/clinic_employees_state.dart';
 import 'package:beauty_center_app/features/clinic/cubit/clinic_offers_cubit.dart';
@@ -8,6 +7,7 @@ import 'package:beauty_center_app/features/clinic/widgets/clinic_map_card.dart';
 import 'package:beauty_center_app/features/clinic/widgets/clinic_network_image.dart';
 import 'package:beauty_center_app/features/clinic/widgets/clinic_offer_card.dart';
 import 'package:beauty_center_app/features/clinic/widgets/clinic_section_title.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,57 +21,37 @@ class ClinicOverviewView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String description = clinic.description?.trim().isNotEmpty == true
-        ? clinic.description!.trim()
-        : 'Clinic center';
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) =>
-              getIt<ClinicOffersCubit>()..fetchClinicOffers(clinic.id),
-        ),
-        BlocProvider(
-          create: (context) =>
-              getIt<ClinicEmployeesCubit>()..fetchClinicEmployees(clinic.id),
-        ),
-      ],
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const ClinicSectionTitle('About Clinic'),
-          const SizedBox(height: 18),
-          Text(
-            description,
-            style: AppTextStyles.subtitle.copyWith(
-              color: AppColors.textSecondary,
-              fontSize: 17,
-              height: 1.48,
-            ),
-          ),
-          const SizedBox(height: 44),
-          const ClinicSectionTitle('Location'),
-          const SizedBox(height: 18),
-          ClinicMapCard(clinic: clinic),
-          const SizedBox(height: 44),
-          BlocBuilder<ClinicOffersCubit, ClinicOffersState>(
-            builder: (context, state) {
-              return Row(
-                children: [
-                  const Expanded(child: ClinicSectionTitle('Special Offers')),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 18),
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    final String description = clinic.description.trim().isNotEmpty
+        ? clinic.description.trim()
+        : l10n.clinicCenter;
 
-          const _OffersList(),
-          const SizedBox(height: 44),
-          const ClinicSectionTitle('Our Specialists'),
-          const SizedBox(height: 18),
-          const _SpecialistsList(),
-          const SizedBox(height: 90),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ClinicSectionTitle(l10n.clinicAbout),
+        const SizedBox(height: 18),
+        Text(
+          description,
+          style: AppTextStyles.subtitle.copyWith(
+            color: AppColors.textSecondary,
+            fontSize: 17,
+            height: 1.48,
+          ),
+        ),
+        const SizedBox(height: 44),
+        ClinicSectionTitle(l10n.clinicLocation),
+        const SizedBox(height: 18),
+        ClinicMapCard(clinic: clinic),
+        const SizedBox(height: 44),
+        ClinicSectionTitle(l10n.clinicSpecialOffers),
+        const SizedBox(height: 18),
+        const _OffersList(),
+        const SizedBox(height: 44),
+        ClinicSectionTitle(l10n.clinicOurSpecialists),
+        const SizedBox(height: 18),
+        const _SpecialistsList(),
+      ],
     );
   }
 }
@@ -134,6 +114,8 @@ class _EmptyOffersCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
@@ -152,7 +134,7 @@ class _EmptyOffersCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'No Offers Available Right Now',
+            l10n.clinicNoOffersTitle,
             style: AppTextStyles.subtitle.copyWith(
               fontSize: 15,
               fontWeight: FontWeight.w600,
@@ -161,7 +143,7 @@ class _EmptyOffersCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Stay tuned! Exclusive clinic discounts will appear here.',
+            l10n.clinicNoOffersSubtitle,
             textAlign: TextAlign.center,
             style: AppTextStyles.smallCaps.copyWith(
               fontSize: 12,
@@ -229,7 +211,7 @@ class _SpecialistsList extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                'No specialists available right now.',
+                AppLocalizations.of(context).clinicNoSpecialists,
                 style: AppTextStyles.subtitle.copyWith(fontSize: 13),
               ),
             );

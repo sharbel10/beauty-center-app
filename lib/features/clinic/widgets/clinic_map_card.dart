@@ -4,6 +4,7 @@ import 'package:beauty_center_app/core/utils/extensions.dart';
 import 'package:beauty_center_app/core/utils/map_launcher.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_details_response.dart';
 import 'package:beauty_center_app/features/clinic/widgets/clinic_network_image.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class ClinicMapCard extends StatelessWidget {
@@ -44,14 +45,14 @@ class ClinicMapCard extends StatelessWidget {
 
       if (!launched && context.mounted) {
         context.showSnackbar(
-          'Could not open maps for this location.',
+          AppLocalizations.of(context).couldNotOpenMapsForLocation,
           isError: true,
         );
       }
     } catch (_) {
       if (context.mounted) {
         context.showSnackbar(
-          'Could not open maps for this location.',
+          AppLocalizations.of(context).couldNotOpenMapsForLocation,
           isError: true,
         );
       }
@@ -61,7 +62,7 @@ class ClinicMapCard extends StatelessWidget {
   Future<void> _onNavigationPressed(BuildContext context) async {
     if (!clinic.hasCoordinates) {
       context.showSnackbar(
-        'Location is not available for this clinic.',
+        AppLocalizations.of(context).locationUnavailableForClinic,
         isError: true,
       );
       return;

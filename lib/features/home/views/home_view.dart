@@ -163,6 +163,7 @@ class _HomeViewState extends State<HomeView> {
                           builder: (context) => ClinicDetailsView(
                             centerId: clinic.id,
                             cubit: getIt<ClinicDetailsCubit>(),
+                            entryNavItem: AppNavItem.home,
                           ),
                         ),
                       );

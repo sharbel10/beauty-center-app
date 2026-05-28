@@ -1,4 +1,6 @@
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -21,66 +23,25 @@ class ClinicOfferCard extends StatelessWidget {
   final String endsAt;
   final bool isDark;
 
-  String _formatExpiryDate(String dateStr) {
-    if (dateStr.isEmpty) return 'Limited Time';
+  String _formatExpiryDate(BuildContext context, String dateStr) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    if (dateStr.isEmpty) return l10n.limitedTime;
+
     try {
-      final onlyDate = dateStr.split('T')[0];
-      final parts = onlyDate.split('-');
-      if (parts.length < 3) return onlyDate;
-
-      final year = parts[0];
-      final monthNum = parts[1];
-      final day = int.parse(parts[2]).toString();
-      final String monthName;
-      switch (monthNum) {
-        case '01':
-          monthName = 'Jan';
-          break;
-        case '02':
-          monthName = 'Feb';
-          break;
-        case '03':
-          monthName = 'Mar';
-          break;
-        case '04':
-          monthName = 'Apr';
-          break;
-        case '05':
-          monthName = 'May';
-          break;
-        case '06':
-          monthName = 'Jun';
-          break;
-        case '07':
-          monthName = 'Jul';
-          break;
-        case '08':
-          monthName = 'Aug';
-          break;
-        case '09':
-          monthName = 'Sep';
-          break;
-        case '10':
-          monthName = 'Oct';
-          break;
-        case '11':
-          monthName = 'Nov';
-          break;
-        case '12':
-          monthName = 'Dec';
-          break;
-        default:
-          monthName = 'Min';
-      }
-
-      return 'Until $monthName $day, $year';
+      final String onlyDate = dateStr.split('T').first;
+      final DateTime date = DateTime.parse(onlyDate);
+      final String formatted = DateFormat.yMMMd(
+        Localizations.localeOf(context),
+      ).format(date);
+      return l10n.offerUntilDate(formatted);
     } catch (_) {
-      return 'Limited time';
+      return l10n.limitedTimeLower;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final Color background = isDark ? AppColors.primary : AppColors.surface;
     final Color foreground = isDark ? AppColors.surface : AppColors.primary;
     final Color subText = isDark
@@ -88,8 +49,8 @@ class ClinicOfferCard extends StatelessWidget {
         : AppColors.primarySoft.withOpacity(0.7);
 
     final String discountBadgeText = discountType == 'percentage'
-        ? '$discountValue% OFF'
-        : 'SP$discountValue OFF';
+        ? l10n.offerDiscountPercent(discountValue)
+        : l10n.offerDiscountAmount(discountValue);
 
     return Container(
       width: 290,
@@ -135,7 +96,7 @@ class ClinicOfferCard extends StatelessWidget {
                 ),
               ),
               Text(
-                isDark ? 'EXCLUSIVE' : 'HOT DEAL',
+                isDark ? l10n.exclusive : l10n.hotDeal,
                 style: AppTextStyles.smallCaps.copyWith(
                   color: isDark
                       ? AppColors.gold.withOpacity(0.8)
@@ -147,7 +108,6 @@ class ClinicOfferCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
-
           Text(
             title,
             maxLines: 1,
@@ -159,7 +119,6 @@ class ClinicOfferCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-
           Expanded(
             child: Text(
               description,
@@ -172,7 +131,6 @@ class ClinicOfferCard extends StatelessWidget {
               ),
             ),
           ),
-
           Row(
             children: [
               Expanded(
@@ -188,7 +146,7 @@ class ClinicOfferCard extends StatelessWidget {
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                        _formatExpiryDate(endsAt),
+                        _formatExpiryDate(context, endsAt),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: AppTextStyles.subtitle.copyWith(
@@ -204,7 +162,6 @@ class ClinicOfferCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
@@ -215,7 +172,7 @@ class ClinicOfferCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'Claim',
+                  l10n.clinicOfferClaim,
                   style: AppTextStyles.link.copyWith(
                     color: isDark ? AppColors.primary : AppColors.surface,
                     fontSize: 10,

@@ -528,6 +528,7 @@ class _ClinicCardState extends State<_ClinicCard> {
                           builder: (context) => ClinicDetailsView(
                             centerId: clinic.id,
                             cubit: getIt<ClinicDetailsCubit>(),
+                            entryNavItem: AppNavItem.explore,
                           ),
                         ),
                       );
