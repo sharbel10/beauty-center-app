@@ -1,3 +1,4 @@
+import 'package:beauty_center_app/core/di/injection.dart';
 import 'package:beauty_center_app/core/router/route_names.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
@@ -5,6 +6,8 @@ import 'package:beauty_center_app/core/utils/extensions.dart';
 import 'package:beauty_center_app/core/widgets/app_bottom_navigation.dart';
 import 'package:beauty_center_app/features/auth/cubit/auth_cubit.dart';
 import 'package:beauty_center_app/features/auth/cubit/auth_state.dart';
+import 'package:beauty_center_app/features/clinic/cubit/clinic_details_cubit.dart';
+import 'package:beauty_center_app/features/clinic/views/clinic_details_view.dart';
 import 'package:beauty_center_app/features/home/cubit/home_cubit.dart';
 import 'package:beauty_center_app/features/home/cubit/home_state.dart';
 import 'package:beauty_center_app/features/home/models/home_clinic_ui.dart';
@@ -78,10 +81,7 @@ class _HomeViewState extends State<HomeView> {
                   }
                 },
               ),
-              body: SafeArea(
-                bottom: false,
-                child: _buildBody(context, state),
-              ),
+              body: SafeArea(bottom: false, child: _buildBody(context, state)),
             );
           },
         ),
@@ -149,7 +149,19 @@ class _HomeViewState extends State<HomeView> {
                 ),
                 const SizedBox(height: 16),
                 for (final HomeClinicUiModel clinic in clinics) ...<Widget>[
-                  NearbyClinicCard(clinic: clinic),
+                  NearbyClinicCard(
+                    clinic: clinic,
+                    onCardTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ClinicDetailsView(
+                            centerId: clinic.id,
+                            cubit: getIt<ClinicDetailsCubit>(),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                   const SizedBox(height: 12),
                 ],
                 const _DiscoverMoreButton(),
@@ -176,10 +188,7 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      title,
-      style: AppTextStyles.title.copyWith(fontSize: 22),
-    );
+    return Text(title, style: AppTextStyles.title.copyWith(fontSize: 22));
   }
 }
 
@@ -261,7 +270,9 @@ class _PromotionsCarouselState extends State<_PromotionsCarousel> {
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: List<Widget>.generate(widget.promotions.length, (int index) {
+          children: List<Widget>.generate(widget.promotions.length, (
+            int index,
+          ) {
             final bool isActive = index == _index;
             return AnimatedContainer(
               duration: const Duration(milliseconds: 180),

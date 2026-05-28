@@ -3,6 +3,7 @@ import 'package:beauty_center_app/features/home/models/clinic_center.dart';
 
 class HomeClinicUiModel {
   const HomeClinicUiModel({
+    required this.id,
     required this.imageUrl,
     required this.name,
     required this.location,
@@ -23,6 +24,7 @@ class HomeClinicUiModel {
 
   factory HomeClinicUiModel.fromCenter(ClinicCenter center) {
     return HomeClinicUiModel(
+      id: center.id,
       imageUrl: ApiEndpoints.mediaUrl(center.coverPath),
       name: center.name,
       location: center.locationLabel,
@@ -45,6 +47,7 @@ class HomeClinicUiModel {
   }
 
   final String imageUrl;
+  final int id;
   final String name;
   final String location;
   final String distance;
