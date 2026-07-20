@@ -13,6 +13,7 @@ import 'package:beauty_center_app/features/explore/cubit/explore_state.dart';
 import 'package:beauty_center_app/features/home/models/category.dart';
 import 'package:beauty_center_app/features/home/models/clinic_center.dart';
 import 'package:beauty_center_app/features/home/widgets/clinic_network_image.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -86,6 +87,8 @@ class _ExploreViewState extends State<ExploreView> {
           context.showSnackbar(state.message!, isError: true);
         },
         builder: (BuildContext context, ExploreState state) {
+          final AppLocalizations l10n = AppLocalizations.of(context);
+
           return Scaffold(
             backgroundColor: AppColors.scaffold,
             extendBody: true,
@@ -122,7 +125,7 @@ class _ExploreViewState extends State<ExploreView> {
                             ),
                             const SizedBox(height: 24),
                             Text(
-                              'All Clinics',
+                              l10n.allClinics,
                               style: AppTextStyles.headline.copyWith(
                                 fontSize: 24,
                                 height: 1.1,
@@ -165,7 +168,7 @@ class _ExploreViewState extends State<ExploreView> {
                                 child: SizedBox(
                                   width: 190,
                                   child: AppButton(
-                                    text: 'Load More',
+                                    text: l10n.loadMore,
                                     isLoading: state.isLoadingMore,
                                     onPressed: _cubit.loadMore,
                                     height: 48,
@@ -204,6 +207,8 @@ class _SearchAndFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Row(
       children: <Widget>[
         Expanded(
@@ -236,7 +241,7 @@ class _SearchAndFilter extends StatelessWidget {
                   horizontal: 14,
                   vertical: 15,
                 ),
-                hintText: 'Search clinics...',
+                hintText: l10n.searchClinics,
                 hintStyle: AppTextStyles.hint.copyWith(fontSize: 14),
                 prefixIcon: const Icon(
                   Icons.search_rounded,
@@ -262,7 +267,7 @@ class _SearchAndFilter extends StatelessWidget {
             onPressed: onFilter,
             icon: const Icon(Icons.tune_rounded, size: 18),
             label: Text(
-              'Filters',
+              l10n.filters,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.button.copyWith(fontSize: 12),
@@ -297,6 +302,7 @@ class _ActiveFilters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final List<Widget> chips = <Widget>[];
     final int? selectedCategoryId = state.selectedCategoryId;
 
@@ -316,7 +322,7 @@ class _ActiveFilters extends StatelessWidget {
     if (state.hasPriceFilter) {
       chips.add(
         _FilterChip(
-          label: '\$${state.minPrice} - \$${state.maxPrice}',
+          label: l10n.priceRangeFilter(state.minPrice, state.maxPrice),
           onClear: onClearPrice,
         ),
       );
@@ -389,9 +395,11 @@ class _ClinicCardState extends State<_ClinicCard> {
   ClinicCenter get clinic => widget.clinic;
 
   Future<void> _openMap() async {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     if (clinic.latitude == null || clinic.longitude == null) {
       context.showSnackbar(
-        'Location is not available for this clinic.',
+        l10n.locationUnavailableForClinic,
         isError: true,
       );
       return;
@@ -403,15 +411,16 @@ class _ClinicCardState extends State<_ClinicCard> {
     );
 
     if (!launched && mounted) {
-      context.showSnackbar('Could not open maps.', isError: true);
+      context.showSnackbar(l10n.couldNotOpenMaps, isError: true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final String description = clinic.description?.trim().isNotEmpty == true
         ? clinic.description!.trim()
-        : 'Clinic center';
+        : l10n.clinicCenter;
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -518,7 +527,7 @@ class _ClinicCardState extends State<_ClinicCard> {
                   _ClinicStats(clinic: clinic),
                   const SizedBox(height: 16),
                   AppButton(
-                    text: 'View & Book',
+                    text: l10n.viewAndBook,
                     icon: Icons.chevron_right_rounded,
                     height: 48,
                     onPressed: () {
@@ -559,13 +568,14 @@ class _ClinicStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final String areaValue = clinic.area?.isNotEmpty == true
         ? clinic.area!
         : clinic.city?.isNotEmpty == true
         ? clinic.city!
         : clinic.isFeatured
-        ? 'Top Pick'
-        : 'Clinic';
+        ? l10n.topPick
+        : l10n.clinic;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -577,15 +587,15 @@ class _ClinicStats extends StatelessWidget {
       child: Row(
         children: <Widget>[
           Expanded(
-            child: _StatItem(label: 'AREA', value: areaValue),
+            child: _StatItem(label: l10n.area, value: areaValue),
           ),
           Container(width: 1, height: 30, color: AppColors.divider),
           Expanded(
             child: _StatItem(
-              label: 'DISTANCE',
+              label: l10n.distance,
               value: clinic.distance != null
                   ? '${clinic.distance!.toStringAsFixed(1)} km'
-                  : 'N/A',
+                  : l10n.notAvailable,
             ),
           ),
         ],
@@ -653,6 +663,8 @@ class _EmptyClinicsState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -664,11 +676,11 @@ class _EmptyClinicsState extends StatelessWidget {
             color: AppColors.textMuted,
           ),
           const SizedBox(height: 14),
-          Text('No clinics found.', style: AppTextStyles.titleMedium),
+          Text(l10n.noClinicsFound, style: AppTextStyles.titleMedium),
           const SizedBox(height: 18),
           SizedBox(
             width: 180,
-            child: AppButton(text: 'Retry', onPressed: onRetry, height: 48),
+            child: AppButton(text: l10n.retry, onPressed: onRetry, height: 48),
           ),
         ],
       ),
@@ -704,6 +716,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
   Widget build(BuildContext context) {
     return BlocBuilder<ExploreCubit, ExploreState>(
       builder: (BuildContext context, ExploreState state) {
+        final AppLocalizations l10n = AppLocalizations.of(context);
         _ensureInitialValues(state);
         final List<Category> topLevelCategories = state.categories
             .where((Category category) => category.isTopLevel)
@@ -743,7 +756,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                   children: <Widget>[
                     Expanded(
                       child: Text(
-                        'Filters',
+                        l10n.filters,
                         style: AppTextStyles.title.copyWith(
                           fontSize: 22,
                           height: 1.1,
@@ -758,13 +771,13 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                 ),
                 const SizedBox(height: 18),
                 _FilterSection(
-                  title: 'Categories',
+                  title: l10n.categories,
                   child: Wrap(
                     spacing: 8,
                     runSpacing: 8,
                     children: <Widget>[
                       _FilterChoice(
-                        label: 'All',
+                        label: l10n.all,
                         selected: _selectedCategoryId == null,
                         onSelected: () {
                           setState(() => _selectedCategoryId = null);
@@ -783,7 +796,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                 ),
                 const SizedBox(height: 18),
                 _FilterSection(
-                  title: 'Pricing',
+                  title: l10n.pricing,
                   child: _PriceRangeSlider(
                     values: _priceValues,
                     maxLimit: ExploreState.defaultMaxPrice,
@@ -815,7 +828,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                           ),
                         ),
                         child: Text(
-                          'Reset',
+                          l10n.reset,
                           style: AppTextStyles.link.copyWith(fontSize: 13),
                         ),
                       ),
@@ -823,7 +836,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: AppButton(
-                        text: 'Apply',
+                        text: l10n.apply,
                         onPressed: () async {
                           final ExploreCubit cubit = context
                               .read<ExploreCubit>();
@@ -896,6 +909,7 @@ class _PriceRangeSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final int min = values.start.round();
     final int max = values.end.round();
 
@@ -905,11 +919,11 @@ class _PriceRangeSlider extends StatelessWidget {
         Row(
           children: <Widget>[
             Expanded(
-              child: _PricePill(label: 'Min', value: min),
+              child: _PricePill(label: l10n.min, value: min),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: _PricePill(label: 'Max', value: max),
+              child: _PricePill(label: l10n.max, value: max),
             ),
           ],
         ),

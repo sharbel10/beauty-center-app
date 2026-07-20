@@ -1,6 +1,7 @@
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/features/book_treatment/components/booking_step_title.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -31,6 +32,7 @@ class _DateStepState extends State<DateStep> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final DateTime now = DateTime.now();
     final DateTime firstDay = DateTime(now.year, now.month, now.day);
     final DateTime lastDay = firstDay.add(const Duration(days: 180));
@@ -38,9 +40,9 @@ class _DateStepState extends State<DateStep> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
       children: <Widget>[
-        const BookingStepTitle(
-          title: 'Select Date',
-          subtitle: 'Choose a day for your appointment',
+        BookingStepTitle(
+          title: l10n.selectDate,
+          subtitle: l10n.selectDateSubtitle,
         ),
         const SizedBox(height: 16),
         Container(
@@ -51,6 +53,7 @@ class _DateStepState extends State<DateStep> {
             border: Border.all(color: AppColors.inputBorder),
           ),
           child: TableCalendar<void>(
+            locale: Localizations.localeOf(context).toLanguageTag(),
             firstDay: firstDay,
             lastDay: lastDay,
             focusedDay: _focusedDay,
@@ -63,8 +66,8 @@ class _DateStepState extends State<DateStep> {
             onPageChanged: (DateTime focusedDay) {
               _focusedDay = focusedDay;
             },
-            availableCalendarFormats: const <CalendarFormat, String>{
-              CalendarFormat.month: 'Month',
+            availableCalendarFormats: <CalendarFormat, String>{
+              CalendarFormat.month: l10n.calendarMonth,
             },
             headerStyle: HeaderStyle(
               titleCentered: true,

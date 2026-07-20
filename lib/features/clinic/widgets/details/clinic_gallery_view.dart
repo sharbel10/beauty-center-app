@@ -1,18 +1,16 @@
 import 'package:beauty_center_app/core/di/injection.dart';
 import 'package:beauty_center_app/features/clinic/cubit/clinic_portfolio_cubit.dart';
 import 'package:beauty_center_app/features/clinic/cubit/clinic_portfolio_state.dart';
-import 'package:beauty_center_app/features/clinic/cubit/clinic_services_cubit.dart';
-import 'package:beauty_center_app/features/clinic/cubit/clinic_services_state.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_details_response.dart';
 import 'package:beauty_center_app/features/clinic/widgets/clinic_network_image.dart'
     show ClinicNetworkImage;
 import 'package:beauty_center_app/features/clinic/widgets/clinic_section_title.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
-
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ClinicGalleryView extends StatelessWidget {
   const ClinicGalleryView({required this.clinic, super.key});
@@ -21,42 +19,26 @@ class ClinicGalleryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) =>
-              getIt<ClinicPortfolioCubit>()..fetchClinicPortfolio(clinic.id),
-        ),
-        BlocProvider(
-          create: (context) =>
-              getIt<ClinicServicesCubit>()..fetchClinicServices(clinic.id),
-        ),
-      ],
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
+    return BlocProvider(
+      create: (context) =>
+          getIt<ClinicPortfolioCubit>()..fetchClinicPortfolio(clinic.id),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _GalleryEyebrow('THE EXPERIENCE'),
+          _GalleryEyebrow(l10n.clinicGalleryExperienceEyebrow),
           const SizedBox(height: 8),
-          const ClinicSectionTitle('Clinic Interior'),
+          ClinicSectionTitle(l10n.clinicGalleryInteriorTitle),
           const SizedBox(height: 18),
-
           _InteriorCollage(images: clinic.images),
-
           const SizedBox(height: 42),
-          const _GalleryEyebrow('REAL RESULTS'),
+          _GalleryEyebrow(l10n.clinicGalleryResultsEyebrow),
           const SizedBox(height: 8),
-          const ClinicSectionTitle('Transformations'),
+          ClinicSectionTitle(l10n.clinicGalleryTransformationsTitle),
           const SizedBox(height: 18),
-
           const _DynamicTransformationsList(),
-
-          const SizedBox(height: 42),
-          const _GalleryEyebrow('CLINICAL PRECISION'),
-          const SizedBox(height: 8),
-          const ClinicSectionTitle('Skin Procedures'),
-          const SizedBox(height: 18),
-          const _ProceduresGrid(),
-          const SizedBox(height: 90),
+          const SizedBox(height: 24),
         ],
       ),
     );
@@ -68,6 +50,8 @@ class _DynamicTransformationsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return BlocBuilder<ClinicPortfolioCubit, ClinicPortfolioState>(
       builder: (context, state) {
         if (state is ClinicPortfolioLoading) {
@@ -96,8 +80,8 @@ class _DynamicTransformationsList extends StatelessWidget {
               return _TransformationCard(
                 title: item.caption.isNotEmpty
                     ? item.caption
-                    : 'Clinical Transformation Result',
-                badge: 'RESULT',
+                    : l10n.clinicGalleryDefaultTransformationCaption,
+                badge: l10n.clinicGalleryResultBadge,
                 beforeImage: item.beforeImagePath,
                 afterImage: item.afterImagePath,
               );
@@ -164,7 +148,6 @@ class _InteriorCollage extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 14),
-
           Expanded(
             flex: 4,
             child: Column(
@@ -176,7 +159,6 @@ class _InteriorCollage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 14),
-
                 Expanded(
                   child: ClinicNetworkImage(
                     imageUrl: thirdImage,
@@ -207,6 +189,8 @@ class _TransformationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
@@ -244,7 +228,7 @@ class _TransformationCard extends StatelessWidget {
               Expanded(
                 child: _TransformationImage(
                   imageUrl: beforeImage,
-                  label: 'BEFORE',
+                  label: l10n.clinicGalleryBeforeLabel,
                   isAfter: false,
                 ),
               ),
@@ -252,7 +236,7 @@ class _TransformationCard extends StatelessWidget {
               Expanded(
                 child: _TransformationImage(
                   imageUrl: afterImage,
-                  label: 'AFTER',
+                  label: l10n.clinicGalleryAfterLabel,
                   isAfter: true,
                 ),
               ),
@@ -335,96 +319,13 @@ class _SoftBadge extends StatelessWidget {
   }
 }
 
-class _ProceduresGrid extends StatelessWidget {
-  const _ProceduresGrid();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<ClinicServicesCubit, ClinicServicesState>(
-      builder: (context, state) {
-        if (state is ClinicServicesLoading) {
-          return const Center(
-            child: CircularProgressIndicator(color: AppColors.gold),
-          );
-        }
-
-        if (state is ClinicServicesSuccess) {
-          final items = state.services.take(4).toList();
-
-          if (items.isEmpty) {
-            return const _EmptyStateCard(title: 'No Procedures Available');
-          }
-
-          return GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: items.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 1.02,
-            ),
-            itemBuilder: (context, index) {
-              final item = items[index];
-              return _ProcedureTile(label: item.name, imageUrl: item.imagePath);
-            },
-          );
-        }
-
-        return const SizedBox.shrink();
-      },
-    );
-  }
-}
-
-class _ProcedureTile extends StatelessWidget {
-  const _ProcedureTile({required this.label, required this.imageUrl});
-  final String label;
-  final String imageUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(14),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          ClinicNetworkImage(imageUrl: imageUrl),
-          const DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0x00000000), Color(0xAA000000)],
-              ),
-            ),
-          ),
-          Positioned(
-            left: 10,
-            bottom: 10,
-            right: 10,
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.link.copyWith(
-                color: AppColors.surface,
-                fontSize: 11,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _EmptyPortfolioCard extends StatelessWidget {
   const _EmptyPortfolioCard();
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
@@ -436,12 +337,12 @@ class _EmptyPortfolioCard extends StatelessWidget {
         children: [
           Icon(
             Icons.photo_library_outlined,
-            color: AppColors.primarySoft.withOpacity(0.4),
+            color: AppColors.primarySoft.withValues(alpha: 0.4),
             size: 30,
           ),
           const SizedBox(height: 8),
           Text(
-            'No Transformations Logged Yet',
+            l10n.clinicGalleryNoTransformations,
             style: AppTextStyles.subtitle.copyWith(
               fontSize: 13,
               color: AppColors.primarySoft,
@@ -462,42 +363,8 @@ class _TransformationsShimmer extends StatelessWidget {
       height: 200,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.1),
+        color: Colors.grey.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-      ),
-    );
-  }
-}
-
-class _EmptyStateCard extends StatelessWidget {
-  const _EmptyStateCard({required this.title});
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceMuted,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.photo_library_outlined,
-            color: AppColors.primarySoft.withOpacity(0.4),
-            size: 30,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: AppTextStyles.subtitle.copyWith(
-              fontSize: 13,
-              color: AppColors.primarySoft,
-            ),
-          ),
-        ],
       ),
     );
   }

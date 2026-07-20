@@ -54,6 +54,10 @@ import 'package:beauty_center_app/features/home/repository/home_repository.dart'
     as _i668;
 import 'package:beauty_center_app/features/onboarding/cubit/onboarding_cubit.dart'
     as _i328;
+import 'package:beauty_center_app/features/profile/cubit/profile_cubit.dart'
+    as _i741;
+import 'package:beauty_center_app/features/profile/repository/profile_repository.dart'
+    as _i812;
 import 'package:beauty_center_app/features/splash/cubit/splash_cubit.dart'
     as _i420;
 import 'package:get_it/get_it.dart' as _i174;
@@ -107,6 +111,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i668.HomeRepository>(
       () => _i668.HomeRepository(gh<_i1058.DioClient>()),
     );
+    gh.factory<_i812.ProfileRepository>(
+      () => _i812.ProfileRepository(gh<_i1058.DioClient>()),
+    );
     gh.singleton<_i361.DeviceRegistrationService>(
       () => _i361.DeviceRegistrationService(
         gh<_i159.FirebaseMessagingService>(),
@@ -128,9 +135,13 @@ extension GetItInjectableX on _i174.GetIt {
       ),
     );
     gh.factory<_i92.HomeCubit>(
-      () => _i92.HomeCubit(
-        gh<_i668.HomeRepository>(),
+      () => _i92.HomeCubit(gh<_i668.HomeRepository>()),
+    );
+    gh.factory<_i741.ProfileCubit>(
+      () => _i741.ProfileCubit(
+        gh<_i812.ProfileRepository>(),
         gh<_i441.LocationService>(),
+        gh<_i196.AuthCubit>(),
       ),
     );
     gh.factory<_i98.ClinicDetailsCubit>(

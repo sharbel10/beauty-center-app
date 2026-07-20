@@ -1,6 +1,7 @@
 import 'package:beauty_center_app/core/router/route_names.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,6 +10,8 @@ class BookingsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
       child: SizedBox(
@@ -35,7 +38,7 @@ class BookingsHeader extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                'My Appointments',
+                l10n.myAppointments,
                 textAlign: TextAlign.center,
                 style: AppTextStyles.title.copyWith(fontSize: 18),
               ),

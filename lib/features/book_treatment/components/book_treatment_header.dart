@@ -1,5 +1,6 @@
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class BookTreatmentHeader extends StatelessWidget {
@@ -9,6 +10,8 @@ class BookTreatmentHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
       child: Row(
@@ -25,7 +28,7 @@ class BookTreatmentHeader extends StatelessWidget {
           ),
           Expanded(
             child: Text(
-              'Book Treatment',
+              l10n.bookTreatment,
               textAlign: TextAlign.center,
               style: AppTextStyles.title.copyWith(fontSize: 20),
             ),

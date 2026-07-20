@@ -1,3 +1,4 @@
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -8,8 +9,6 @@ class ClinicDetailsTabs extends SliverPersistentHeaderDelegate {
 
   final int selectedIndex;
   final ValueChanged<int> onChanged;
-
-  static const List<String> tabs = ['Overview', 'Services', 'Gallery', 'Info'];
 
   @override
   double get minExtent => 48;
@@ -23,6 +22,14 @@ class ClinicDetailsTabs extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    final List<String> tabs = <String>[
+      l10n.clinicTabOverview,
+      l10n.clinicTabServices,
+      l10n.clinicTabGallery,
+      l10n.clinicTabInfo,
+    ];
+
     return DecoratedBox(
       decoration: BoxDecoration(
         color: AppColors.surface,

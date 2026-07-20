@@ -18,6 +18,8 @@ import 'package:beauty_center_app/features/auth/views/reset_password_view.dart';
 import 'package:beauty_center_app/features/home/views/home_view.dart';
 import 'package:beauty_center_app/features/onboarding/cubit/onboarding_cubit.dart';
 import 'package:beauty_center_app/features/onboarding/views/onboarding_view.dart';
+import 'package:beauty_center_app/features/profile/cubit/profile_cubit.dart';
+import 'package:beauty_center_app/features/profile/views/profile_view.dart';
 import 'package:beauty_center_app/features/splash/cubit/splash_cubit.dart';
 import 'package:beauty_center_app/features/splash/views/splash_view.dart';
 import 'package:flutter/material.dart';
@@ -112,6 +114,14 @@ class AppRouter {
           path: RouteNames.bookingsPath,
           builder: (context, state) =>
               BookingsView(cubit: getIt<BookingsCubit>()),
+        ),
+        GoRoute(
+          name: RouteNames.profile,
+          path: RouteNames.profilePath,
+          builder: (context, state) => ProfileView(
+            authCubit: _authCubit,
+            profileCubit: getIt<ProfileCubit>(),
+          ),
         ),
         GoRoute(
           name: RouteNames.bookTreatment,

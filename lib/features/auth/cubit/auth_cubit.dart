@@ -2,6 +2,7 @@ import 'package:beauty_center_app/core/failures/failure.dart';
 import 'package:beauty_center_app/core/storage/preference_manager.dart';
 import 'package:beauty_center_app/core/storage/secure_storage.dart';
 import 'package:beauty_center_app/features/auth/cubit/auth_state.dart';
+import 'package:beauty_center_app/features/auth/models/customer.dart';
 import 'package:beauty_center_app/features/auth/repository/auth_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -212,8 +213,15 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  String get userDisplayName =>
-      state.customer?.name ?? _preferenceManager.getCustomerName() ?? 'Guest';
+  String userDisplayName({String guestLabel = 'Guest'}) =>
+      state.customer?.name ??
+      _preferenceManager.getCustomerName() ??
+      guestLabel;
+
+  Future<void> syncCustomer(Customer customer) async {
+    await _preferenceManager.saveCustomer(customer);
+    emit(state.copyWith(customer: customer));
+  }
 
   Future<void> logout() async {
     emit(

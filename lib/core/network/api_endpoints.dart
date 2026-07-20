@@ -20,6 +20,9 @@ class ApiEndpoints {
   static const String centers = 'customer/centers';
   static const String appointments = 'customer/appointments';
 
+  // Profile
+  static const String profile = 'customer/profile';
+
   // Devices / FCM
   static const String devices = 'customer/devices';
 

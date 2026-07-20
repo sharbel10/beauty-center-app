@@ -7,6 +7,16 @@ import 'package:beauty_center_app/features/clinic/models/clinics_services_respon
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
+/// Stable message keys emitted by [BookTreatmentCubit] for known user-facing
+/// copy. The view maps these through [AppLocalizations]; API error strings
+/// are passed through unchanged.
+abstract final class BookTreatmentMessageKeys {
+  static const String pleaseChooseServiceDateTime =
+      'pleaseChooseServiceDateTime';
+  static const String appointmentBookedSuccessfully =
+      'appointmentBookedSuccessfully';
+}
+
 @injectable
 class BookTreatmentCubit extends Cubit<BookTreatmentState> {
   BookTreatmentCubit(this._repository) : super(const BookTreatmentState());
@@ -195,7 +205,7 @@ class BookTreatmentCubit extends Cubit<BookTreatmentState> {
       emit(
         state.copyWith(
           status: BookTreatmentStatus.failure,
-          message: 'Please choose a service, date, and time.',
+          message: BookTreatmentMessageKeys.pleaseChooseServiceDateTime,
         ),
       );
       return;
@@ -245,7 +255,7 @@ class BookTreatmentCubit extends Cubit<BookTreatmentState> {
             status: BookTreatmentStatus.success,
             appointment: response.appointment,
             message: response.message.isEmpty
-                ? 'Appointment booked successfully.'
+                ? BookTreatmentMessageKeys.appointmentBookedSuccessfully
                 : response.message,
           ),
         );

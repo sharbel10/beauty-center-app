@@ -663,4 +663,308 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get clinicOfferClaim => 'احصل عليه';
+
+  @override
+  String clinicDurationMinutes(int minutes) {
+    return '$minutes د';
+  }
+
+  @override
+  String clinicPrepMinutes(int minutes) {
+    return '+ $minutes د تحضير';
+  }
+
+  @override
+  String priceSp(String price) {
+    return '$price ل.س';
+  }
+
+  @override
+  String get clearAll => 'مسح الكل';
+
+  @override
+  String get filterServiceType => 'نوع الخدمة';
+
+  @override
+  String get filterPriceRange => 'نطاق السعر';
+
+  @override
+  String get filterFacialTreatment => 'علاج الوجه';
+
+  @override
+  String get filterBotoxFillers => 'بوتوكس وفيلر';
+
+  @override
+  String get filterLaserHairRemoval => 'إزالة الشعر بالليزر';
+
+  @override
+  String get filterBodyContouring => 'نحت الجسم';
+
+  @override
+  String get filterChemicalPeel => 'تقشير كيميائي';
+
+  @override
+  String get filterLocationBeverlyHills => 'Beverly Hills, CA';
+
+  @override
+  String get filterLocationSantaMonica => 'Santa Monica';
+
+  @override
+  String get filterLocationWestHollywood => 'West Hollywood';
+
+  @override
+  String get filterLocationDowntownLa => 'Downtown LA';
+
+  @override
+  String get filterLocationMalibu => 'Malibu';
+
+  @override
+  String priceUsd(int value) {
+    return '\$$value';
+  }
+
+  @override
+  String get profileTitle => 'الملف الشخصي';
+
+  @override
+  String get phone => 'الهاتف';
+
+  @override
+  String get yourLocation => 'موقعك';
+
+  @override
+  String get verified => 'موثّق';
+
+  @override
+  String get unverified => 'غير موثّق';
+
+  @override
+  String get active => 'نشط';
+
+  @override
+  String get inactive => 'غير نشط';
+
+  @override
+  String get unableToLoadProfile => 'تعذر تحميل الملف الشخصي.';
+
+  @override
+  String get noSpecialPromotionsTitle => 'لا توجد عروض خاصة حالياً';
+
+  @override
+  String get noSpecialPromotionsSubtitle =>
+      'عد لاحقاً للاطلاع على عروض حصرية من العيادات القريبة منك.';
+
+  @override
+  String get findingYourLocation => 'جارٍ تحديد موقعك...';
+
+  @override
+  String get locationServicesOff => 'خدمات الموقع متوقفة';
+
+  @override
+  String get enableLocation => 'تفعيل الموقع';
+
+  @override
+  String get locationUnavailable => 'الموقع غير متاح';
+
+  @override
+  String get myAppointments => 'مواعيدي';
+
+  @override
+  String get upcoming => 'القادمة';
+
+  @override
+  String get past => 'السابقة';
+
+  @override
+  String get next30Days => 'الـ 30 يوماً القادمة';
+
+  @override
+  String get history => 'السجل';
+
+  @override
+  String get noUpcomingAppointments => 'لا توجد مواعيد قادمة.';
+
+  @override
+  String get noPastAppointments => 'لا توجد مواعيد سابقة.';
+
+  @override
+  String get cancelAppointment => 'إلغاء الموعد؟';
+
+  @override
+  String get cancelAppointmentConfirm => 'هل أنت متأكد من إلغاء هذا الموعد؟';
+
+  @override
+  String get cancelAppointmentAction => 'إلغاء الموعد';
+
+  @override
+  String get keep => 'إبقاء';
+
+  @override
+  String get clinicMissingForAppointment => 'العيادة غير موجودة لهذا الموعد.';
+
+  @override
+  String get reschedule => 'إعادة الجدولة';
+
+  @override
+  String get viewDetails => 'عرض التفاصيل';
+
+  @override
+  String get rebook => 'إعادة الحجز';
+
+  @override
+  String get appointmentCancelled => 'تم إلغاء الموعد بنجاح.';
+
+  @override
+  String get emailOrPhone => 'البريد أو الهاتف';
+
+  @override
+  String get emailOrPhoneHint => 'البريد الإلكتروني أو رقم الهاتف';
+
+  @override
+  String get bookTreatment => 'حجز علاج';
+
+  @override
+  String get selectService => 'اختر الخدمة';
+
+  @override
+  String get selectServiceSubtitle => 'اختر العلاج الذي تريد حجزه';
+
+  @override
+  String get chooseSpecialist => 'اختر الأخصائي';
+
+  @override
+  String get chooseSpecialistSubtitle =>
+      'اختياري — اترك \"أي\" لأقرب موعد متاح';
+
+  @override
+  String get anySpecialist => 'أي';
+
+  @override
+  String get anySpecialistName => 'أي أخصائي';
+
+  @override
+  String get otherCategory => 'أخرى';
+
+  @override
+  String get selectDate => 'اختر التاريخ';
+
+  @override
+  String get selectDateSubtitle => 'اختر يوماً لموعدك';
+
+  @override
+  String get calendarMonth => 'شهر';
+
+  @override
+  String get selectTime => 'اختر الوقت';
+
+  @override
+  String get changeDate => 'تغيير التاريخ';
+
+  @override
+  String get couldNotLoadAvailableTimes => 'تعذر تحميل الأوقات المتاحة.';
+
+  @override
+  String get noAvailableTimesOnDate => 'لا توجد أوقات متاحة في هذا التاريخ.';
+
+  @override
+  String specialistNoAvailability(String name) {
+    return '$name غير متاح في هذا التاريخ.';
+  }
+
+  @override
+  String get tryAnySpecialist => 'جرّب أي أخصائي';
+
+  @override
+  String get pickAnotherDate => 'اختر تاريخاً آخر';
+
+  @override
+  String get morningPeriod => 'صباحاً';
+
+  @override
+  String get afternoonPeriod => 'مساءً';
+
+  @override
+  String get bookingSummary => 'الملخص';
+
+  @override
+  String get serviceLabel => 'الخدمة';
+
+  @override
+  String get specialistLabel => 'الأخصائي';
+
+  @override
+  String get dateLabel => 'التاريخ';
+
+  @override
+  String get timeLabel => 'الوقت';
+
+  @override
+  String get estimatedTotal => 'الإجمالي التقديري';
+
+  @override
+  String bookingTotal(String total) {
+    return 'الإجمالي  $total';
+  }
+
+  @override
+  String get chooseATime => 'اختر وقتاً';
+
+  @override
+  String get continueLabel => 'متابعة';
+
+  @override
+  String get confirmBooking => 'تأكيد الحجز';
+
+  @override
+  String get confirmReschedule => 'تأكيد إعادة الجدولة';
+
+  @override
+  String get noServicesAvailable => 'لا توجد خدمات متاحة لهذه العيادة.';
+
+  @override
+  String get pleaseChooseServiceDateTime => 'يرجى اختيار خدمة وتاريخ ووقت.';
+
+  @override
+  String get appointmentBookedSuccessfully => 'تم حجز الموعد بنجاح.';
+
+  @override
+  String get appointmentDetails => 'تفاصيل الموعد';
+
+  @override
+  String get clinicLabel => 'العيادة';
+
+  @override
+  String get depositLabel => 'العربون';
+
+  @override
+  String get notesLabel => 'ملاحظات';
+
+  @override
+  String get cancellationReasonLabel => 'سبب الإلغاء';
+
+  @override
+  String get statusPending => 'قيد الانتظار';
+
+  @override
+  String get statusConfirmed => 'مؤكد';
+
+  @override
+  String get statusCompleted => 'مكتمل';
+
+  @override
+  String get statusCancelled => 'ملغى';
+
+  @override
+  String get statusRejected => 'مرفوض';
+
+  @override
+  String get errorNoInternet =>
+      'لا يوجد اتصال بالإنترنت. تحقق من الشبكة وحاول مرة أخرى.';
+
+  @override
+  String get errorServerUnavailable =>
+      'تعذر الوصول إلى الخادم. يرجى المحاولة لاحقاً.';
+
+  @override
+  String get errorUnexpected => 'حدث خطأ ما. يرجى المحاولة مرة أخرى.';
 }

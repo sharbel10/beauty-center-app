@@ -5,6 +5,7 @@ import 'package:beauty_center_app/features/book_treatment/components/booking_ste
 import 'package:beauty_center_app/features/book_treatment/utils/booking_formats.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_employees_response.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_services_response.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 /// Step 1: choose a service (required) and optionally a specialist.
@@ -64,11 +65,11 @@ class _ServiceStepState extends State<ServiceStep> {
         : widget.services.first.category.id;
   }
 
-  Map<int, _CategoryGroup> get _groups {
+  Map<int, _CategoryGroup> _groups(AppLocalizations l10n) {
     final Map<int, _CategoryGroup> groups = <int, _CategoryGroup>{};
     for (final ClinicServiceItem service in widget.services) {
       final String name = service.category.name.isEmpty
-          ? 'Other'
+          ? l10n.otherCategory
           : service.category.name;
       groups
           .putIfAbsent(
@@ -83,14 +84,15 @@ class _ServiceStepState extends State<ServiceStep> {
 
   @override
   Widget build(BuildContext context) {
-    final Map<int, _CategoryGroup> groups = _groups;
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    final Map<int, _CategoryGroup> groups = _groups(l10n);
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
       children: <Widget>[
-        const BookingStepTitle(
-          title: 'Select Service',
-          subtitle: 'Pick the treatment you want to book',
+        BookingStepTitle(
+          title: l10n.selectService,
+          subtitle: l10n.selectServiceSubtitle,
         ),
         const SizedBox(height: 14),
         for (final MapEntry<int, _CategoryGroup> entry in groups.entries) ...<Widget>[
@@ -110,9 +112,9 @@ class _ServiceStepState extends State<ServiceStep> {
           const SizedBox(height: 10),
         ],
         const SizedBox(height: 14),
-        const BookingStepTitle(
-          title: 'Choose Specialist',
-          subtitle: 'Optional — leave "Any" for the earliest availability',
+        BookingStepTitle(
+          title: l10n.chooseSpecialist,
+          subtitle: l10n.chooseSpecialistSubtitle,
         ),
         const SizedBox(height: 16),
         _SpecialistRow(
@@ -256,6 +258,8 @@ class _ServiceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return InkWell(
       onTap: onTap,
       child: AnimatedContainer(
@@ -284,7 +288,7 @@ class _ServiceRow extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${service.durationMinutes} min • '
+                    '${l10n.clinicDurationMinutes(service.durationMinutes)} • '
                     '${BookingFormats.price(service.finalPrice)}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -334,13 +338,15 @@ class _SpecialistRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return SizedBox(
       height: 92,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: <Widget>[
           _SpecialistOption(
-            label: 'Any',
+            label: l10n.anySpecialist,
             isSelected: selectedEmployeeId == null,
             onTap: () => onChanged(null),
             child: const Icon(

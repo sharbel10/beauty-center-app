@@ -1,5 +1,6 @@
 import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:beauty_center_app/features/home/models/clinic_center.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 
 class HomeClinicUiModel {
   const HomeClinicUiModel({
@@ -68,8 +69,7 @@ class HomeClinicUiModel {
 
   List<String> get displayTags => tags.take(2).toList();
 
-  String get reviewsLabel =>
-      ratingsCount == 0 ? 'No reviews yet' : '$ratingsCount reviews';
+  String reviewsLabel(AppLocalizations l10n) => l10n.reviewsCount(ratingsCount);
 
   String? get cityAreaLabel {
     final List<String> parts = <String>[

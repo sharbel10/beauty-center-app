@@ -1,6 +1,7 @@
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/core/router/route_names.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -27,6 +28,7 @@ class AppBottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final double bottomInset = MediaQuery.paddingOf(context).bottom;
 
     return SizedBox(
@@ -59,7 +61,7 @@ class AppBottomNavigation extends StatelessWidget {
                       Expanded(
                         child: _NavItem(
                           icon: Icons.home_rounded,
-                          label: 'HOME',
+                          label: l10n.home,
                           isActive: currentItem == AppNavItem.home,
                           onTap: () => _handleTap(context, AppNavItem.home),
                         ),
@@ -67,7 +69,7 @@ class AppBottomNavigation extends StatelessWidget {
                       Expanded(
                         child: _NavItem(
                           icon: Icons.explore_outlined,
-                          label: 'EXPLORE',
+                          label: l10n.explore,
                           isActive: currentItem == AppNavItem.explore,
                           onTap: () => _handleTap(context, AppNavItem.explore),
                         ),
@@ -76,7 +78,7 @@ class AppBottomNavigation extends StatelessWidget {
                       Expanded(
                         child: _NavItem(
                           icon: Icons.calendar_month_outlined,
-                          label: 'BOOKINGS',
+                          label: l10n.bookings,
                           isActive: currentItem == AppNavItem.bookings,
                           onTap: () => _handleTap(context, AppNavItem.bookings),
                         ),
@@ -84,7 +86,7 @@ class AppBottomNavigation extends StatelessWidget {
                       Expanded(
                         child: _NavItem(
                           icon: Icons.person_outline_rounded,
-                          label: 'PROFILE',
+                          label: l10n.profile,
                           isActive: currentItem == AppNavItem.profile,
                           onTap: () => _handleTap(context, AppNavItem.profile),
                         ),
@@ -123,6 +125,8 @@ class AppBottomNavigation extends StatelessWidget {
       context.goNamed(RouteNames.explore);
     } else if (item == AppNavItem.bookings) {
       context.goNamed(RouteNames.bookings);
+    } else if (item == AppNavItem.profile) {
+      context.goNamed(RouteNames.profile);
     }
   }
 }
@@ -182,6 +186,8 @@ class _CenterScanButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -206,7 +212,7 @@ class _CenterScanButton extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          'AI SCAN',
+          l10n.aiScan,
           style: AppTextStyles.smallCaps.copyWith(
             color: isActive ? AppColors.primary : AppColors.textMuted,
             fontSize: 8,

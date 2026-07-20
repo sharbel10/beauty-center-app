@@ -20,6 +20,7 @@ import 'package:beauty_center_app/features/home/widgets/home_header.dart';
 import 'package:beauty_center_app/features/home/widgets/home_search_bar.dart';
 import 'package:beauty_center_app/features/home/widgets/nearby_clinic_card.dart';
 import 'package:beauty_center_app/features/home/widgets/promotion_card.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -106,13 +107,15 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget _buildBody(BuildContext context, HomeState state) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     if (state.isLoading && !state.hasData) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (!state.hasData) {
       return _HomeErrorBody(
-        message: state.message ?? 'Unable to load home data.',
+        message: state.message ?? l10n.unableToLoadHomeData,
         onRetry: _homeCubit.loadHome,
       );
     }
@@ -128,7 +131,9 @@ class _HomeViewState extends State<HomeView> {
           (MapEntry<int, Offer> entry) => PromotionUiModel.fromOffer(
             entry.value,
             isDark: entry.key.isEven,
-            badge: entry.key == 0 ? 'EXCLUSIVE' : 'HOT DEAL',
+            badge: entry.key == 0 ? l10n.exclusive : l10n.hotDeal,
+            cta: l10n.claimOffer,
+            price: PromotionUiModel.formatPrice(entry.value, l10n),
           ),
         )
         .toList();
@@ -147,19 +152,16 @@ class _HomeViewState extends State<HomeView> {
                       previous.isAuthenticated != current.isAuthenticated,
                   builder: (BuildContext context, AuthState authState) {
                     return HomeHeader(
-                      userName: widget._authCubit.userDisplayName,
-                      locationLabel: state.locationLabel,
-                      isLocationLoading: state.isLocationLoading,
-                      onLocationTap: state.hasLocation
-                          ? null
-                          : _homeCubit.refreshLocation,
+                      userName: widget._authCubit.userDisplayName(
+                        guestLabel: l10n.guest,
+                      ),
                     );
                   },
                 ),
                 const SizedBox(height: 20),
                 const HomeSearchBar(),
                 const SizedBox(height: 28),
-                const _SectionHeader(title: 'Nearby Clinics'),
+                _SectionHeader(title: l10n.nearbyClinics),
                 const SizedBox(height: 14),
                 HomeCategoryChips(
                   categories: data.topLevelCategories,
@@ -193,7 +195,7 @@ class _HomeViewState extends State<HomeView> {
                 ],
                 const _DiscoverMoreButton(),
                 const SizedBox(height: 32),
-                const _SectionHeader(title: 'Special Promotions'),
+                _SectionHeader(title: l10n.specialPromotions),
                 const SizedBox(height: 14),
                 _PromotionsCarousel(promotions: promotions),
                 SizedBox(
@@ -224,6 +226,8 @@ class _DiscoverMoreButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return SizedBox(
       height: 52,
       width: double.infinity,
@@ -232,7 +236,7 @@ class _DiscoverMoreButton extends StatelessWidget {
         iconAlignment: IconAlignment.end,
         icon: const Icon(Icons.arrow_forward_rounded),
         label: Text(
-          'DISCOVER MORE CLINICS',
+          l10n.discoverMoreClinics,
           style: AppTextStyles.link.copyWith(fontSize: 13),
         ),
         style: TextButton.styleFrom(
@@ -271,7 +275,7 @@ class _PromotionsCarouselState extends State<_PromotionsCarousel> {
   @override
   Widget build(BuildContext context) {
     if (widget.promotions.isEmpty) {
-      return const SizedBox.shrink();
+      return const _PromotionsEmptyPlaceholder();
     }
 
     return Column(
@@ -318,6 +322,61 @@ class _PromotionsCarouselState extends State<_PromotionsCarousel> {
   }
 }
 
+class _PromotionsEmptyPlaceholder extends StatelessWidget {
+  const _PromotionsEmptyPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppColors.divider.withValues(alpha: 0.7)),
+      ),
+      child: Column(
+        children: <Widget>[
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceMuted,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.local_offer_outlined,
+              color: AppColors.primary,
+              size: 28,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            l10n.noSpecialPromotionsTitle,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.title.copyWith(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.noSpecialPromotionsSubtitle,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.subtitle.copyWith(
+              fontSize: 13,
+              height: 1.4,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _HomeErrorBody extends StatelessWidget {
   const _HomeErrorBody({required this.message, required this.onRetry});
 
@@ -326,6 +385,8 @@ class _HomeErrorBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -334,7 +395,7 @@ class _HomeErrorBody extends StatelessWidget {
           children: <Widget>[
             Text(message, textAlign: TextAlign.center),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: onRetry, child: const Text('Retry')),
+            ElevatedButton(onPressed: onRetry, child: Text(l10n.retry)),
           ],
         ),
       ),

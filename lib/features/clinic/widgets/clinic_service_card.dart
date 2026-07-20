@@ -1,3 +1,4 @@
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -27,6 +28,7 @@ class ClinicServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final bool hasDiscount = originalPrice > finalPrice;
 
     return Container(
@@ -90,61 +92,76 @@ class ClinicServiceCard extends StatelessWidget {
                 color: Color(0xFF806221),
               ),
               const SizedBox(width: 8),
-
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '$durationMinutes min',
-                    style: AppTextStyles.subtitle.copyWith(
-                      color: AppColors.primary,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  if (preparationMinutes > 0) ...[
-                    const SizedBox(height: 2),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     Text(
-                      '+ $preparationMinutes min prep',
+                      l10n.clinicDurationMinutes(durationMinutes),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.subtitle.copyWith(
-                        color: const Color(0xFF9EA6B0),
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-
-              const Spacer(),
-
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  if (hasDiscount) ...[
-                    Text(
-                      '${_formatPriceWithCommas(originalPrice)} SP',
-                      style: const TextStyle(
-                        color: Color(0xFF9EA6B0),
+                        color: AppColors.primary,
                         fontSize: 12,
-                        decoration: TextDecoration.lineThrough,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    if (preparationMinutes > 0) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        l10n.clinicPrepMinutes(preparationMinutes),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.subtitle.copyWith(
+                          color: const Color(0xFF9EA6B0),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ],
-                  Text(
-                    '${_formatPriceWithCommas(finalPrice)} SP',
-                    style: AppTextStyles.title.copyWith(
-                      fontSize: 18,
-                      color: hasDiscount
-                          ? const Color(0xFFD32F2F)
-                          : AppColors.primary,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    if (hasDiscount) ...[
+                      Flexible(
+                        child: Text(
+                          l10n.priceSp(_formatPriceWithCommas(originalPrice)),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Color(0xFF9EA6B0),
+                            fontSize: 12,
+                            decoration: TextDecoration.lineThrough,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    Flexible(
+                      child: Text(
+                        l10n.priceSp(_formatPriceWithCommas(finalPrice)),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.title.copyWith(
+                          fontSize: 18,
+                          color: hasDiscount
+                              ? const Color(0xFFD32F2F)
+                              : AppColors.primary,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),

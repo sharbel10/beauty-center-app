@@ -3,6 +3,7 @@ import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/features/book_treatment/components/booking_step_title.dart';
 import 'package:beauty_center_app/features/book_treatment/cubit/book_treatment_state.dart';
 import 'package:beauty_center_app/features/book_treatment/models/available_slots_response.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 /// Step 3: pick a time slot and review the booking summary.
@@ -40,22 +41,24 @@ class TimeStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
       children: <Widget>[
         BookingStepTitle(
-          title: 'Select Time',
+          title: l10n.selectTime,
           subtitle: dateLabel,
           trailing: TextButton(
             onPressed: onChangeDate,
             child: Text(
-              'Change date',
+              l10n.changeDate,
               style: AppTextStyles.link.copyWith(fontSize: 13),
             ),
           ),
         ),
         const SizedBox(height: 16),
-        ..._buildSlotsArea(),
+        ..._buildSlotsArea(l10n),
         const SizedBox(height: 24),
         _SummaryCard(
           serviceName: serviceName,
@@ -67,7 +70,7 @@ class TimeStep extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildSlotsArea() {
+  List<Widget> _buildSlotsArea(AppLocalizations l10n) {
     if (slotsStatus == SlotsStatus.loading) {
       return const <Widget>[
         Padding(
@@ -81,8 +84,8 @@ class TimeStep extends StatelessWidget {
       return <Widget>[
         _EmptyState(
           icon: Icons.wifi_off_rounded,
-          message: slotsMessage ?? 'Could not load available times.',
-          actionLabel: 'Retry',
+          message: slotsMessage ?? l10n.couldNotLoadAvailableTimes,
+          actionLabel: l10n.retry,
           onAction: onRetry,
         ),
       ];
@@ -96,10 +99,10 @@ class TimeStep extends StatelessWidget {
         return <Widget>[
           _EmptyState(
             icon: Icons.event_busy_rounded,
-            message: '$specialistName has no availability on this date.',
-            actionLabel: 'Try any specialist',
+            message: l10n.specialistNoAvailability(specialistName),
+            actionLabel: l10n.tryAnySpecialist,
             onAction: onTryAnySpecialist,
-            secondaryActionLabel: 'Pick another date',
+            secondaryActionLabel: l10n.pickAnotherDate,
             onSecondaryAction: onChangeDate,
           ),
         ];
@@ -107,8 +110,8 @@ class TimeStep extends StatelessWidget {
       return <Widget>[
         _EmptyState(
           icon: Icons.event_busy_rounded,
-          message: 'No available times on this date.',
-          actionLabel: 'Pick another date',
+          message: l10n.noAvailableTimesOnDate,
+          actionLabel: l10n.pickAnotherDate,
           onAction: onChangeDate,
         ),
       ];
@@ -123,7 +126,7 @@ class TimeStep extends StatelessWidget {
 
     return <Widget>[
       if (morning.isNotEmpty) ...<Widget>[
-        const _PeriodLabel('MORNING'),
+        _PeriodLabel(l10n.morningPeriod),
         const SizedBox(height: 10),
         _SlotGrid(
           slots: morning,
@@ -133,7 +136,7 @@ class TimeStep extends StatelessWidget {
         if (afternoon.isNotEmpty) const SizedBox(height: 18),
       ],
       if (afternoon.isNotEmpty) ...<Widget>[
-        const _PeriodLabel('AFTERNOON'),
+        _PeriodLabel(l10n.afternoonPeriod),
         const SizedBox(height: 10),
         _SlotGrid(
           slots: afternoon,
@@ -297,6 +300,8 @@ class _SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -308,18 +313,22 @@ class _SummaryCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            'Summary',
+            l10n.bookingSummary,
             style: AppTextStyles.bodyLarge.copyWith(
               fontSize: 15,
               fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 12),
-          _SummaryRow(label: 'Service', value: serviceName),
-          _SummaryRow(label: 'Specialist', value: specialistName),
-          _SummaryRow(label: 'Date', value: dateLabel),
+          _SummaryRow(label: l10n.serviceLabel, value: serviceName),
+          _SummaryRow(label: l10n.specialistLabel, value: specialistName),
+          _SummaryRow(label: l10n.dateLabel, value: dateLabel),
           const Divider(color: AppColors.divider, height: 20),
-          _SummaryRow(label: 'Estimated Total', value: totalLabel, bold: true),
+          _SummaryRow(
+            label: l10n.estimatedTotal,
+            value: totalLabel,
+            bold: true,
+          ),
         ],
       ),
     );

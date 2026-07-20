@@ -10,6 +10,8 @@ import 'package:beauty_center_app/features/bookings/components/bookings_header.d
 import 'package:beauty_center_app/features/bookings/cubit/bookings_cubit.dart';
 import 'package:beauty_center_app/features/bookings/cubit/bookings_state.dart';
 import 'package:beauty_center_app/features/bookings/models/appointment_model.dart';
+import 'package:beauty_center_app/features/clinic/widgets/clinic_network_image.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -68,6 +70,8 @@ class _BookingsViewState extends State<BookingsView> {
           }
         },
         builder: (BuildContext context, BookingsState state) {
+          final AppLocalizations l10n = AppLocalizations.of(context);
+
           return Scaffold(
             backgroundColor: AppColors.background,
             bottomNavigationBar: AppBottomNavigation(
@@ -89,10 +93,10 @@ class _BookingsViewState extends State<BookingsView> {
                       child: _selectedTab == 0
                           ? _AppointmentsList(
                               key: const ValueKey<String>('upcoming'),
-                              label: 'NEXT 30 DAYS',
+                              label: l10n.next30Days,
                               appointments: state.upcoming,
                               isLoading: state.isLoading && !state.hasData,
-                              emptyMessage: 'No upcoming appointments.',
+                              emptyMessage: l10n.noUpcomingAppointments,
                               onRefresh: _cubit.loadAppointments,
                               onViewDetails: _showAppointmentDetails,
                               onMorePressed: _showAppointmentActions,
@@ -100,11 +104,11 @@ class _BookingsViewState extends State<BookingsView> {
                             )
                           : _AppointmentsList(
                               key: const ValueKey<String>('past'),
-                              label: 'HISTORY',
+                              label: l10n.history,
                               appointments: state.history,
                               isPast: true,
                               isLoading: state.isLoading && !state.hasData,
-                              emptyMessage: 'No past appointments.',
+                              emptyMessage: l10n.noPastAppointments,
                               onRefresh: _cubit.loadAppointments,
                               onViewDetails: _showAppointmentDetails,
                               onMorePressed: _showAppointmentActions,
@@ -128,15 +132,26 @@ class _BookingsViewState extends State<BookingsView> {
       context.goNamed(RouteNames.explore);
     } else if (item == AppNavItem.bookings) {
       context.goNamed(RouteNames.bookings);
+    } else if (item == AppNavItem.profile) {
+      context.goNamed(RouteNames.profile);
     }
   }
 
   void _showAppointmentDetails(AppointmentModel appointment) {
     showModalBottomSheet<void>(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return _AppointmentDetailsSheet(appointment: appointment);
+        return _AppointmentDetailsSheet(
+          appointment: appointment,
+          onRebook: appointment.isPast || appointment.startsAtIsPast
+              ? () {
+                  Navigator.of(context).pop();
+                  _openBooking(appointment);
+                }
+              : null,
+        );
       },
     );
   }
@@ -175,22 +190,26 @@ class _BookingsViewState extends State<BookingsView> {
     BuildContext context,
     AppointmentModel appointment,
   ) async {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return await showDialog<bool>(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text('Cancel appointment?'),
+              title: Text(l10n.cancelAppointment),
               content: Text(
-                '${appointment.serviceName}\n${appointment.date} at ${appointment.time}',
+                '${l10n.cancelAppointmentConfirm}\n\n'
+                '${appointment.serviceName}\n'
+                '${appointment.date} · ${appointment.time}',
               ),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Keep'),
+                  child: Text(l10n.keep),
                 ),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text('Cancel Appointment'),
+                  child: Text(l10n.cancelAppointmentAction),
                 ),
               ],
             );
@@ -203,7 +222,7 @@ class _BookingsViewState extends State<BookingsView> {
     final int? centerId = appointment.centerId;
     if (centerId == null) {
       context.showSnackbar(
-        'Clinic is missing for this appointment.',
+        AppLocalizations.of(context).clinicMissingForAppointment,
         isError: true,
       );
       return;
@@ -314,24 +333,35 @@ class _EmptyAppointments extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 36),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.divider),
       ),
       child: Column(
         children: <Widget>[
-          const Icon(
-            Icons.calendar_month_outlined,
-            color: AppColors.textMuted,
-            size: 28,
+          Container(
+            width: 56,
+            height: 56,
+            decoration: const BoxDecoration(
+              color: AppColors.surfaceMuted,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.calendar_month_outlined,
+              color: AppColors.primary,
+              size: 26,
+            ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 14),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: AppTextStyles.subtitle.copyWith(fontSize: 14),
+            style: AppTextStyles.subtitle.copyWith(
+              fontSize: 14,
+              height: 1.4,
+            ),
           ),
         ],
       ),
@@ -340,70 +370,334 @@ class _EmptyAppointments extends StatelessWidget {
 }
 
 class _AppointmentDetailsSheet extends StatelessWidget {
-  const _AppointmentDetailsSheet({required this.appointment});
+  const _AppointmentDetailsSheet({
+    required this.appointment,
+    this.onRebook,
+  });
 
   final AppointmentModel appointment;
+  final VoidCallback? onRebook;
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    final double bottomInset = MediaQuery.paddingOf(context).bottom;
+    final String? notes = appointment.customerNotes?.trim();
+    final String? cancelReason = appointment.cancellationReason?.trim();
+
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.88,
+      ),
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          const SizedBox(height: 10),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppColors.divider,
+              borderRadius: BorderRadius.circular(999),
+            ),
+          ),
+          Flexible(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(20, 18, 20, 16 + bottomInset),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          l10n.appointmentDetails,
+                          style: AppTextStyles.title.copyWith(fontSize: 20),
+                        ),
+                      ),
+                      AppointmentStatusBadge(status: appointment.status),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: AppColors.scaffold,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: AppColors.divider),
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(14),
+                          child: SizedBox(
+                            width: 78,
+                            height: 78,
+                            child: ClinicNetworkImage(
+                              imageUrl: appointment.imageUrl,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                appointment.serviceName,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTextStyles.bodyLarge.copyWith(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                appointment.clinicName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTextStyles.subtitle.copyWith(
+                                  fontSize: 13,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  _DetailsGrid(
+                    items: <_DetailTileData>[
+                      _DetailTileData(
+                        icon: Icons.calendar_month_rounded,
+                        label: l10n.dateLabel,
+                        value: appointment.date,
+                      ),
+                      _DetailTileData(
+                        icon: Icons.schedule_rounded,
+                        label: l10n.timeLabel,
+                        value: appointment.time,
+                      ),
+                      if (appointment.employeeName?.isNotEmpty == true)
+                        _DetailTileData(
+                          icon: Icons.person_rounded,
+                          label: l10n.specialistLabel,
+                          value: appointment.employeeName!,
+                        ),
+                      _DetailTileData(
+                        icon: Icons.payments_rounded,
+                        label: l10n.estimatedTotal,
+                        value: appointment.totalLabel,
+                      ),
+                      if (appointment.depositRequired > 0)
+                        _DetailTileData(
+                          icon: Icons.account_balance_wallet_outlined,
+                          label: l10n.depositLabel,
+                          value: '${_formatPrice(appointment.depositRequired)} SP',
+                        ),
+                    ],
+                  ),
+                  if (notes != null && notes.isNotEmpty) ...<Widget>[
+                    const SizedBox(height: 16),
+                    _InfoBlock(
+                      title: l10n.notesLabel,
+                      body: notes,
+                      icon: Icons.notes_rounded,
+                    ),
+                  ],
+                  if (cancelReason != null &&
+                      cancelReason.isNotEmpty) ...<Widget>[
+                    const SizedBox(height: 12),
+                    _InfoBlock(
+                      title: l10n.cancellationReasonLabel,
+                      body: cancelReason,
+                      icon: Icons.info_outline_rounded,
+                      tone: AppColors.danger,
+                    ),
+                  ],
+                  if (onRebook != null) ...<Widget>[
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton.icon(
+                        onPressed: onRebook,
+                        icon: const Icon(Icons.refresh_rounded, size: 18),
+                        label: Text(
+                          l10n.rebook,
+                          style: AppTextStyles.button.copyWith(fontSize: 14),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: AppColors.surface,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatPrice(double price) {
+    final String value = price.toStringAsFixed(0);
+    final RegExp reg = RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
+    return value.replaceAllMapped(reg, (Match match) => '${match[1]},');
+  }
+}
+
+class _DetailTileData {
+  const _DetailTileData({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+}
+
+class _DetailsGrid extends StatelessWidget {
+  const _DetailsGrid({required this.items});
+
+  final List<_DetailTileData> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: items
+          .map(
+            (_DetailTileData item) => SizedBox(
+              width: (MediaQuery.sizeOf(context).width - 50) / 2,
+              child: _DetailTile(data: item),
+            ),
+          )
+          .toList(),
+    );
+  }
+}
+
+class _DetailTile extends StatelessWidget {
+  const _DetailTile({required this.data});
+
+  final _DetailTileData data;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(
-        20,
-        12,
-        20,
-        20 + MediaQuery.paddingOf(context).bottom,
-      ),
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.scaffold,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.divider),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Center(
-            child: Container(
-              width: 36,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.divider,
-                borderRadius: BorderRadius.circular(999),
-              ),
+          Container(
+            width: 32,
+            height: 32,
+            decoration: const BoxDecoration(
+              color: AppColors.surfaceMuted,
+              shape: BoxShape.circle,
             ),
+            child: Icon(data.icon, size: 16, color: AppColors.primary),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
           Text(
-            appointment.serviceName,
-            style: AppTextStyles.bodyLarge.copyWith(
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
+            data.label.toUpperCase(),
+            style: AppTextStyles.smallCaps.copyWith(
+              fontSize: 9,
+              color: AppColors.textMuted,
             ),
           ),
           const SizedBox(height: 4),
           Text(
-            appointment.clinicName,
-            style: AppTextStyles.subtitle.copyWith(fontSize: 13),
-          ),
-          const SizedBox(height: 14),
-          _DetailRow(
-            icon: Icons.calendar_month_rounded,
-            text: appointment.date,
-          ),
-          const SizedBox(height: 10),
-          _DetailRow(icon: Icons.schedule_rounded, text: appointment.time),
-          if (appointment.employeeName?.isNotEmpty == true) ...<Widget>[
-            const SizedBox(height: 10),
-            _DetailRow(
-              icon: Icons.person_rounded,
-              text: appointment.employeeName!,
+            data.value,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.subtitle.copyWith(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
             ),
-          ],
-          const SizedBox(height: 10),
-          _DetailRow(
-            icon: Icons.payments_rounded,
-            text: appointment.totalLabel,
           ),
-          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoBlock extends StatelessWidget {
+  const _InfoBlock({
+    required this.title,
+    required this.body,
+    required this.icon,
+    this.tone = AppColors.primary,
+  });
+
+  final String title;
+  final String body;
+  final IconData icon;
+  final Color tone;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: tone.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: tone.withValues(alpha: 0.14)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Icon(icon, size: 18, color: tone),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  title,
+                  style: AppTextStyles.smallCaps.copyWith(
+                    fontSize: 10,
+                    color: tone,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  body,
+                  style: AppTextStyles.subtitle.copyWith(
+                    fontSize: 13,
+                    height: 1.4,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -423,6 +717,8 @@ class _AppointmentActionsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Container(
       padding: EdgeInsets.fromLTRB(
         12,
@@ -441,7 +737,7 @@ class _AppointmentActionsSheet extends StatelessWidget {
             dense: true,
             leading: const Icon(Icons.event_repeat_rounded, size: 22),
             title: Text(
-              'Reschedule',
+              l10n.reschedule,
               style: AppTextStyles.bodyMedium.copyWith(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
@@ -454,7 +750,7 @@ class _AppointmentActionsSheet extends StatelessWidget {
             dense: true,
             leading: const Icon(Icons.cancel_outlined, size: 22),
             title: Text(
-              'Cancel Appointment',
+              l10n.cancelAppointmentAction,
               style: AppTextStyles.bodyMedium.copyWith(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
@@ -465,32 +761,6 @@ class _AppointmentActionsSheet extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _DetailRow extends StatelessWidget {
-  const _DetailRow({required this.icon, required this.text});
-
-  final IconData icon;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Icon(icon, color: AppColors.primary, size: 18),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Text(
-            text,
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.textPrimary,
-              fontSize: 14,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

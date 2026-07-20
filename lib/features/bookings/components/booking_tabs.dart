@@ -1,5 +1,6 @@
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class BookingTabs extends StatelessWidget {
@@ -14,6 +15,8 @@ class BookingTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Container(
       height: 46,
       decoration: const BoxDecoration(
@@ -26,12 +29,12 @@ class BookingTabs extends StatelessWidget {
       child: Row(
         children: <Widget>[
           _TabButton(
-            label: 'Upcoming',
+            label: l10n.upcoming,
             isActive: selectedIndex == 0,
             onTap: () => onChanged(0),
           ),
           _TabButton(
-            label: 'Past',
+            label: l10n.past,
             isActive: selectedIndex == 1,
             onTap: () => onChanged(1),
           ),

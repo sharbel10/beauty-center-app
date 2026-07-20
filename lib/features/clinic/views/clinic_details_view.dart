@@ -1,6 +1,9 @@
+import 'package:beauty_center_app/core/router/route_names.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/utils/extensions.dart';
 import 'package:beauty_center_app/core/widgets/app_bottom_navigation.dart';
+import 'package:beauty_center_app/core/widgets/app_button.dart';
+import 'package:beauty_center_app/features/book_treatment/models/book_treatment_args.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_details_response.dart';
 import 'package:beauty_center_app/features/clinic/widgets/clinic_details_header.dart';
 import 'package:beauty_center_app/features/clinic/widgets/clinic_details_tabs.dart';
@@ -8,8 +11,10 @@ import 'package:beauty_center_app/features/clinic/widgets/details/clinic_gallery
 import 'package:beauty_center_app/features/clinic/widgets/details/clinic_info_view.dart';
 import 'package:beauty_center_app/features/clinic/widgets/details/clinic_overview_view.dart';
 import 'package:beauty_center_app/features/clinic/widgets/details/clinic_services_view.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../cubit/clinic_details_cubit.dart';
 import '../cubit/clinic_details_state.dart';
 
@@ -58,6 +63,8 @@ class _ClinicDetailsViewState extends State<ClinicDetailsView> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return BlocProvider<ClinicDetailsCubit>.value(
       value: _cubit,
       child: BlocConsumer<ClinicDetailsCubit, ClinicDetailsState>(
@@ -69,10 +76,20 @@ class _ClinicDetailsViewState extends State<ClinicDetailsView> {
           context.showSnackbar(state.message!, isError: true);
         },
         builder: (context, state) {
+          final bool showBookButton = state.hasData;
+          final int? centerId = state.center?.id;
+
           return Scaffold(
             backgroundColor: AppColors.surface,
-            bottomNavigationBar: const AppBottomNavigation(
-              currentItem: AppNavItem.explore,
+            bottomNavigationBar: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                if (showBookButton && centerId != null)
+                  _StickyBookAppointmentBar(centerId: centerId),
+                const AppBottomNavigation(
+                  currentItem: AppNavItem.explore,
+                ),
+              ],
             ),
             body: SafeArea(
               child: () {
@@ -89,7 +106,7 @@ class _ClinicDetailsViewState extends State<ClinicDetailsView> {
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           Text(
-                            state.message ?? 'Failed to load clinic details.',
+                            state.message ?? l10n.clinicDetailsLoadFailed,
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 16),
@@ -97,7 +114,7 @@ class _ClinicDetailsViewState extends State<ClinicDetailsView> {
                             onPressed: () => _cubit.loadClinicDetails(
                               widget.centerId,
                             ),
-                            child: const Text('Retry'),
+                            child: Text(l10n.retry),
                           ),
                         ],
                       ),
@@ -137,12 +154,45 @@ class _ClinicDetailsViewState extends State<ClinicDetailsView> {
                         ),
                       ),
                     ),
+                    const SliverToBoxAdapter(
+                      child: SizedBox(height: 24),
+                    ),
                   ],
                 );
               }(),
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _StickyBookAppointmentBar extends StatelessWidget {
+  const _StickyBookAppointmentBar({required this.centerId});
+
+  final int centerId;
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
+    return Material(
+      color: AppColors.surface,
+      elevation: 8,
+      shadowColor: const Color(0x220A2A55),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+        child: AppButton(
+          text: l10n.clinicBookAppointment,
+          onPressed: () {
+            context.pushNamed(
+              RouteNames.bookTreatment,
+              extra: BookTreatmentArgs(centerId: centerId),
+            );
+          },
+          height: 58,
+        ),
       ),
     );
   }

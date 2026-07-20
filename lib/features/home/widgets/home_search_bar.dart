@@ -1,5 +1,6 @@
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class HomeSearchBar extends StatelessWidget {
@@ -7,6 +8,8 @@ class HomeSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Container(
       height: 50,
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -32,7 +35,7 @@ class HomeSearchBar extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Search clinics or treatments...',
+              l10n.searchClinicsOrTreatments,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.hint.copyWith(

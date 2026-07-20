@@ -8,6 +8,7 @@ import 'package:beauty_center_app/features/clinic/widgets/clinic_map_card.dart';
 import 'package:beauty_center_app/features/clinic/widgets/clinic_network_image.dart';
 import 'package:beauty_center_app/features/clinic/widgets/clinic_offer_card.dart';
 import 'package:beauty_center_app/features/clinic/widgets/clinic_section_title.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,9 +22,10 @@ class ClinicOverviewView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final String description = clinic.description?.trim().isNotEmpty == true
         ? clinic.description!.trim()
-        : 'Clinic center';
+        : l10n.clinicCenter;
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -38,7 +40,7 @@ class ClinicOverviewView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const ClinicSectionTitle('About Clinic'),
+          ClinicSectionTitle(l10n.clinicAbout),
           const SizedBox(height: 18),
           Text(
             description,
@@ -49,7 +51,7 @@ class ClinicOverviewView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 44),
-          const ClinicSectionTitle('Location'),
+          ClinicSectionTitle(l10n.clinicLocation),
           const SizedBox(height: 18),
           ClinicMapCard(clinic: clinic),
           const SizedBox(height: 44),
@@ -57,7 +59,7 @@ class ClinicOverviewView extends StatelessWidget {
             builder: (context, state) {
               return Row(
                 children: [
-                  const Expanded(child: ClinicSectionTitle('Special Offers')),
+                  Expanded(child: ClinicSectionTitle(l10n.clinicSpecialOffers)),
                 ],
               );
             },
@@ -66,7 +68,7 @@ class ClinicOverviewView extends StatelessWidget {
 
           const _OffersList(),
           const SizedBox(height: 44),
-          const ClinicSectionTitle('Our Specialists'),
+          ClinicSectionTitle(l10n.clinicOurSpecialists),
           const SizedBox(height: 18),
           const _SpecialistsList(),
           const SizedBox(height: 90),
@@ -134,6 +136,8 @@ class _EmptyOffersCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
@@ -152,7 +156,7 @@ class _EmptyOffersCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'No Offers Available Right Now',
+            l10n.clinicNoOffersTitle,
             style: AppTextStyles.subtitle.copyWith(
               fontSize: 15,
               fontWeight: FontWeight.w600,
@@ -161,7 +165,7 @@ class _EmptyOffersCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Stay tuned! Exclusive clinic discounts will appear here.',
+            l10n.clinicNoOffersSubtitle,
             textAlign: TextAlign.center,
             style: AppTextStyles.smallCaps.copyWith(
               fontSize: 12,
@@ -202,6 +206,8 @@ class _SpecialistsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return BlocBuilder<ClinicEmployeesCubit, ClinicEmployeesState>(
       builder: (context, state) {
         if (state is ClinicEmployeesLoading) {
@@ -229,7 +235,7 @@ class _SpecialistsList extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                'No specialists available right now.',
+                l10n.clinicNoSpecialists,
                 style: AppTextStyles.subtitle.copyWith(fontSize: 13),
               ),
             );

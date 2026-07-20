@@ -14,6 +14,7 @@ import 'package:beauty_center_app/features/book_treatment/models/available_slots
 import 'package:beauty_center_app/features/book_treatment/models/book_treatment_args.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_employees_response.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_services_response.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -74,6 +75,17 @@ class _BookTreatmentViewState extends State<BookTreatmentView> {
     }
   }
 
+  String _localizeMessage(AppLocalizations l10n, String? message) {
+    switch (message) {
+      case BookTreatmentMessageKeys.pleaseChooseServiceDateTime:
+        return l10n.pleaseChooseServiceDateTime;
+      case BookTreatmentMessageKeys.appointmentBookedSuccessfully:
+        return l10n.appointmentBookedSuccessfully;
+      default:
+        return message ?? l10n.appointmentBookedSuccessfully;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider<BookTreatmentCubit>.value(
@@ -82,14 +94,16 @@ class _BookTreatmentViewState extends State<BookTreatmentView> {
         listenWhen: (BookTreatmentState previous, BookTreatmentState current) =>
             previous.status != current.status,
         listener: (BuildContext context, BookTreatmentState state) {
+          final AppLocalizations l10n = AppLocalizations.of(context);
           if (state.status == BookTreatmentStatus.failure &&
               state.message != null) {
-            context.showSnackbar(state.message!, isError: true);
+            context.showSnackbar(
+              _localizeMessage(l10n, state.message),
+              isError: true,
+            );
           }
           if (state.status == BookTreatmentStatus.success) {
-            context.showSnackbar(
-              state.message ?? 'Appointment booked successfully.',
-            );
+            context.showSnackbar(_localizeMessage(l10n, state.message));
             context.goNamed(RouteNames.bookings);
           }
         },
@@ -247,6 +261,8 @@ class _TimeStepSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return BlocSelector<
       BookTreatmentCubit,
       BookTreatmentState,
@@ -277,7 +293,8 @@ class _TimeStepSection extends StatelessWidget {
           selectedStartsAt: selectedStartsAt,
           dateLabel: state.selectedDateLabel,
           serviceName: state.selectedService?.name ?? '—',
-          specialistName: state.selectedEmployee?.name ?? 'Any specialist',
+          specialistName:
+              state.selectedEmployee?.name ?? l10n.anySpecialistName,
           hasSpecificSpecialist: selectedEmployeeId != null,
           totalLabel: state.totalLabel,
           onSlotSelected: cubit.selectSlot,
@@ -295,6 +312,8 @@ class _BottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return BlocSelector<
       BookTreatmentCubit,
       BookTreatmentState,
@@ -332,8 +351,8 @@ class _BottomBar extends StatelessWidget {
           total: total,
           time: time,
           confirmText: cubit.state.args?.isRescheduling ?? false
-              ? 'Confirm Reschedule'
-              : 'Confirm Booking',
+              ? l10n.confirmReschedule
+              : l10n.confirmBooking,
           onPressed: isLastStep ? cubit.confirmBooking : cubit.nextStep,
         );
       },
@@ -348,6 +367,8 @@ class _EmptyServicesState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -355,7 +376,7 @@ class _EmptyServicesState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
-              message ?? 'No services available for this clinic.',
+              message ?? l10n.noServicesAvailable,
               textAlign: TextAlign.center,
               style: AppTextStyles.subtitle.copyWith(fontSize: 14),
             ),
@@ -369,7 +390,7 @@ class _EmptyServicesState extends StatelessWidget {
                   cubit.initialize(args);
                 }
               },
-              child: const Text('Retry'),
+              child: Text(l10n.retry),
             ),
           ],
         ),

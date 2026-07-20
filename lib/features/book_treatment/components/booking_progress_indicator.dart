@@ -1,5 +1,6 @@
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class BookingProgressIndicator extends StatelessWidget {
@@ -9,8 +10,6 @@ class BookingProgressIndicator extends StatelessWidget {
     super.key,
   });
 
-  static const List<String> _labels = <String>['Service', 'Date', 'Time'];
-
   final int currentStep;
 
   /// Called when the user taps an already-completed step to go back.
@@ -18,17 +17,24 @@ class BookingProgressIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    final List<String> labels = <String>[
+      l10n.serviceLabel,
+      l10n.dateLabel,
+      l10n.timeLabel,
+    ];
+
     return Row(
       children: <Widget>[
-        for (int index = 0; index < _labels.length; index++) ...<Widget>[
+        for (int index = 0; index < labels.length; index++) ...<Widget>[
           if (index > 0) const SizedBox(width: 8),
-          Expanded(child: _buildSegment(index)),
+          Expanded(child: _buildSegment(index, labels[index])),
         ],
       ],
     );
   }
 
-  Widget _buildSegment(int index) {
+  Widget _buildSegment(int index, String label) {
     final bool isCompleted = index < currentStep;
     final bool isActive = index == currentStep;
 
@@ -63,7 +69,7 @@ class BookingProgressIndicator extends StatelessWidget {
                   const SizedBox(width: 4),
                 ],
                 Text(
-                  _labels[index],
+                  label,
                   style: AppTextStyles.bodySmall.copyWith(
                     fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
                     color: isActive || isCompleted

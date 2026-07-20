@@ -1,4 +1,5 @@
 import 'package:beauty_center_app/features/home/models/offer.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 
 class PromotionUiModel {
   const PromotionUiModel({
@@ -16,15 +17,17 @@ class PromotionUiModel {
     Offer offer, {
     required bool isDark,
     required String badge,
+    required String cta,
+    required String price,
   }) {
     return PromotionUiModel(
       badge: badge,
       title: offer.title,
       subtitle: offer.center?.name ?? '',
       description: offer.description ?? '',
-      price: _formatPrice(offer),
+      price: price,
       oldPrice: '',
-      cta: 'CLAIM OFFER',
+      cta: cta,
       isDark: isDark,
     );
   }
@@ -38,14 +41,10 @@ class PromotionUiModel {
   final String cta;
   final bool isDark;
 
-  static String _formatPrice(Offer offer) {
+  static String formatPrice(Offer offer, AppLocalizations l10n) {
     if (offer.discountType == 'percentage') {
-      final String value = offer.discountValue.truncateToDouble() ==
-              offer.discountValue
-          ? offer.discountValue.toStringAsFixed(0)
-          : offer.discountValue.toStringAsFixed(1);
-      return '$value% OFF';
+      return l10n.offerDiscountPercent(offer.discountValue.round());
     }
-    return '${offer.discountValue.toStringAsFixed(0)} OFF';
+    return l10n.offerDiscountAmount(offer.discountValue.round());
   }
 }

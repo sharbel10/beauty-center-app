@@ -281,5 +281,135 @@
       "value": {"type": "int"}
     }
   },
-  "clinicOfferClaim": "Claim"
+  "clinicOfferClaim": "Claim",
+  "clinicDurationMinutes": "{minutes} min",
+  "@clinicDurationMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "clinicPrepMinutes": "+ {minutes} min prep",
+  "@clinicPrepMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "priceSp": "{price} SP",
+  "@priceSp": {
+    "placeholders": {
+      "price": {"type": "String"}
+    }
+  },
+  "clearAll": "CLEAR ALL",
+  "filterServiceType": "Service Type",
+  "filterPriceRange": "Price Range",
+  "filterFacialTreatment": "Facial Treatment",
+  "filterBotoxFillers": "Botox & Fillers",
+  "filterLaserHairRemoval": "Laser Hair Removal",
+  "filterBodyContouring": "Body Contouring",
+  "filterChemicalPeel": "Chemical Peel",
+  "filterLocationBeverlyHills": "Beverly Hills, CA",
+  "filterLocationSantaMonica": "Santa Monica",
+  "filterLocationWestHollywood": "West Hollywood",
+  "filterLocationDowntownLa": "Downtown LA",
+  "filterLocationMalibu": "Malibu",
+  "priceUsd": "${value}",
+  "@priceUsd": {
+    "placeholders": {
+      "value": {"type": "int"}
+    }
+  },
+  "profileTitle": "Profile",
+  "phone": "Phone",
+  "yourLocation": "YOUR LOCATION",
+  "verified": "Verified",
+  "unverified": "Unverified",
+  "active": "Active",
+  "inactive": "Inactive",
+  "unableToLoadProfile": "Unable to load profile.",
+  "noSpecialPromotionsTitle": "No special promotions right now",
+  "noSpecialPromotionsSubtitle": "Check back soon for exclusive offers from clinics near you.",
+  "findingYourLocation": "Finding your location...",
+  "locationServicesOff": "Location services off",
+  "enableLocation": "Enable location",
+  "locationUnavailable": "Location unavailable",
+  "myAppointments": "My Appointments",
+  "upcoming": "Upcoming",
+  "past": "Past",
+  "next30Days": "NEXT 30 DAYS",
+  "history": "HISTORY",
+  "noUpcomingAppointments": "No upcoming appointments.",
+  "noPastAppointments": "No past appointments.",
+  "cancelAppointment": "Cancel appointment?",
+  "cancelAppointmentConfirm": "Are you sure you want to cancel this appointment?",
+  "cancelAppointmentAction": "Cancel Appointment",
+  "keep": "Keep",
+  "clinicMissingForAppointment": "Clinic is missing for this appointment.",
+  "reschedule": "Reschedule",
+  "viewDetails": "View details",
+  "rebook": "Rebook",
+  "appointmentCancelled": "Appointment cancelled successfully.",
+  "emailOrPhone": "Email or Phone",
+  "emailOrPhoneHint": "Email or phone number",
+  "bookTreatment": "Book Treatment",
+  "selectService": "Select Service",
+  "selectServiceSubtitle": "Pick the treatment you want to book",
+  "chooseSpecialist": "Choose Specialist",
+  "chooseSpecialistSubtitle": "Optional — leave \"Any\" for the earliest availability",
+  "anySpecialist": "Any",
+  "anySpecialistName": "Any specialist",
+  "otherCategory": "Other",
+  "selectDate": "Select Date",
+  "selectDateSubtitle": "Choose a day for your appointment",
+  "calendarMonth": "Month",
+  "selectTime": "Select Time",
+  "changeDate": "Change date",
+  "couldNotLoadAvailableTimes": "Could not load available times.",
+  "noAvailableTimesOnDate": "No available times on this date.",
+  "specialistNoAvailability": "{name} has no availability on this date.",
+  "@specialistNoAvailability": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tryAnySpecialist": "Try any specialist",
+  "pickAnotherDate": "Pick another date",
+  "morningPeriod": "MORNING",
+  "afternoonPeriod": "AFTERNOON",
+  "bookingSummary": "Summary",
+  "serviceLabel": "Service",
+  "specialistLabel": "Specialist",
+  "dateLabel": "Date",
+  "timeLabel": "Time",
+  "estimatedTotal": "Estimated Total",
+  "bookingTotal": "Total  {total}",
+  "@bookingTotal": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "chooseATime": "Choose a time",
+  "continueLabel": "Continue",
+  "confirmBooking": "Confirm Booking",
+  "confirmReschedule": "Confirm Reschedule",
+  "noServicesAvailable": "No services available for this clinic.",
+  "pleaseChooseServiceDateTime": "Please choose a service, date, and time.",
+  "appointmentBookedSuccessfully": "Appointment booked successfully.",
+  "appointmentDetails": "Appointment details",
+  "clinicLabel": "Clinic",
+  "depositLabel": "Deposit",
+  "notesLabel": "Notes",
+  "cancellationReasonLabel": "Cancellation reason",
+  "statusPending": "Pending",
+  "statusConfirmed": "Confirmed",
+  "statusCompleted": "Completed",
+  "statusCancelled": "Cancelled",
+  "statusRejected": "Rejected",
+  "errorNoInternet": "No internet connection. Please check your network and try again.",
+  "errorServerUnavailable": "Can't reach the server. Please try again later.",
+  "errorUnexpected": "Something went wrong. Please try again."
 }

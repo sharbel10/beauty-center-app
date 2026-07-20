@@ -9,6 +9,7 @@ import 'package:beauty_center_app/features/auth/widgets/auth_card.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_feedback.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_header.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_validation.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -69,12 +70,15 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
   }
 
   bool _validate() {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final String? passwordError = AuthValidation.password(
       _passwordController.text,
+      l10n,
     );
     final String? confirmPasswordError = AuthValidation.confirmPassword(
       _passwordController.text,
       _confirmPasswordController.text,
+      l10n,
     );
 
     setState(() {
@@ -93,11 +97,14 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return BlocProvider<AuthCubit>.value(
       value: widget._cubit,
       child: BlocListener<AuthCubit, AuthState>(
         listenWhen: (previous, current) => previous.status != current.status,
         listener: (context, state) {
+          final AppLocalizations l10n = AppLocalizations.of(context);
           if (state.status == AuthStatus.success) {
             if (state.message != null) {
               showAuthSnackBar(context, message: state.message!);
@@ -107,7 +114,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
           } else if (state.status == AuthStatus.failure) {
             final String message = state.errors != null
                 ? state.errors!.values.first.first as String
-                : state.message ?? 'Reset failed';
+                : state.message ?? l10n.resetFailed;
             showAuthSnackBar(context, message: message, isError: true);
           }
         },
@@ -131,9 +138,9 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                             return Column(
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                const AuthHeader(
-                                  title: 'Reset Password',
-                                  subtitle: 'Create a new password',
+                                AuthHeader(
+                                  title: l10n.resetPassword,
+                                  subtitle: l10n.createNewPassword,
                                 ),
                                 const SizedBox(height: 34),
                                 AuthCard(
@@ -142,12 +149,12 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                                         CrossAxisAlignment.stretch,
                                     children: <Widget>[
                                       Text(
-                                        'New Password',
+                                        l10n.newPassword,
                                         style: AppTextStyles.headlineSmall,
                                       ),
                                       const SizedBox(height: 10),
                                       Text(
-                                        'Choose a password for your account.',
+                                        l10n.choosePasswordForAccount,
                                         style: AppTextStyles.bodyMedium
                                             .copyWith(
                                               color: AppColors.textLight,
@@ -155,8 +162,8 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                                       ),
                                       const SizedBox(height: 28),
                                       AppTextField(
-                                        label: 'New Password',
-                                        hintText: 'Enter new password',
+                                        label: l10n.newPassword,
+                                        hintText: l10n.enterNewPassword,
                                         controller: _passwordController,
                                         prefixIcon: Icons.lock_rounded,
                                         obscureText: _obscurePassword,
@@ -179,8 +186,8 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                                       ),
                                       const SizedBox(height: 22),
                                       AppTextField(
-                                        label: 'Confirm Password',
-                                        hintText: 'Confirm new password',
+                                        label: l10n.confirmPassword,
+                                        hintText: l10n.confirmNewPassword,
                                         controller: _confirmPasswordController,
                                         prefixIcon: Icons.lock_reset_rounded,
                                         obscureText: _obscureConfirmPassword,
@@ -206,7 +213,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                                       ),
                                       const SizedBox(height: 28),
                                       AppButton(
-                                        text: 'Reset Password',
+                                        text: l10n.resetPassword,
                                         isLoading: state.isSubmitting,
                                         onPressed: _submit,
                                       ),

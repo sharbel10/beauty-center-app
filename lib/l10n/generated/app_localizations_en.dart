@@ -662,4 +662,312 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clinicOfferClaim => 'Claim';
+
+  @override
+  String clinicDurationMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String clinicPrepMinutes(int minutes) {
+    return '+ $minutes min prep';
+  }
+
+  @override
+  String priceSp(String price) {
+    return '$price SP';
+  }
+
+  @override
+  String get clearAll => 'CLEAR ALL';
+
+  @override
+  String get filterServiceType => 'Service Type';
+
+  @override
+  String get filterPriceRange => 'Price Range';
+
+  @override
+  String get filterFacialTreatment => 'Facial Treatment';
+
+  @override
+  String get filterBotoxFillers => 'Botox & Fillers';
+
+  @override
+  String get filterLaserHairRemoval => 'Laser Hair Removal';
+
+  @override
+  String get filterBodyContouring => 'Body Contouring';
+
+  @override
+  String get filterChemicalPeel => 'Chemical Peel';
+
+  @override
+  String get filterLocationBeverlyHills => 'Beverly Hills, CA';
+
+  @override
+  String get filterLocationSantaMonica => 'Santa Monica';
+
+  @override
+  String get filterLocationWestHollywood => 'West Hollywood';
+
+  @override
+  String get filterLocationDowntownLa => 'Downtown LA';
+
+  @override
+  String get filterLocationMalibu => 'Malibu';
+
+  @override
+  String priceUsd(int value) {
+    return '\$$value';
+  }
+
+  @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get yourLocation => 'YOUR LOCATION';
+
+  @override
+  String get verified => 'Verified';
+
+  @override
+  String get unverified => 'Unverified';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get inactive => 'Inactive';
+
+  @override
+  String get unableToLoadProfile => 'Unable to load profile.';
+
+  @override
+  String get noSpecialPromotionsTitle => 'No special promotions right now';
+
+  @override
+  String get noSpecialPromotionsSubtitle =>
+      'Check back soon for exclusive offers from clinics near you.';
+
+  @override
+  String get findingYourLocation => 'Finding your location...';
+
+  @override
+  String get locationServicesOff => 'Location services off';
+
+  @override
+  String get enableLocation => 'Enable location';
+
+  @override
+  String get locationUnavailable => 'Location unavailable';
+
+  @override
+  String get myAppointments => 'My Appointments';
+
+  @override
+  String get upcoming => 'Upcoming';
+
+  @override
+  String get past => 'Past';
+
+  @override
+  String get next30Days => 'NEXT 30 DAYS';
+
+  @override
+  String get history => 'HISTORY';
+
+  @override
+  String get noUpcomingAppointments => 'No upcoming appointments.';
+
+  @override
+  String get noPastAppointments => 'No past appointments.';
+
+  @override
+  String get cancelAppointment => 'Cancel appointment?';
+
+  @override
+  String get cancelAppointmentConfirm =>
+      'Are you sure you want to cancel this appointment?';
+
+  @override
+  String get cancelAppointmentAction => 'Cancel Appointment';
+
+  @override
+  String get keep => 'Keep';
+
+  @override
+  String get clinicMissingForAppointment =>
+      'Clinic is missing for this appointment.';
+
+  @override
+  String get reschedule => 'Reschedule';
+
+  @override
+  String get viewDetails => 'View details';
+
+  @override
+  String get rebook => 'Rebook';
+
+  @override
+  String get appointmentCancelled => 'Appointment cancelled successfully.';
+
+  @override
+  String get emailOrPhone => 'Email or Phone';
+
+  @override
+  String get emailOrPhoneHint => 'Email or phone number';
+
+  @override
+  String get bookTreatment => 'Book Treatment';
+
+  @override
+  String get selectService => 'Select Service';
+
+  @override
+  String get selectServiceSubtitle => 'Pick the treatment you want to book';
+
+  @override
+  String get chooseSpecialist => 'Choose Specialist';
+
+  @override
+  String get chooseSpecialistSubtitle =>
+      'Optional — leave \"Any\" for the earliest availability';
+
+  @override
+  String get anySpecialist => 'Any';
+
+  @override
+  String get anySpecialistName => 'Any specialist';
+
+  @override
+  String get otherCategory => 'Other';
+
+  @override
+  String get selectDate => 'Select Date';
+
+  @override
+  String get selectDateSubtitle => 'Choose a day for your appointment';
+
+  @override
+  String get calendarMonth => 'Month';
+
+  @override
+  String get selectTime => 'Select Time';
+
+  @override
+  String get changeDate => 'Change date';
+
+  @override
+  String get couldNotLoadAvailableTimes => 'Could not load available times.';
+
+  @override
+  String get noAvailableTimesOnDate => 'No available times on this date.';
+
+  @override
+  String specialistNoAvailability(String name) {
+    return '$name has no availability on this date.';
+  }
+
+  @override
+  String get tryAnySpecialist => 'Try any specialist';
+
+  @override
+  String get pickAnotherDate => 'Pick another date';
+
+  @override
+  String get morningPeriod => 'MORNING';
+
+  @override
+  String get afternoonPeriod => 'AFTERNOON';
+
+  @override
+  String get bookingSummary => 'Summary';
+
+  @override
+  String get serviceLabel => 'Service';
+
+  @override
+  String get specialistLabel => 'Specialist';
+
+  @override
+  String get dateLabel => 'Date';
+
+  @override
+  String get timeLabel => 'Time';
+
+  @override
+  String get estimatedTotal => 'Estimated Total';
+
+  @override
+  String bookingTotal(String total) {
+    return 'Total  $total';
+  }
+
+  @override
+  String get chooseATime => 'Choose a time';
+
+  @override
+  String get continueLabel => 'Continue';
+
+  @override
+  String get confirmBooking => 'Confirm Booking';
+
+  @override
+  String get confirmReschedule => 'Confirm Reschedule';
+
+  @override
+  String get noServicesAvailable => 'No services available for this clinic.';
+
+  @override
+  String get pleaseChooseServiceDateTime =>
+      'Please choose a service, date, and time.';
+
+  @override
+  String get appointmentBookedSuccessfully =>
+      'Appointment booked successfully.';
+
+  @override
+  String get appointmentDetails => 'Appointment details';
+
+  @override
+  String get clinicLabel => 'Clinic';
+
+  @override
+  String get depositLabel => 'Deposit';
+
+  @override
+  String get notesLabel => 'Notes';
+
+  @override
+  String get cancellationReasonLabel => 'Cancellation reason';
+
+  @override
+  String get statusPending => 'Pending';
+
+  @override
+  String get statusConfirmed => 'Confirmed';
+
+  @override
+  String get statusCompleted => 'Completed';
+
+  @override
+  String get statusCancelled => 'Cancelled';
+
+  @override
+  String get statusRejected => 'Rejected';
+
+  @override
+  String get errorNoInternet =>
+      'No internet connection. Please check your network and try again.';
+
+  @override
+  String get errorServerUnavailable =>
+      'Can\'t reach the server. Please try again later.';
+
+  @override
+  String get errorUnexpected => 'Something went wrong. Please try again.';
 }

@@ -1,5 +1,6 @@
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 /// Step-aware bottom bar: "Continue" on the first two steps, total plus
@@ -10,9 +11,9 @@ class BookingSummaryBar extends StatelessWidget {
     required this.isEnabled,
     required this.isLoading,
     required this.onPressed,
+    required this.confirmText,
     this.total = '',
     this.time = '',
-    this.confirmText = 'Confirm Booking',
     super.key,
   });
 
@@ -26,6 +27,8 @@ class BookingSummaryBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return SafeArea(
       top: false,
       child: Container(
@@ -42,7 +45,7 @@ class BookingSummaryBar extends StatelessWidget {
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      'Total  $total',
+                      l10n.bookingTotal(total),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.bodyLarge.copyWith(
@@ -53,7 +56,7 @@ class BookingSummaryBar extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    time.isEmpty ? 'Choose a time' : time,
+                    time.isEmpty ? l10n.chooseATime : time,
                     style: AppTextStyles.bodyMedium.copyWith(
                       fontWeight: FontWeight.w600,
                       color: time.isEmpty
@@ -95,7 +98,7 @@ class BookingSummaryBar extends StatelessWidget {
                         children: <Widget>[
                           Flexible(
                             child: Text(
-                              isLastStep ? confirmText : 'Continue',
+                              isLastStep ? confirmText : l10n.continueLabel,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppTextStyles.button.copyWith(
