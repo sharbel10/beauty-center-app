@@ -9,7 +9,6 @@ import 'package:beauty_center_app/features/auth/widgets/auth_card.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_feedback.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_header.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_validation.dart';
-import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -71,11 +70,9 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
 
   bool _validate() {
     final String? passwordError = AuthValidation.password(
-      context,
       _passwordController.text,
     );
     final String? confirmPasswordError = AuthValidation.confirmPassword(
-      context,
       _passwordController.text,
       _confirmPasswordController.text,
     );
@@ -96,8 +93,6 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
 
   @override
   Widget build(BuildContext context) {
-    final AppLocalizations l10n = AppLocalizations.of(context);
-
     return BlocProvider<AuthCubit>.value(
       value: widget._cubit,
       child: BlocListener<AuthCubit, AuthState>(
@@ -112,7 +107,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
           } else if (state.status == AuthStatus.failure) {
             final String message = state.errors != null
                 ? state.errors!.values.first.first as String
-                : state.message ?? l10n.resetFailed;
+                : state.message ?? 'Reset failed';
             showAuthSnackBar(context, message: message, isError: true);
           }
         },
@@ -136,9 +131,9 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                             return Column(
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                AuthHeader(
-                                  title: l10n.resetPassword,
-                                  subtitle: l10n.createNewPassword,
+                                const AuthHeader(
+                                  title: 'Reset Password',
+                                  subtitle: 'Create a new password',
                                 ),
                                 const SizedBox(height: 34),
                                 AuthCard(
@@ -147,12 +142,12 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                                         CrossAxisAlignment.stretch,
                                     children: <Widget>[
                                       Text(
-                                        l10n.newPassword,
+                                        'New Password',
                                         style: AppTextStyles.headlineSmall,
                                       ),
                                       const SizedBox(height: 10),
                                       Text(
-                                        l10n.choosePasswordForAccount,
+                                        'Choose a password for your account.',
                                         style: AppTextStyles.bodyMedium
                                             .copyWith(
                                               color: AppColors.textLight,
@@ -160,8 +155,8 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                                       ),
                                       const SizedBox(height: 28),
                                       AppTextField(
-                                        label: l10n.newPassword,
-                                        hintText: l10n.enterNewPassword,
+                                        label: 'New Password',
+                                        hintText: 'Enter new password',
                                         controller: _passwordController,
                                         prefixIcon: Icons.lock_rounded,
                                         obscureText: _obscurePassword,
@@ -184,8 +179,8 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                                       ),
                                       const SizedBox(height: 22),
                                       AppTextField(
-                                        label: l10n.confirmPassword,
-                                        hintText: l10n.confirmNewPassword,
+                                        label: 'Confirm Password',
+                                        hintText: 'Confirm new password',
                                         controller: _confirmPasswordController,
                                         prefixIcon: Icons.lock_reset_rounded,
                                         obscureText: _obscureConfirmPassword,
@@ -211,7 +206,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                                       ),
                                       const SizedBox(height: 28),
                                       AppButton(
-                                        text: l10n.resetPassword,
+                                        text: 'Reset Password',
                                         isLoading: state.isSubmitting,
                                         onPressed: _submit,
                                       ),

@@ -1,7 +1,11 @@
 import 'package:beauty_center_app/core/di/injection.dart';
 import 'package:beauty_center_app/core/router/route_names.dart';
-import 'package:beauty_center_app/core/utils/app_logger.dart';
 import 'package:beauty_center_app/features/auth/cubit/auth_cubit.dart';
+import 'package:beauty_center_app/features/book_treatment/cubit/book_treatment_cubit.dart';
+import 'package:beauty_center_app/features/book_treatment/models/book_treatment_args.dart';
+import 'package:beauty_center_app/features/book_treatment/views/book_treatment_view.dart';
+import 'package:beauty_center_app/features/bookings/cubit/bookings_cubit.dart';
+import 'package:beauty_center_app/features/bookings/views/bookings_view.dart';
 import 'package:beauty_center_app/features/explore/cubit/explore_cubit.dart';
 import 'package:beauty_center_app/features/explore/views/explore_view.dart';
 import 'package:beauty_center_app/features/home/cubit/home_cubit.dart';
@@ -95,12 +99,34 @@ class AppRouter {
           name: RouteNames.home,
           path: RouteNames.homePath,
           builder: (context, state) =>
-              HomeView(authCubit: _authCubit, homeCubit: _homeCubit),
+              HomeView(authCubit: _authCubit, homeCubit: getIt<HomeCubit>()),
         ),
         GoRoute(
           name: RouteNames.explore,
           path: RouteNames.explorePath,
-          builder: (context, state) => ExploreView(cubit: _exploreCubit),
+          builder: (context, state) =>
+              ExploreView(cubit: getIt<ExploreCubit>()),
+        ),
+        GoRoute(
+          name: RouteNames.bookings,
+          path: RouteNames.bookingsPath,
+          builder: (context, state) =>
+              BookingsView(cubit: getIt<BookingsCubit>()),
+        ),
+        GoRoute(
+          name: RouteNames.bookTreatment,
+          path: RouteNames.bookTreatmentPath,
+          // Booking requires real navigation args; deep links or missing
+          // extras redirect back to explore instead of booking against a
+          // hardcoded clinic.
+          redirect: (context, state) =>
+              state.extra is BookTreatmentArgs ? null : RouteNames.explorePath,
+          builder: (context, state) {
+            return BookTreatmentView(
+              args: state.extra! as BookTreatmentArgs,
+              cubit: getIt<BookTreatmentCubit>(),
+            );
+          },
         ),
       ],
     );
@@ -110,8 +136,6 @@ class AppRouter {
   final SplashCubit _splashCubit;
   final OnboardingCubit _onboardingCubit;
   final AuthCubit _authCubit;
-  final HomeCubit _homeCubit = getIt<HomeCubit>();
-  final ExploreCubit _exploreCubit = getIt<ExploreCubit>();
   late final GoRouter _router;
 
   // Navigator key is shared so non-UI layers (e.g. interceptors) can trigger
@@ -142,9 +166,34 @@ class AppRouter {
     _routerRef?.goNamed(RouteNames.login);
   }
 
-  static void navigateFromNotification({required String type, String? id}) {
-    AppLogger.d('Notification tap: type=$type id=$id');
-    // v1: route to home; extend with type-specific routes when screens exist.
-    _routerRef?.goNamed(RouteNames.home);
+
+  static void navigateFromNotification({
+    required String type,
+    String? id,
+  }) {
+    final GoRouter? router = _routerRef;
+
+    if (router == null) {
+      return;
+    }
+
+    switch (type) {
+      case 'booking':
+      case 'appointment':
+        router.goNamed(RouteNames.bookings);
+        break;
+
+      case 'explore':
+      case 'center':
+        router.goNamed(RouteNames.explore);
+        break;
+
+      case 'home':
+        router.goNamed(RouteNames.home);
+        break;
+
+      default:
+        router.goNamed(RouteNames.home);
+    }
   }
 }

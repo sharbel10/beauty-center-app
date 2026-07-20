@@ -9,7 +9,6 @@ import 'package:beauty_center_app/features/auth/widgets/auth_card.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_feedback.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_header.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_validation.dart';
-import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,7 +36,7 @@ class _OtpViewState extends State<OtpView> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showAuthSnackBar(
           context,
-          message: AppLocalizations.of(context).emailRequiredToProceed,
+          message: 'Email is required to proceed.',
           isError: true,
         );
         context.pop();
@@ -80,21 +79,19 @@ class _OtpViewState extends State<OtpView> {
     if (state.status == AuthStatus.success) {
       showAuthSnackBar(
         context,
-        message:
-            state.message ?? AppLocalizations.of(context).otpSentSuccessfully,
+        message: state.message ?? 'OTP sent successfully.',
       );
     } else if (state.status == AuthStatus.failure) {
       showAuthSnackBar(
         context,
-        message:
-            state.message ?? AppLocalizations.of(context).failedToResendOtp,
+        message: state.message ?? 'Failed to resend OTP.',
         isError: true,
       );
     }
   }
 
   bool _validate() {
-    final String? otpError = AuthValidation.otp(context, _otpController.text);
+    final String? otpError = AuthValidation.otp(_otpController.text);
 
     setState(() {
       _otpError = otpError;
@@ -110,8 +107,6 @@ class _OtpViewState extends State<OtpView> {
 
   @override
   Widget build(BuildContext context) {
-    final AppLocalizations l10n = AppLocalizations.of(context);
-
     return BlocProvider<AuthCubit>.value(
       value: widget._cubit,
       child: BlocListener<AuthCubit, AuthState>(
@@ -130,7 +125,7 @@ class _OtpViewState extends State<OtpView> {
           } else if (state.status == AuthStatus.failure) {
             final String message = state.errors != null
                 ? state.errors!.values.first.first as String
-                : state.message ?? l10n.verificationFailed;
+                : state.message ?? 'Verification failed';
             showAuthSnackBar(context, message: message, isError: true);
           }
         },
@@ -154,9 +149,9 @@ class _OtpViewState extends State<OtpView> {
                             return Column(
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                AuthHeader(
-                                  title: l10n.otpVerification,
-                                  subtitle: l10n.secureAccountRecovery,
+                                const AuthHeader(
+                                  title: 'OTP Verification',
+                                  subtitle: 'Secure account recovery',
                                 ),
                                 const SizedBox(height: 34),
                                 AuthCard(
@@ -165,14 +160,12 @@ class _OtpViewState extends State<OtpView> {
                                         CrossAxisAlignment.stretch,
                                     children: <Widget>[
                                       Text(
-                                        l10n.enterCode,
+                                        'Enter Code',
                                         style: AppTextStyles.headlineSmall,
                                       ),
                                       const SizedBox(height: 10),
                                       Text(
-                                        l10n.otpEmailMessage(
-                                          widget.initialEmail ?? l10n.yourEmail,
-                                        ),
+                                        'Enter the 6-digit code sent to ${widget.initialEmail ?? "your email"}.',
                                         style: AppTextStyles.bodyMedium
                                             .copyWith(
                                               color: AppColors.textLight,
@@ -180,7 +173,7 @@ class _OtpViewState extends State<OtpView> {
                                       ),
                                       const SizedBox(height: 28),
                                       AppTextField(
-                                        label: l10n.verificationCode,
+                                        label: 'Verification Code',
                                         hintText: '000000',
                                         controller: _otpController,
                                         prefixIcon: Icons.pin_rounded,
@@ -198,7 +191,7 @@ class _OtpViewState extends State<OtpView> {
                                       ),
                                       const SizedBox(height: 28),
                                       AppButton(
-                                        text: l10n.verifyCode,
+                                        text: 'Verify Code',
                                         isLoading: state.isSubmitting,
                                         onPressed: _submit,
                                       ),
@@ -207,7 +200,7 @@ class _OtpViewState extends State<OtpView> {
                                         onPressed: state.isSubmitting
                                             ? null
                                             : _resendCode,
-                                        child: Text(l10n.resendCode),
+                                        child: const Text('Resend code'),
                                       ),
                                     ],
                                   ),
@@ -218,7 +211,7 @@ class _OtpViewState extends State<OtpView> {
                                     _clearFields();
                                     context.goNamed(RouteNames.login);
                                   },
-                                  child: Text(l10n.backToLogin),
+                                  child: const Text('Back to Login'),
                                 ),
                               ],
                             );

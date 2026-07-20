@@ -1,6 +1,5 @@
 import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_details_response.dart';
-import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -12,8 +11,6 @@ class ClinicDetailsTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppLocalizations l10n = AppLocalizations.of(context);
-
     return SizedBox(
       height: 58,
       child: Padding(
@@ -27,7 +24,7 @@ class ClinicDetailsTopBar extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                l10n.clinicDetailsTitle,
+                'Clinic Details',
                 textAlign: TextAlign.center,
                 style: AppTextStyles.link.copyWith(fontSize: 18),
               ),
@@ -51,8 +48,6 @@ class ClinicDetailsHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppLocalizations l10n = AppLocalizations.of(context);
-
     return SizedBox(
       height: 260,
       child: Stack(
@@ -110,7 +105,7 @@ class ClinicDetailsHero extends StatelessWidget {
                       borderRadius: BorderRadius.circular(18),
                     ),
                     child: Text(
-                      l10n.clinicTopRated,
+                      'TOP RATED',
                       style: AppTextStyles.smallCaps.copyWith(
                         color: const Color(0xFF5C4218),
                         fontSize: 11,
@@ -136,10 +131,8 @@ class ClinicDetailsHero extends StatelessWidget {
                   children: [
                     _HeroMeta(
                       icon: Icons.star_rounded,
-                      text: l10n.clinicHeroRatingReviews(
-                        clinic.averageRating.toStringAsFixed(1),
-                        l10n.reviewsCount(clinic.ratingsCount),
-                      ),
+                      text:
+                          '${clinic.averageRating.toStringAsFixed(1)} (${clinic.ratingsCount} reviews)',
                       iconColor: AppColors.gold,
                     ),
                     const Text('|', style: TextStyle(color: AppColors.surface)),

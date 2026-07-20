@@ -6,6 +6,7 @@ import 'package:beauty_center_app/core/utils/extensions.dart';
 import 'package:beauty_center_app/core/widgets/app_bottom_navigation.dart';
 import 'package:beauty_center_app/features/auth/cubit/auth_cubit.dart';
 import 'package:beauty_center_app/features/auth/cubit/auth_state.dart';
+import 'package:beauty_center_app/features/book_treatment/models/book_treatment_args.dart';
 import 'package:beauty_center_app/features/clinic/cubit/clinic_details_cubit.dart';
 import 'package:beauty_center_app/features/clinic/views/clinic_details_view.dart';
 import 'package:beauty_center_app/features/home/cubit/home_cubit.dart';
@@ -19,7 +20,6 @@ import 'package:beauty_center_app/features/home/widgets/home_header.dart';
 import 'package:beauty_center_app/features/home/widgets/home_search_bar.dart';
 import 'package:beauty_center_app/features/home/widgets/nearby_clinic_card.dart';
 import 'package:beauty_center_app/features/home/widgets/promotion_card.dart';
-import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -42,10 +42,30 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   int? _selectedCategoryId;
 
+  // Captured once: the router's builder re-runs on every push/pop and
+  // creates a fresh HomeCubit from getIt, which would otherwise replace
+  // the loaded one with an empty instance.
+  late final HomeCubit _homeCubit;
+
   @override
   void initState() {
     super.initState();
-    widget._homeCubit.loadHome();
+    _homeCubit = widget._homeCubit;
+    _homeCubit.loadHome();
+  }
+
+  @override
+  void didUpdateWidget(HomeView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(widget._homeCubit, _homeCubit)) {
+      widget._homeCubit.close();
+    }
+  }
+
+  @override
+  void dispose() {
+    _homeCubit.close();
+    super.dispose();
   }
 
   @override
@@ -53,7 +73,7 @@ class _HomeViewState extends State<HomeView> {
     return MultiBlocProvider(
       providers: <BlocProvider<dynamic>>[
         BlocProvider<AuthCubit>.value(value: widget._authCubit),
-        BlocProvider<HomeCubit>.value(value: widget._homeCubit),
+        BlocProvider<HomeCubit>.value(value: _homeCubit),
       ],
       child: BlocListener<AuthCubit, AuthState>(
         listenWhen: (AuthState previous, AuthState current) =>
@@ -74,13 +94,8 @@ class _HomeViewState extends State<HomeView> {
             return Scaffold(
               backgroundColor: AppColors.scaffold,
               extendBody: true,
-              bottomNavigationBar: AppBottomNavigation(
+              bottomNavigationBar: const AppBottomNavigation(
                 currentItem: AppNavItem.home,
-                onItemSelected: (AppNavItem item) {
-                  if (item == AppNavItem.explore) {
-                    context.goNamed(RouteNames.explore);
-                  }
-                },
               ),
               body: SafeArea(bottom: false, child: _buildBody(context, state)),
             );
@@ -91,16 +106,14 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget _buildBody(BuildContext context, HomeState state) {
-    final AppLocalizations l10n = AppLocalizations.of(context);
-
     if (state.isLoading && !state.hasData) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (!state.hasData) {
       return _HomeErrorBody(
-        message: state.message ?? l10n.unableToLoadHomeData,
-        onRetry: widget._homeCubit.loadHome,
+        message: state.message ?? 'Unable to load home data.',
+        onRetry: _homeCubit.loadHome,
       );
     }
 
@@ -115,15 +128,13 @@ class _HomeViewState extends State<HomeView> {
           (MapEntry<int, Offer> entry) => PromotionUiModel.fromOffer(
             entry.value,
             isDark: entry.key.isEven,
-            badge: entry.key == 0 ? l10n.exclusive : l10n.hotDeal,
-            cta: l10n.claimOffer,
-            offLabel: l10n.off,
+            badge: entry.key == 0 ? 'EXCLUSIVE' : 'HOT DEAL',
           ),
         )
         .toList();
 
     return RefreshIndicator(
-      onRefresh: () => widget._homeCubit.loadHome(forceRefresh: true),
+      onRefresh: _homeCubit.loadHome,
       child: CustomScrollView(
         slivers: <Widget>[
           SliverPadding(
@@ -135,16 +146,20 @@ class _HomeViewState extends State<HomeView> {
                       previous.customer?.name != current.customer?.name ||
                       previous.isAuthenticated != current.isAuthenticated,
                   builder: (BuildContext context, AuthState authState) {
-                    final String userName = widget._authCubit.userDisplayName;
                     return HomeHeader(
-                      userName: userName == 'Guest' ? l10n.guest : userName,
+                      userName: widget._authCubit.userDisplayName,
+                      locationLabel: state.locationLabel,
+                      isLocationLoading: state.isLocationLoading,
+                      onLocationTap: state.hasLocation
+                          ? null
+                          : _homeCubit.refreshLocation,
                     );
                   },
                 ),
                 const SizedBox(height: 20),
                 const HomeSearchBar(),
                 const SizedBox(height: 28),
-                _SectionHeader(title: l10n.nearbyClinics),
+                const _SectionHeader(title: 'Nearby Clinics'),
                 const SizedBox(height: 14),
                 HomeCategoryChips(
                   categories: data.topLevelCategories,
@@ -157,13 +172,18 @@ class _HomeViewState extends State<HomeView> {
                 for (final HomeClinicUiModel clinic in clinics) ...<Widget>[
                   NearbyClinicCard(
                     clinic: clinic,
+                    onBookPressed: () {
+                      context.pushNamed(
+                        RouteNames.bookTreatment,
+                        extra: BookTreatmentArgs(centerId: clinic.id),
+                      );
+                    },
                     onCardTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => ClinicDetailsView(
                             centerId: clinic.id,
                             cubit: getIt<ClinicDetailsCubit>(),
-                            entryNavItem: AppNavItem.home,
                           ),
                         ),
                       );
@@ -173,7 +193,7 @@ class _HomeViewState extends State<HomeView> {
                 ],
                 const _DiscoverMoreButton(),
                 const SizedBox(height: 32),
-                _SectionHeader(title: l10n.specialPromotions),
+                const _SectionHeader(title: 'Special Promotions'),
                 const SizedBox(height: 14),
                 _PromotionsCarousel(promotions: promotions),
                 SizedBox(
@@ -212,7 +232,7 @@ class _DiscoverMoreButton extends StatelessWidget {
         iconAlignment: IconAlignment.end,
         icon: const Icon(Icons.arrow_forward_rounded),
         label: Text(
-          AppLocalizations.of(context).discoverMoreClinics,
+          'DISCOVER MORE CLINICS',
           style: AppTextStyles.link.copyWith(fontSize: 13),
         ),
         style: TextButton.styleFrom(
@@ -314,10 +334,7 @@ class _HomeErrorBody extends StatelessWidget {
           children: <Widget>[
             Text(message, textAlign: TextAlign.center),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: onRetry,
-              child: Text(AppLocalizations.of(context).retry),
-            ),
+            ElevatedButton(onPressed: onRetry, child: const Text('Retry')),
           ],
         ),
       ),

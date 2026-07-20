@@ -59,9 +59,7 @@ class ExploreState extends Equatable {
     return ExploreState(
       status: status ?? this.status,
       categories: categories ?? this.categories,
-      centers: clearCenters
-          ? const <ClinicCenter>[]
-          : (centers ?? this.centers),
+      centers: clearCenters ? const <ClinicCenter>[] : (centers ?? this.centers),
       meta: clearMeta ? null : (meta ?? this.meta),
       message: clearMessage ? null : (message ?? this.message),
       search: search ?? this.search,

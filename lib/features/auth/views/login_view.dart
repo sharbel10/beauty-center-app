@@ -9,7 +9,6 @@ import 'package:beauty_center_app/features/auth/widgets/auth_card.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_feedback.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_header.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_validation.dart';
-import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -52,6 +51,7 @@ class _LoginViewState extends State<LoginView> {
     if (!_validate()) {
       return;
     }
+
     await widget._cubit.login(
       login: _emailController.text.trim(),
       password: _passwordController.text,
@@ -59,13 +59,8 @@ class _LoginViewState extends State<LoginView> {
   }
 
   bool _validate() {
-    final AppLocalizations l10n = AppLocalizations.of(context);
-    final String? emailError = AuthValidation.email(
-      context,
-      _emailController.text,
-    );
+    final String? emailError = AuthValidation.email(_emailController.text);
     final String? passwordError = AuthValidation.password(
-      context,
       _passwordController.text,
     );
 
@@ -77,7 +72,7 @@ class _LoginViewState extends State<LoginView> {
     if (emailError != null || passwordError != null) {
       showAuthSnackBar(
         context,
-        message: emailError ?? passwordError ?? l10n.checkEnteredData,
+        message: emailError ?? passwordError ?? 'Check the entered data.',
         isError: true,
       );
       return false;
@@ -88,8 +83,6 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    final AppLocalizations l10n = AppLocalizations.of(context);
-
     return BlocProvider<AuthCubit>.value(
       value: widget._cubit,
       child: BlocListener<AuthCubit, AuthState>(
@@ -107,7 +100,7 @@ class _LoginViewState extends State<LoginView> {
           } else if (state.status == AuthStatus.failure) {
             final String message = state.errors != null
                 ? state.errors!.values.first.first as String
-                : state.message ?? l10n.loginFailed;
+                : state.message ?? 'Login failed';
 
             if (message == 'Email verification is required before login.') {
               final String email = _emailController.text.trim();
@@ -143,9 +136,9 @@ class _LoginViewState extends State<LoginView> {
                             return Column(
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                AuthHeader(
-                                  title: l10n.lumina,
-                                  subtitle: l10n.signInToContinue,
+                                const AuthHeader(
+                                  title: 'Lumina',
+                                  subtitle: 'Sign in to continue',
                                 ),
                                 const SizedBox(height: 36),
                                 AuthCard(
@@ -154,12 +147,12 @@ class _LoginViewState extends State<LoginView> {
                                         CrossAxisAlignment.stretch,
                                     children: <Widget>[
                                       Text(
-                                        l10n.login,
+                                        'Login',
                                         style: AppTextStyles.headlineSmall,
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        l10n.accessYourLuminaAccount,
+                                        'Access your Lumina account.',
                                         style: AppTextStyles.bodyMedium
                                             .copyWith(
                                               color: AppColors.textLight,
@@ -167,8 +160,8 @@ class _LoginViewState extends State<LoginView> {
                                       ),
                                       const SizedBox(height: 28),
                                       AppTextField(
-                                        label: l10n.emailAddress,
-                                        hintText: l10n.emailHint,
+                                        label: 'Email Address',
+                                        hintText: 'name@example.com',
                                         controller: _emailController,
                                         prefixIcon: Icons.email_rounded,
                                         errorText: _emailError,
@@ -178,8 +171,8 @@ class _LoginViewState extends State<LoginView> {
                                       ),
                                       const SizedBox(height: 22),
                                       AppTextField(
-                                        label: l10n.password,
-                                        hintText: l10n.enterYourPassword,
+                                        label: 'Password',
+                                        hintText: 'Enter your password',
                                         controller: _passwordController,
                                         prefixIcon: Icons.lock_rounded,
                                         obscureText: _obscurePassword,
@@ -201,9 +194,7 @@ class _LoginViewState extends State<LoginView> {
                                             tapTargetSize: MaterialTapTargetSize
                                                 .shrinkWrap,
                                           ),
-                                          child: Text(
-                                            l10n.forgotPasswordQuestion,
-                                          ),
+                                          child: const Text('Forgot password?'),
                                         ),
                                         suffixIcon: IconButton(
                                           onPressed: () {
@@ -238,7 +229,7 @@ class _LoginViewState extends State<LoginView> {
                                           const SizedBox(width: 10),
                                           Expanded(
                                             child: Text(
-                                              l10n.rememberMe,
+                                              'Remember me',
                                               style: AppTextStyles.bodyMedium,
                                             ),
                                           ),
@@ -246,7 +237,7 @@ class _LoginViewState extends State<LoginView> {
                                       ),
                                       const SizedBox(height: 26),
                                       AppButton(
-                                        text: l10n.login,
+                                        text: 'Login',
                                         isLoading: state.isSubmitting,
                                         onPressed: _submit,
                                       ),
@@ -259,7 +250,7 @@ class _LoginViewState extends State<LoginView> {
                                   crossAxisAlignment: WrapCrossAlignment.center,
                                   children: <Widget>[
                                     Text(
-                                      l10n.dontHaveAccount,
+                                      "Don't have an account? ",
                                       style: AppTextStyles.bodyMedium,
                                     ),
                                     TextButton(
@@ -267,7 +258,7 @@ class _LoginViewState extends State<LoginView> {
                                         _clearFields();
                                         context.pushNamed(RouteNames.register);
                                       },
-                                      child: Text(l10n.register),
+                                      child: const Text('Register'),
                                     ),
                                   ],
                                 ),

@@ -16,8 +16,11 @@ class ClinicNetworkImage extends StatelessWidget {
       imageUrl,
       fit: BoxFit.cover,
       errorBuilder:
-          (BuildContext context, Object error, StackTrace? stackTrace) =>
-              _placeholder(),
+          (
+            BuildContext context,
+            Object error,
+            StackTrace? stackTrace,
+          ) => _placeholder(),
       loadingBuilder:
           (BuildContext context, Widget child, ImageChunkEvent? progress) {
             if (progress == null) {

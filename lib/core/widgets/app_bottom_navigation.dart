@@ -1,7 +1,8 @@
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
-import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
+import 'package:beauty_center_app/core/router/route_names.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 enum AppNavItem { home, explore, aiScan, bookings, profile }
 
@@ -27,7 +28,6 @@ class AppBottomNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double bottomInset = MediaQuery.paddingOf(context).bottom;
-    final AppLocalizations l10n = AppLocalizations.of(context);
 
     return SizedBox(
       height: _barHeight + bottomInset + _centerButtonLift,
@@ -59,35 +59,34 @@ class AppBottomNavigation extends StatelessWidget {
                       Expanded(
                         child: _NavItem(
                           icon: Icons.home_rounded,
-                          label: l10n.home,
+                          label: 'HOME',
                           isActive: currentItem == AppNavItem.home,
-                          onTap: () => onItemSelected?.call(AppNavItem.home),
+                          onTap: () => _handleTap(context, AppNavItem.home),
                         ),
                       ),
                       Expanded(
                         child: _NavItem(
                           icon: Icons.explore_outlined,
-                          label: l10n.explore,
+                          label: 'EXPLORE',
                           isActive: currentItem == AppNavItem.explore,
-                          onTap: () => onItemSelected?.call(AppNavItem.explore),
+                          onTap: () => _handleTap(context, AppNavItem.explore),
                         ),
                       ),
                       const SizedBox(width: _centerButtonSize + 8),
                       Expanded(
                         child: _NavItem(
                           icon: Icons.calendar_month_outlined,
-                          label: l10n.bookings,
+                          label: 'BOOKINGS',
                           isActive: currentItem == AppNavItem.bookings,
-                          onTap: () =>
-                              onItemSelected?.call(AppNavItem.bookings),
+                          onTap: () => _handleTap(context, AppNavItem.bookings),
                         ),
                       ),
                       Expanded(
                         child: _NavItem(
                           icon: Icons.person_outline_rounded,
-                          label: l10n.profile,
+                          label: 'PROFILE',
                           isActive: currentItem == AppNavItem.profile,
-                          onTap: () => onItemSelected?.call(AppNavItem.profile),
+                          onTap: () => _handleTap(context, AppNavItem.profile),
                         ),
                       ),
                     ],
@@ -100,12 +99,31 @@ class AppBottomNavigation extends StatelessWidget {
             bottom: bottomInset + (_barHeight - _centerButtonSize) / 2,
             child: _CenterScanButton(
               isActive: currentItem == AppNavItem.aiScan,
-              onTap: () => onItemSelected?.call(AppNavItem.aiScan),
+              onTap: () => _handleTap(context, AppNavItem.aiScan),
             ),
           ),
         ],
       ),
     );
+  }
+
+  void _handleTap(BuildContext context, AppNavItem item) {
+    if (onItemSelected != null) {
+      onItemSelected!(item);
+      return;
+    }
+
+    if (item == currentItem) {
+      return;
+    }
+
+    if (item == AppNavItem.home) {
+      context.goNamed(RouteNames.home);
+    } else if (item == AppNavItem.explore) {
+      context.goNamed(RouteNames.explore);
+    } else if (item == AppNavItem.bookings) {
+      context.goNamed(RouteNames.bookings);
+    }
   }
 }
 
@@ -188,7 +206,7 @@ class _CenterScanButton extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          AppLocalizations.of(context).aiScan,
+          'AI SCAN',
           style: AppTextStyles.smallCaps.copyWith(
             color: isActive ? AppColors.primary : AppColors.textMuted,
             fontSize: 8,

@@ -9,7 +9,6 @@ import 'package:beauty_center_app/features/auth/widgets/auth_card.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_feedback.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_header.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_validation.dart';
-import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -79,25 +78,15 @@ class _RegisterViewState extends State<RegisterView> {
   }
 
   bool _validate() {
-    final AppLocalizations l10n = AppLocalizations.of(context);
     final String? fullNameError = AuthValidation.fullName(
-      context,
       _fullNameController.text,
     );
-    final String? emailError = AuthValidation.email(
-      context,
-      _emailController.text,
-    );
-    final String? phoneError = AuthValidation.phone(
-      context,
-      _phoneController.text,
-    );
+    final String? emailError = AuthValidation.email(_emailController.text);
+    final String? phoneError = AuthValidation.phone(_phoneController.text);
     final String? passwordError = AuthValidation.password(
-      context,
       _passwordController.text,
     );
     final String? confirmPasswordError = AuthValidation.confirmPassword(
-      context,
       _passwordController.text,
       _confirmPasswordController.text,
     );
@@ -117,11 +106,7 @@ class _RegisterViewState extends State<RegisterView> {
         passwordError ??
         confirmPasswordError;
     if (firstError != null) {
-      showAuthSnackBar(
-        context,
-        message: firstError.isEmpty ? l10n.checkEnteredData : firstError,
-        isError: true,
-      );
+      showAuthSnackBar(context, message: firstError, isError: true);
       return false;
     }
 
@@ -130,8 +115,6 @@ class _RegisterViewState extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
-    final AppLocalizations l10n = AppLocalizations.of(context);
-
     return BlocProvider<AuthCubit>.value(
       value: widget._cubit,
       child: BlocListener<AuthCubit, AuthState>(
@@ -147,7 +130,7 @@ class _RegisterViewState extends State<RegisterView> {
           } else if (state.status == AuthStatus.failure) {
             final String message = state.errors != null
                 ? state.errors!.values.first.first as String
-                : state.message ?? l10n.registrationFailed;
+                : state.message ?? 'Registration failed';
             showAuthSnackBar(context, message: message, isError: true);
           }
         },
@@ -171,9 +154,9 @@ class _RegisterViewState extends State<RegisterView> {
                             return Column(
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                AuthHeader(
-                                  title: l10n.createAccount,
-                                  subtitle: l10n.joinLumina,
+                                const AuthHeader(
+                                  title: 'Create Account',
+                                  subtitle: 'Join Lumina',
                                 ),
                                 const SizedBox(height: 34),
                                 AuthCard(
@@ -182,8 +165,8 @@ class _RegisterViewState extends State<RegisterView> {
                                         CrossAxisAlignment.stretch,
                                     children: <Widget>[
                                       AppTextField(
-                                        label: l10n.fullName,
-                                        hintText: l10n.fullNameHint,
+                                        label: 'Full Name',
+                                        hintText: 'Jane Doe',
                                         controller: _fullNameController,
                                         prefixIcon: Icons.person_rounded,
                                         errorText: _fullNameError,
@@ -191,8 +174,8 @@ class _RegisterViewState extends State<RegisterView> {
                                       ),
                                       const SizedBox(height: 22),
                                       AppTextField(
-                                        label: l10n.emailAddress,
-                                        hintText: l10n.registerEmailHint,
+                                        label: 'Email Address',
+                                        hintText: 'jane@example.com',
                                         controller: _emailController,
                                         prefixIcon: Icons.email_rounded,
                                         errorText: _emailError,
@@ -202,8 +185,8 @@ class _RegisterViewState extends State<RegisterView> {
                                       ),
                                       const SizedBox(height: 22),
                                       AppTextField(
-                                        label: l10n.phoneNumber,
-                                        hintText: l10n.phoneHint,
+                                        label: 'Phone Number',
+                                        hintText: '+1 (555) 000-0000',
                                         controller: _phoneController,
                                         prefixIcon: Icons.phone_rounded,
                                         errorText: _phoneError,
@@ -212,8 +195,8 @@ class _RegisterViewState extends State<RegisterView> {
                                       ),
                                       const SizedBox(height: 22),
                                       AppTextField(
-                                        label: l10n.password,
-                                        hintText: l10n.createPassword,
+                                        label: 'Password',
+                                        hintText: 'Create a password',
                                         controller: _passwordController,
                                         prefixIcon: Icons.lock_rounded,
                                         obscureText: _obscurePassword,
@@ -236,8 +219,8 @@ class _RegisterViewState extends State<RegisterView> {
                                       ),
                                       const SizedBox(height: 22),
                                       AppTextField(
-                                        label: l10n.confirmPassword,
-                                        hintText: l10n.confirmYourPassword,
+                                        label: 'Confirm Password',
+                                        hintText: 'Confirm your password',
                                         controller: _confirmPasswordController,
                                         prefixIcon: Icons.lock_rounded,
                                         obscureText: _obscureConfirmPassword,
@@ -263,7 +246,7 @@ class _RegisterViewState extends State<RegisterView> {
                                       ),
                                       const SizedBox(height: 28),
                                       AppButton(
-                                        text: l10n.createAccount,
+                                        text: 'Create Account',
                                         isLoading: state.isSubmitting,
                                         onPressed: _submit,
                                       ),
@@ -276,7 +259,7 @@ class _RegisterViewState extends State<RegisterView> {
                                   crossAxisAlignment: WrapCrossAlignment.center,
                                   children: <Widget>[
                                     Text(
-                                      l10n.alreadyHaveAccount,
+                                      'Already have an account? ',
                                       style: AppTextStyles.bodyMedium,
                                     ),
                                     TextButton(
@@ -284,7 +267,7 @@ class _RegisterViewState extends State<RegisterView> {
                                         _clearFields();
                                         context.goNamed(RouteNames.login);
                                       },
-                                      child: Text(l10n.login),
+                                      child: const Text('Login'),
                                     ),
                                   ],
                                 ),

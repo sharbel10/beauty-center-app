@@ -4,10 +4,8 @@ import 'package:beauty_center_app/core/router/route_names.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/core/widgets/app_button.dart';
-import 'package:beauty_center_app/core/widgets/language_toggle_button.dart';
 import 'package:beauty_center_app/features/onboarding/cubit/onboarding_cubit.dart';
 import 'package:beauty_center_app/features/onboarding/cubit/onboarding_state.dart';
-import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -26,24 +24,27 @@ class _OnboardingViewState extends State<OnboardingView> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  List<_OnboardingData> _pages(AppLocalizations l10n) => <_OnboardingData>[
+  static const List<_OnboardingData> _pages = <_OnboardingData>[
     _OnboardingData(
-      navTitle: l10n.onboardingDiscoverClinics,
+      navTitle: 'Discover Clinics',
       imageUrl: 'assets/images/onboarding_1.jpeg',
-      title: l10n.onboardingDiscoverTitle,
-      subtitle: l10n.onboardingDiscoverSubtitle,
+      title: 'Find trusted beauty centers near you.',
+      subtitle:
+          'Explore services, specialists, and available appointments from one place.',
     ),
     _OnboardingData(
-      navTitle: l10n.onboardingBookVisits,
+      navTitle: 'Book Visits',
       imageUrl: 'assets/images/onboarding_2.jpeg',
-      title: l10n.onboardingBookTitle,
-      subtitle: l10n.onboardingBookSubtitle,
+      title: 'Schedule your care without extra calls.',
+      subtitle:
+          'Choose your treatment, pick a time, and keep your booking details organized.',
     ),
     _OnboardingData(
-      navTitle: l10n.onboardingPersonalCare,
+      navTitle: 'Personal Care',
       imageUrl: 'assets/images/onboarding_3.jpeg',
-      title: l10n.onboardingPersonalTitle,
-      subtitle: l10n.onboardingPersonalSubtitle,
+      title: 'Track your beauty journey clearly.',
+      subtitle:
+          'Review appointments and follow-up notes in a simple patient experience.',
     ),
   ];
 
@@ -54,7 +55,7 @@ class _OnboardingViewState extends State<OnboardingView> {
   }
 
   void _next() {
-    if (_currentPage == _pages(AppLocalizations.of(context)).length - 1) {
+    if (_currentPage == _pages.length - 1) {
       _finish();
       return;
     }
@@ -72,9 +73,6 @@ class _OnboardingViewState extends State<OnboardingView> {
 
   @override
   Widget build(BuildContext context) {
-    final AppLocalizations l10n = AppLocalizations.of(context);
-    final List<_OnboardingData> pages = _pages(l10n);
-
     return BlocProvider<OnboardingCubit>.value(
       value: widget._cubit,
       child: BlocListener<OnboardingCubit, OnboardingState>(
@@ -90,34 +88,34 @@ class _OnboardingViewState extends State<OnboardingView> {
               child: Column(
                 children: <Widget>[
                   _OnboardingTopBar(
-                    title: pages[_currentPage].navTitle,
+                    title: _pages[_currentPage].navTitle,
                     onSkip: _finish,
                   ),
                   const SizedBox(height: 24),
                   Expanded(
                     child: PageView.builder(
                       controller: _pageController,
-                      itemCount: pages.length,
+                      itemCount: _pages.length,
                       onPageChanged: (int index) {
                         setState(() {
                           _currentPage = index;
                         });
                       },
                       itemBuilder: (BuildContext context, int index) {
-                        return _OnboardingPage(data: pages[index]);
+                        return _OnboardingPage(data: _pages[index]);
                       },
                     ),
                   ),
                   const SizedBox(height: 18),
                   _OnboardingIndicator(
-                    count: pages.length,
+                    count: _pages.length,
                     currentIndex: _currentPage,
                   ),
                   const SizedBox(height: 28),
                   AppButton(
-                    text: _currentPage == pages.length - 1
-                        ? l10n.getStarted
-                        : l10n.next,
+                    text: _currentPage == _pages.length - 1
+                        ? 'Get Started'
+                        : 'Next',
                     icon: Icons.arrow_forward_rounded,
                     onPressed: _next,
                     height: 60,
@@ -144,7 +142,7 @@ class _OnboardingTopBar extends StatelessWidget {
       height: 42,
       child: Row(
         children: <Widget>[
-          const SizedBox(width: 64, child: LanguageToggleButton()),
+          const SizedBox(width: 64),
           Expanded(
             child: Text(
               title,
@@ -162,7 +160,7 @@ class _OnboardingTopBar extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 foregroundColor: AppColors.textLight,
               ),
-              child: Text(AppLocalizations.of(context).skip),
+              child: const Text('Skip'),
             ),
           ),
         ],

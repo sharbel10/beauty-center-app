@@ -1,9 +1,9 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = "http://192.168.1.11:8000/api/";
+  static const String baseUrl = 'http://192.168.1.207:8000/api/';
 
-  // Auth endpoints.
+  // Auth endpoints
   static const String login = 'customer/login';
   static const String register = 'customer/register';
   static const String logout = 'customer/logout';
@@ -12,17 +12,18 @@ class ApiEndpoints {
   static const String resendOtp = 'customer/resend-email-otp';
   static const String resetPassword = 'customer/reset-password';
 
-  // Devices (FCM)
-  static const String devices = 'customer/devices';
-
   // Home
   static const String home = 'customer/home';
 
   // Explore
   static const String categories = 'customer/categories';
   static const String centers = 'customer/centers';
+  static const String appointments = 'customer/appointments';
 
-  static const String storageUrl = 'http://192.168.1.11:8000/storage/';
+  // Devices / FCM
+  static const String devices = 'customer/devices';
+
+  static const String storageUrl = 'http://192.168.1.207:8000/storage/';
 
   static String mediaUrl(String? path) {
     if (path == null || path.isEmpty) {

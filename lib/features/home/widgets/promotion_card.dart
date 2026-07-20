@@ -4,7 +4,11 @@ import 'package:beauty_center_app/features/home/models/promotion_ui.dart';
 import 'package:flutter/material.dart';
 
 class PromotionCard extends StatelessWidget {
-  const PromotionCard({required this.promotion, this.height = 220, super.key});
+  const PromotionCard({
+    required this.promotion,
+    this.height = 220,
+    super.key,
+  });
 
   final PromotionUiModel promotion;
   final double height;

@@ -114,42 +114,41 @@ class _SplashViewState extends State<SplashView>
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: LayoutBuilder(
-                    builder:
-                        (BuildContext context, BoxConstraints constraints) {
-                          final int? splashDecodeWidth =
-                              constraints.maxWidth.isFinite &&
-                                  constraints.maxWidth > 0
-                              ? constraints.maxWidth.round().clamp(1, 8192)
-                              : null;
-                          return Stack(
-                            alignment: Alignment.bottomLeft,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(24),
-                                child: Image.asset(
-                                  'assets/images/splash.png',
-                                  height: 220,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                  cacheWidth: splashDecodeWidth,
-                                  cacheHeight: 220,
-                                ),
+                    builder: (BuildContext context, BoxConstraints constraints) {
+                      final int? splashDecodeWidth =
+                          constraints.maxWidth.isFinite &&
+                              constraints.maxWidth > 0
+                          ? constraints.maxWidth.round().clamp(1, 8192)
+                          : null;
+                      return Stack(
+                        alignment: Alignment.bottomLeft,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(24),
+                            child: Image.asset(
+                              'assets/images/splash.png',
+                              height: 220,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              cacheWidth: splashDecodeWidth,
+                              cacheHeight: 220,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(24.0),
+                            child: Text(
+                              'EXCELLENCE IN CARE',
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.5,
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(24.0),
-                                child: Text(
-                                  'EXCELLENCE IN CARE',
-                                  style: GoogleFonts.inter(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 1.5,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ),
                 const Spacer(),

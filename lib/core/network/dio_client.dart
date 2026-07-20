@@ -8,14 +8,14 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 @singleton
 class DioClient {
   DioClient(this._headerInterceptor)
-    : _dio = Dio(
-        BaseOptions(
-          baseUrl: ApiEndpoints.baseUrl,
-          connectTimeout: const Duration(seconds: 30),
-          receiveTimeout: const Duration(seconds: 30),
-          contentType: Headers.jsonContentType,
-        ),
-      ) {
+      : _dio = Dio(
+          BaseOptions(
+            baseUrl: ApiEndpoints.baseUrl,
+            connectTimeout: const Duration(seconds: 30),
+            receiveTimeout: const Duration(seconds: 30),
+            contentType: Headers.jsonContentType,
+          ),
+        ) {
     _dio.interceptors.add(_headerInterceptor);
 
     if (kDebugMode) {

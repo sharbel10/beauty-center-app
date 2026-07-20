@@ -1,6 +1,5 @@
 import 'package:beauty_center_app/core/di/injection.dart';
 import 'package:beauty_center_app/core/network/api_endpoints.dart';
-import 'package:beauty_center_app/core/router/route_names.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/core/utils/extensions.dart';
@@ -14,10 +13,8 @@ import 'package:beauty_center_app/features/explore/cubit/explore_state.dart';
 import 'package:beauty_center_app/features/home/models/category.dart';
 import 'package:beauty_center_app/features/home/models/clinic_center.dart';
 import 'package:beauty_center_app/features/home/widgets/clinic_network_image.dart';
-import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class ExploreView extends StatefulWidget {
   const ExploreView({required ExploreCubit cubit, super.key}) : _cubit = cubit;
@@ -31,20 +28,35 @@ class ExploreView extends StatefulWidget {
 class _ExploreViewState extends State<ExploreView> {
   final TextEditingController _searchController = TextEditingController();
 
+  // Captured once: the router's builder re-runs on every push/pop and
+  // creates a fresh ExploreCubit from getIt, which would otherwise replace
+  // the loaded one with an empty instance.
+  late final ExploreCubit _cubit;
+
   @override
   void initState() {
     super.initState();
-    widget._cubit.loadInitial();
+    _cubit = widget._cubit;
+    _cubit.loadInitial();
+  }
+
+  @override
+  void didUpdateWidget(ExploreView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(widget._cubit, _cubit)) {
+      widget._cubit.close();
+    }
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _cubit.close();
     super.dispose();
   }
 
   Future<void> _submitSearch() async {
-    await widget._cubit.updateSearch(_searchController.text);
+    await _cubit.updateSearch(_searchController.text);
   }
 
   void _showFilters(BuildContext context) {
@@ -64,7 +76,7 @@ class _ExploreViewState extends State<ExploreView> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ExploreCubit>.value(
-      value: widget._cubit,
+      value: _cubit,
       child: BlocConsumer<ExploreCubit, ExploreState>(
         listenWhen: (ExploreState previous, ExploreState current) =>
             previous.message != current.message &&
@@ -74,23 +86,16 @@ class _ExploreViewState extends State<ExploreView> {
           context.showSnackbar(state.message!, isError: true);
         },
         builder: (BuildContext context, ExploreState state) {
-          final AppLocalizations l10n = AppLocalizations.of(context);
-
           return Scaffold(
             backgroundColor: AppColors.scaffold,
             extendBody: true,
-            bottomNavigationBar: AppBottomNavigation(
+            bottomNavigationBar: const AppBottomNavigation(
               currentItem: AppNavItem.explore,
-              onItemSelected: (AppNavItem item) {
-                if (item == AppNavItem.home) {
-                  context.goNamed(RouteNames.home);
-                }
-              },
             ),
             body: SafeArea(
               bottom: false,
               child: RefreshIndicator(
-                onRefresh: widget._cubit.refreshCenters,
+                onRefresh: _cubit.refreshCenters,
                 child: CustomScrollView(
                   slivers: <Widget>[
                     SliverToBoxAdapter(
@@ -109,15 +114,15 @@ class _ExploreViewState extends State<ExploreView> {
                             _ActiveFilters(
                               state: state,
                               onClearCategory: () {
-                                widget._cubit.updateCategory(null);
+                                _cubit.updateCategory(null);
                               },
                               onClearPrice: () {
-                                widget._cubit.resetPriceFilter();
+                                _cubit.resetPriceFilter();
                               },
                             ),
                             const SizedBox(height: 24),
                             Text(
-                              l10n.allClinics,
+                              'All Clinics',
                               style: AppTextStyles.headline.copyWith(
                                 fontSize: 24,
                                 height: 1.1,
@@ -137,7 +142,7 @@ class _ExploreViewState extends State<ExploreView> {
                       SliverFillRemaining(
                         hasScrollBody: false,
                         child: _EmptyClinicsState(
-                          onRetry: widget._cubit.loadInitial,
+                          onRetry: _cubit.loadInitial,
                         ),
                       )
                     else
@@ -152,7 +157,7 @@ class _ExploreViewState extends State<ExploreView> {
                           itemCount:
                               state.centers.length +
                               (state.canLoadMore ? 1 : 0),
-                          separatorBuilder: (_, __) =>
+                          separatorBuilder: (BuildContext context, int index) =>
                               const SizedBox(height: 16),
                           itemBuilder: (BuildContext context, int index) {
                             if (index >= state.centers.length) {
@@ -160,9 +165,9 @@ class _ExploreViewState extends State<ExploreView> {
                                 child: SizedBox(
                                   width: 190,
                                   child: AppButton(
-                                    text: l10n.loadMore,
+                                    text: 'Load More',
                                     isLoading: state.isLoadingMore,
-                                    onPressed: widget._cubit.loadMore,
+                                    onPressed: _cubit.loadMore,
                                     height: 48,
                                   ),
                                 ),
@@ -231,7 +236,7 @@ class _SearchAndFilter extends StatelessWidget {
                   horizontal: 14,
                   vertical: 15,
                 ),
-                hintText: AppLocalizations.of(context).searchClinics,
+                hintText: 'Search clinics...',
                 hintStyle: AppTextStyles.hint.copyWith(fontSize: 14),
                 prefixIcon: const Icon(
                   Icons.search_rounded,
@@ -257,7 +262,7 @@ class _SearchAndFilter extends StatelessWidget {
             onPressed: onFilter,
             icon: const Icon(Icons.tune_rounded, size: 18),
             label: Text(
-              AppLocalizations.of(context).filters,
+              'Filters',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.button.copyWith(fontSize: 12),
@@ -311,9 +316,7 @@ class _ActiveFilters extends StatelessWidget {
     if (state.hasPriceFilter) {
       chips.add(
         _FilterChip(
-          label: AppLocalizations.of(
-            context,
-          ).priceRangeFilter(state.minPrice, state.maxPrice),
+          label: '\$${state.minPrice} - \$${state.maxPrice}',
           onClear: onClearPrice,
         ),
       );
@@ -388,7 +391,7 @@ class _ClinicCardState extends State<_ClinicCard> {
   Future<void> _openMap() async {
     if (clinic.latitude == null || clinic.longitude == null) {
       context.showSnackbar(
-        AppLocalizations.of(context).locationUnavailableForClinic,
+        'Location is not available for this clinic.',
         isError: true,
       );
       return;
@@ -400,19 +403,15 @@ class _ClinicCardState extends State<_ClinicCard> {
     );
 
     if (!launched && mounted) {
-      context.showSnackbar(
-        AppLocalizations.of(context).couldNotOpenMaps,
-        isError: true,
-      );
+      context.showSnackbar('Could not open maps.', isError: true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final AppLocalizations l10n = AppLocalizations.of(context);
     final String description = clinic.description?.trim().isNotEmpty == true
         ? clinic.description!.trim()
-        : l10n.clinicCenter;
+        : 'Clinic center';
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -519,7 +518,7 @@ class _ClinicCardState extends State<_ClinicCard> {
                   _ClinicStats(clinic: clinic),
                   const SizedBox(height: 16),
                   AppButton(
-                    text: l10n.viewAndBook,
+                    text: 'View & Book',
                     icon: Icons.chevron_right_rounded,
                     height: 48,
                     onPressed: () {
@@ -528,7 +527,6 @@ class _ClinicCardState extends State<_ClinicCard> {
                           builder: (context) => ClinicDetailsView(
                             centerId: clinic.id,
                             cubit: getIt<ClinicDetailsCubit>(),
-                            entryNavItem: AppNavItem.explore,
                           ),
                         ),
                       );
@@ -561,14 +559,13 @@ class _ClinicStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppLocalizations l10n = AppLocalizations.of(context);
     final String areaValue = clinic.area?.isNotEmpty == true
         ? clinic.area!
         : clinic.city?.isNotEmpty == true
         ? clinic.city!
         : clinic.isFeatured
-        ? l10n.topPick
-        : l10n.clinic;
+        ? 'Top Pick'
+        : 'Clinic';
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -580,15 +577,15 @@ class _ClinicStats extends StatelessWidget {
       child: Row(
         children: <Widget>[
           Expanded(
-            child: _StatItem(label: l10n.area, value: areaValue),
+            child: _StatItem(label: 'AREA', value: areaValue),
           ),
           Container(width: 1, height: 30, color: AppColors.divider),
           Expanded(
             child: _StatItem(
-              label: l10n.distance,
+              label: 'DISTANCE',
               value: clinic.distance != null
                   ? '${clinic.distance!.toStringAsFixed(1)} km'
-                  : l10n.notAvailable,
+                  : 'N/A',
             ),
           ),
         ],
@@ -667,18 +664,11 @@ class _EmptyClinicsState extends StatelessWidget {
             color: AppColors.textMuted,
           ),
           const SizedBox(height: 14),
-          Text(
-            AppLocalizations.of(context).noClinicsFound,
-            style: AppTextStyles.titleMedium,
-          ),
+          Text('No clinics found.', style: AppTextStyles.titleMedium),
           const SizedBox(height: 18),
           SizedBox(
             width: 180,
-            child: AppButton(
-              text: AppLocalizations.of(context).retry,
-              onPressed: onRetry,
-              height: 48,
-            ),
+            child: AppButton(text: 'Retry', onPressed: onRetry, height: 48),
           ),
         ],
       ),
@@ -715,7 +705,6 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
     return BlocBuilder<ExploreCubit, ExploreState>(
       builder: (BuildContext context, ExploreState state) {
         _ensureInitialValues(state);
-        final AppLocalizations l10n = AppLocalizations.of(context);
         final List<Category> topLevelCategories = state.categories
             .where((Category category) => category.isTopLevel)
             .toList();
@@ -754,7 +743,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                   children: <Widget>[
                     Expanded(
                       child: Text(
-                        l10n.filters,
+                        'Filters',
                         style: AppTextStyles.title.copyWith(
                           fontSize: 22,
                           height: 1.1,
@@ -769,13 +758,13 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                 ),
                 const SizedBox(height: 18),
                 _FilterSection(
-                  title: l10n.categories,
+                  title: 'Categories',
                   child: Wrap(
                     spacing: 8,
                     runSpacing: 8,
                     children: <Widget>[
                       _FilterChoice(
-                        label: l10n.all,
+                        label: 'All',
                         selected: _selectedCategoryId == null,
                         onSelected: () {
                           setState(() => _selectedCategoryId = null);
@@ -794,7 +783,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                 ),
                 const SizedBox(height: 18),
                 _FilterSection(
-                  title: l10n.pricing,
+                  title: 'Pricing',
                   child: _PriceRangeSlider(
                     values: _priceValues,
                     maxLimit: ExploreState.defaultMaxPrice,
@@ -826,7 +815,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                           ),
                         ),
                         child: Text(
-                          l10n.reset,
+                          'Reset',
                           style: AppTextStyles.link.copyWith(fontSize: 13),
                         ),
                       ),
@@ -834,7 +823,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: AppButton(
-                        text: l10n.apply,
+                        text: 'Apply',
                         onPressed: () async {
                           final ExploreCubit cubit = context
                               .read<ExploreCubit>();
@@ -916,17 +905,11 @@ class _PriceRangeSlider extends StatelessWidget {
         Row(
           children: <Widget>[
             Expanded(
-              child: _PricePill(
-                label: AppLocalizations.of(context).min,
-                value: min,
-              ),
+              child: _PricePill(label: 'Min', value: min),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: _PricePill(
-                label: AppLocalizations.of(context).max,
-                value: max,
-              ),
+              child: _PricePill(label: 'Max', value: max),
             ),
           ],
         ),

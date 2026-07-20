@@ -9,13 +9,6 @@ class ClinicPortfolioCubit extends Cubit<ClinicPortfolioState> {
 
   ClinicPortfolioCubit(this._repository) : super(ClinicPortfolioInitial());
 
-  Future<void> fetchClinicPortfolioIfNeeded(int centerId) async {
-    if (state is ClinicPortfolioLoading || state is ClinicPortfolioSuccess) {
-      return;
-    }
-    await fetchClinicPortfolio(centerId);
-  }
-
   Future<void> fetchClinicPortfolio(int centerId) async {
     emit(ClinicPortfolioLoading());
 

@@ -42,7 +42,9 @@ class Offer extends Equatable {
 
   String get discountLabel {
     if (discountType == 'percentage') {
-      return '${discountValue.toStringAsFixed(discountValue.truncateToDouble() == discountValue ? 0 : 1)}% OFF';
+      return '${discountValue.toStringAsFixed(
+        discountValue.truncateToDouble() == discountValue ? 0 : 1,
+      )}% OFF';
     }
     return '${discountValue.toStringAsFixed(0)} OFF';
   }

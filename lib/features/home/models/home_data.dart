@@ -18,9 +18,7 @@ class HomeData extends Equatable {
   factory HomeData.fromJson(Map<String, dynamic> json) {
     return HomeData(
       categories: (json['categories'] as List<dynamic>? ?? <dynamic>[])
-          .map(
-            (dynamic item) => Category.fromJson(item as Map<String, dynamic>),
-          )
+          .map((dynamic item) => Category.fromJson(item as Map<String, dynamic>))
           .toList(),
       featuredCenters:
           (json['featured_centers'] as List<dynamic>? ?? <dynamic>[])
@@ -32,12 +30,13 @@ class HomeData extends Equatable {
       offers: (json['offers'] as List<dynamic>? ?? <dynamic>[])
           .map((dynamic item) => Offer.fromJson(item as Map<String, dynamic>))
           .toList(),
-      advertisements: (json['advertisements'] as List<dynamic>? ?? <dynamic>[])
-          .map(
-            (dynamic item) =>
-                Advertisement.fromJson(item as Map<String, dynamic>),
-          )
-          .toList(),
+      advertisements:
+          (json['advertisements'] as List<dynamic>? ?? <dynamic>[])
+              .map(
+                (dynamic item) =>
+                    Advertisement.fromJson(item as Map<String, dynamic>),
+              )
+              .toList(),
     );
   }
 
@@ -52,7 +51,8 @@ class HomeData extends Equatable {
   List<ClinicCenter> get previewFeaturedCenters =>
       featuredCenters.take(featuredPreviewLimit).toList();
 
-  List<Offer> get previewOffers => offers.take(promotionsPreviewLimit).toList();
+  List<Offer> get previewOffers =>
+      offers.take(promotionsPreviewLimit).toList();
 
   @override
   List<Object?> get props => [
