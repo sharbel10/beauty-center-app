@@ -1,13 +1,15 @@
+import 'package:beauty_center_app/core/router/route_names.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
+import 'package:beauty_center_app/features/favorites/cubit/favorites_cubit.dart';
+import 'package:beauty_center_app/features/favorites/cubit/favorites_state.dart';
 import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeHeader extends StatelessWidget {
-  const HomeHeader({
-    required this.userName,
-    super.key,
-  });
+  const HomeHeader({required this.userName, super.key});
 
   final String userName;
 
@@ -32,9 +34,53 @@ class HomeHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        Container(
-          width: 54,
-          height: 54,
+        BlocBuilder<FavoritesCubit, FavoritesState>(
+          builder: (BuildContext context, FavoritesState state) {
+            final int totalFavorites =
+                state.centers.length + state.services.length;
+            return _HeaderCircleButton(
+              icon: Icons.favorite_rounded,
+              badgeColor: AppColors.primary,
+              onTap: () => context.pushNamed(RouteNames.favorites),
+            );
+          },
+        ),
+        const SizedBox(width: 10),
+        _HeaderCircleButton(
+          icon: Icons.notifications_rounded,
+          hasIndicator: true,
+          onTap: () {},
+        ),
+      ],
+    );
+  }
+}
+
+class _HeaderCircleButton extends StatelessWidget {
+  const _HeaderCircleButton({
+    required this.icon,
+    required this.onTap,
+    this.badgeCount = 0,
+    this.badgeColor,
+    this.hasIndicator = false,
+  });
+
+  final IconData icon;
+  final VoidCallback onTap;
+  final int badgeCount;
+  final Color? badgeColor;
+  final bool hasIndicator;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(27),
+        child: Container(
+          width: 50,
+          height: 50,
           decoration: BoxDecoration(
             color: AppColors.surface,
             shape: BoxShape.circle,
@@ -49,27 +95,75 @@ class HomeHeader extends StatelessWidget {
           child: Stack(
             alignment: Alignment.center,
             children: <Widget>[
-              const Icon(
-                Icons.notifications_rounded,
-                color: AppColors.primary,
-                size: 26,
-              ),
-              Positioned(
-                top: 15,
-                right: 15,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: AppColors.danger,
-                    shape: BoxShape.circle,
+              Icon(icon, color: AppColors.primary, size: 24),
+              if (hasIndicator)
+                const Positioned(top: 15, right: 15, child: _IndicatorDot())
+              else if (badgeCount > 0)
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: _CountBadge(
+                    count: badgeCount,
+                    color: badgeColor ?? AppColors.primary,
                   ),
                 ),
-              ),
             ],
           ),
         ),
-      ],
+      ),
+    );
+  }
+}
+
+class _CountBadge extends StatelessWidget {
+  const _CountBadge({required this.count, required this.color});
+
+  final int count;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final String display = count > 99 ? '99+' : count.toString();
+    final double width = display.length > 2 ? 24 : 20;
+
+    return Container(
+      width: width,
+      height: 20,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.surface, width: 1.5),
+      ),
+      constraints: const BoxConstraints(minWidth: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Center(
+        child: Text(
+          display,
+          style: AppTextStyles.smallCaps.copyWith(
+            color: AppColors.surface,
+            fontSize: 9,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.2,
+            height: 1.2,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _IndicatorDot extends StatelessWidget {
+  const _IndicatorDot();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 8,
+      height: 8,
+      decoration: const BoxDecoration(
+        color: AppColors.danger,
+        shape: BoxShape.circle,
+      ),
     );
   }
 }

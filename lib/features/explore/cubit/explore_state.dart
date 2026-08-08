@@ -19,7 +19,7 @@ class ExploreState extends Equatable {
     this.sortBy = 'rating',
   });
 
-  static const int defaultMaxPrice = 1000;
+  static const int defaultMaxPrice = 1000000;
 
   final ExploreStatus status;
   final List<Category> categories;
@@ -59,7 +59,9 @@ class ExploreState extends Equatable {
     return ExploreState(
       status: status ?? this.status,
       categories: categories ?? this.categories,
-      centers: clearCenters ? const <ClinicCenter>[] : (centers ?? this.centers),
+      centers: clearCenters
+          ? const <ClinicCenter>[]
+          : (centers ?? this.centers),
       meta: clearMeta ? null : (meta ?? this.meta),
       message: clearMessage ? null : (message ?? this.message),
       search: search ?? this.search,

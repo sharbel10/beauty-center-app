@@ -386,7 +386,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String priceRangeFilter(int min, int max) {
-    return '\$$min - \$$max';
+    return 'SP $min - SP $max';
   }
 
   @override
@@ -970,4 +970,161 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorUnexpected => 'Something went wrong. Please try again.';
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get birthDate => 'Birth Date';
+
+  @override
+  String get city => 'City';
+
+  @override
+  String get address => 'Address';
+
+  @override
+  String get notificationsEnabled => 'Notifications Enabled';
+
+  @override
+  String get myStats => 'My Stats';
+
+  @override
+  String get appointmentsTotal => 'Total Appointments';
+
+  @override
+  String get appointmentsUpcoming => 'Upcoming Appointments';
+
+  @override
+  String get appointmentsCompleted => 'Completed Appointments';
+
+  @override
+  String get favoriteCenters => 'Favorite Centers';
+
+  @override
+  String get favoriteServices => 'Favorite Services';
+
+  @override
+  String get reviews => 'Reviews';
+
+  @override
+  String get unreadNotifications => 'Unread Notifications';
+
+  @override
+  String get profileUpdatedSuccessfully => 'Profile updated successfully.';
+
+  @override
+  String get male => 'Male';
+
+  @override
+  String get female => 'Female';
+
+  @override
+  String get changeAvatar => 'Change Avatar';
+
+  @override
+  String get uploadAvatar => 'Upload Avatar';
+
+  @override
+  String get avatarUpdatedSuccessfully => 'Avatar updated successfully.';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirm =>
+      'Are you sure you want to delete your account? This action cannot be undone.';
+
+  @override
+  String get accountDeletedSuccessfully => 'Account deleted successfully.';
+
+  @override
+  String get selectImage => 'Select Image';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get gallery => 'Gallery';
+
+  @override
+  String get changePassword => 'Change Password';
+
+  @override
+  String get currentPassword => 'Current Password';
+
+  @override
+  String get passwordChangedSuccessfully => 'Password changed successfully.';
+
+  @override
+  String get passwordChangedReLogin =>
+      'Password changed successfully. Please log in again.';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match.';
+
+  @override
+  String get currentPasswordRequired => 'Current password is required.';
+
+  @override
+  String get newPasswordRequired => 'New password is required.';
+
+  @override
+  String get confirmPasswordRequired => 'Please confirm your password.';
+
+  @override
+  String get passwordTooShort => 'Password must be at least 6 characters.';
+
+  @override
+  String get lastLogin => 'Last Login';
+
+  @override
+  String get favorites => 'Favorites';
+
+  @override
+  String get centers => 'Centers';
+
+  @override
+  String get services => 'Services';
+
+  @override
+  String get offers => 'Offers';
+
+  @override
+  String get noFavoriteCenters => 'No favorite centers';
+
+  @override
+  String get noFavoriteCentersSubtitle =>
+      'Start adding centers to your favorites to see them here.';
+
+  @override
+  String get noFavoriteServices => 'No favorite services';
+
+  @override
+  String get noFavoriteServicesSubtitle =>
+      'Start adding services to your favorites to see them here.';
+
+  @override
+  String get exploreAndAddFavorites => 'Explore and add to favorites';
+
+  @override
+  String get noResultsFound => 'No results found';
+
+  @override
+  String get noResultsFor => 'No results for';
+
+  @override
+  String get currency => 'SYP';
+
+  @override
+  String get pressBackAgainToExit => 'Press back again to exit the app';
 }

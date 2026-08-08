@@ -38,6 +38,7 @@ class ClinicCenterDetail extends Equatable {
     required this.averageRating,
     required this.ratingsCount,
     required this.isFeatured,
+    this.isFavorite = false,
     this.distance,
     required this.email,
     required this.website,
@@ -67,6 +68,7 @@ class ClinicCenterDetail extends Equatable {
       averageRating: (json['average_rating'] as num?)?.toDouble() ?? 0.0,
       ratingsCount: json['ratings_count'] as int? ?? 0,
       isFeatured: json['is_featured'] as bool? ?? false,
+      isFavorite: json['is_favorite'] as bool? ?? false,
       distance: json['distance'],
       email: json['email'] as String? ?? '',
       website: json['website'] as String? ?? '',
@@ -107,7 +109,8 @@ class ClinicCenterDetail extends Equatable {
   final double averageRating;
   final int ratingsCount;
   final bool isFeatured;
-  final dynamic distance;
+  final bool isFavorite;
+  final double? distance;
   final String email;
   final String website;
   final String bookingConfirmationType;
@@ -134,6 +137,7 @@ class ClinicCenterDetail extends Equatable {
     averageRating,
     ratingsCount,
     isFeatured,
+    isFavorite,
     distance,
     email,
     website,

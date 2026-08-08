@@ -8,6 +8,7 @@ class Category extends Equatable {
     required this.slug,
     this.description,
     this.iconPath,
+    this.iconUrl,
   });
 
   factory Category.fromJson(Map<String, dynamic> json) {
@@ -18,6 +19,7 @@ class Category extends Equatable {
       slug: json['slug'] as String,
       description: json['description'] as String?,
       iconPath: json['icon_path'] as String?,
+      iconUrl: json['icon_url'] as String?,
     );
   }
 
@@ -27,9 +29,18 @@ class Category extends Equatable {
   final String slug;
   final String? description;
   final String? iconPath;
+  final String? iconUrl;
 
   bool get isTopLevel => parentId == null;
 
   @override
-  List<Object?> get props => [id, parentId, name, slug, description, iconPath];
+  List<Object?> get props => [
+        id,
+        parentId,
+        name,
+        slug,
+        description,
+        iconPath,
+        iconUrl,
+      ];
 }

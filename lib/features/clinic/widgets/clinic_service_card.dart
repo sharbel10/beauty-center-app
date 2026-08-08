@@ -1,3 +1,4 @@
+import 'package:beauty_center_app/features/favorites/widgets/favorite_heart_button.dart';
 import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,10 @@ class ClinicServiceCard extends StatelessWidget {
     required this.finalPrice,
     this.badge,
     this.darkBadge = false,
+    this.isFavorite = false,
+    this.onFavoriteToggle,
+    this.centerName,
+    this.onTap,
     super.key,
   });
 
@@ -25,13 +30,16 @@ class ClinicServiceCard extends StatelessWidget {
   final double finalPrice;
   final String? badge;
   final bool darkBadge;
+  final bool isFavorite;
+  final Future<void> Function(bool isCurrentlyFavorite)? onFavoriteToggle;
+  final String? centerName;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final bool hasDiscount = originalPrice > finalPrice;
-
-    return Container(
+    final Widget card = Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(22, 22, 22, 18),
       decoration: BoxDecoration(
@@ -48,6 +56,31 @@ class ClinicServiceCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (centerName != null) ...<Widget>[
+            Row(
+              children: <Widget>[
+                const Icon(
+                  Icons.storefront_outlined,
+                  size: 12,
+                  color: AppColors.textMuted,
+                ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    centerName!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.subtitle.copyWith(
+                      fontSize: 11,
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+          ],
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -65,6 +98,20 @@ class ClinicServiceCard extends StatelessWidget {
               if (badge != null) ...[
                 const SizedBox(width: 12),
                 _ServiceBadge(label: badge!, isDark: darkBadge),
+              ],
+              if (onFavoriteToggle != null) ...<Widget>[
+                const SizedBox(width: 8),
+                FavoriteHeartButton(
+                  isFavorite: isFavorite,
+                  size: 19,
+                  padding: const EdgeInsets.all(4),
+                  backgroundColor: Colors.transparent,
+                  onToggle: (bool isCurrentlyFavorite) async {
+                    if (onFavoriteToggle != null) {
+                      await onFavoriteToggle!(isCurrentlyFavorite);
+                    }
+                  },
+                ),
               ],
             ],
           ),
@@ -168,6 +215,15 @@ class ClinicServiceCard extends StatelessWidget {
         ],
       ),
     );
+
+    if (onTap != null) {
+      return InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(22),
+        child: card,
+      );
+    }
+    return card;
   }
 
   String _formatPriceWithCommas(double price) {

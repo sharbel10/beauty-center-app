@@ -1,17 +1,19 @@
 // ignore_for_file: unused_local_variable
 
 import 'package:beauty_center_app/core/di/injection.dart';
+import 'package:beauty_center_app/core/theme/app_colors.dart';
+import 'package:beauty_center_app/core/theme/app_text_styles.dart';
+import 'package:beauty_center_app/core/utils/extensions.dart';
 import 'package:beauty_center_app/features/clinic/cubit/clinic_services_cubit.dart';
 import 'package:beauty_center_app/features/clinic/cubit/clinic_services_state.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_details_response.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_services_response.dart';
 import 'package:beauty_center_app/features/clinic/widgets/clinic_service_card.dart';
+import 'package:beauty_center_app/features/favorites/cubit/favorites_cubit.dart';
+import 'package:beauty_center_app/features/favorites/cubit/favorites_state.dart';
 import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_text_styles.dart';
 
 class ClinicServicesView extends StatelessWidget {
   const ClinicServicesView({required this.clinic, super.key});
@@ -23,114 +25,142 @@ class ClinicServicesView extends StatelessWidget {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
     return BlocProvider(
-      create: (context) =>
+      create: (BuildContext context) =>
           getIt<ClinicServicesCubit>()..fetchClinicServices(clinic.id),
-      child: BlocBuilder<ClinicServicesCubit, ClinicServicesState>(
-        builder: (context, state) {
-          if (state is ClinicServicesLoading) {
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.all(32.0),
-                child: CircularProgressIndicator(color: AppColors.gold),
-              ),
-            );
-          }
-
-          if (state is ClinicServicesFailure) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  state.errorMessage,
-                  style: AppTextStyles.bodyMedium.copyWith(color: Colors.red),
-                ),
-              ),
-            );
-          }
-
-          if (state is ClinicServicesSuccess) {
-            final grouped = state.services.groupByCategory;
-
-            if (grouped.isEmpty) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: Text(l10n.clinicNoServices),
-                ),
+      child: BlocProvider<FavoritesCubit>(
+        create: (_) => getIt<FavoritesCubit>(),
+        child: BlocListener<FavoritesCubit, FavoritesState>(
+          listenWhen: (FavoritesState previous, FavoritesState current) {
+            return previous.message != current.message &&
+                current.message != null;
+          },
+          listener: (BuildContext context, FavoritesState state) {
+            if (state.message != null) {
+              context.showSnackbar(
+                state.message!,
+                isError: state.isMessageError,
               );
+              context.read<FavoritesCubit>().clearMessage();
             }
+          },
+          child: BlocBuilder<ClinicServicesCubit, ClinicServicesState>(
+            builder: (BuildContext context, ClinicServicesState state) {
+              if (state is ClinicServicesLoading) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: CircularProgressIndicator(color: AppColors.gold),
+                  ),
+                );
+              }
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ...grouped.entries.map((entry) {
-                  final category = entry.key;
-                  final servicesList = entry.value;
+              if (state is ClinicServicesFailure) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      state.errorMessage,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                );
+              }
 
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 32.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _ServicesSectionHeader(
-                          title: category.name,
-                          count: l10n.clinicServicesCount(servicesList.length),
-                        ),
-                        const SizedBox(height: 16),
-                        ListView.separated(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: servicesList.length,
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 14),
-                          itemBuilder: (context, index) {
-                            final service = servicesList[index];
+              if (state is ClinicServicesSuccess) {
+                final Map<ServiceCategory, List<ClinicServiceItem>> grouped =
+                    state.services.groupByCategory;
 
-                            String? badgeText;
-                            bool isDarkBadge = false;
-                            if (service.salePrice != null) {
-                              badgeText = l10n.clinicServiceBadgeOffer;
-                            } else if (service.isFeatured) {
-                              badgeText = l10n.clinicServiceBadgeBestSeller;
-                              isDarkBadge = true;
-                            }
-
-                            return ClinicServiceCard(
-                              title: service.name,
-                              description: service.description,
-                              durationMinutes: service.durationMinutes,
-                              preparationMinutes: service.preparationMinutes,
-                              originalPrice: service.price.toDouble(),
-                              finalPrice: service.finalPrice.toDouble(),
-                              // توليد بادج العرض تلقائياً إذا كان هناك سعر تخفيض
-                              badge: service.salePrice != null
-                                  ? l10n.clinicServiceBadgeOffer
-                                  : (service.isFeatured
-                                      ? l10n.clinicServiceBadgeFeatured
-                                      : null),
-                              darkBadge: service.salePrice != null
-                                  ? false
-                                  : true,
-                            );
-                          },
-                        ),
-                      ],
+                if (grouped.isEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32.0),
+                      child: Text(l10n.clinicNoServices),
                     ),
                   );
-                }),
-                const SizedBox(height: 24),
-                ClinicBookingPoliciesPanel(
-                  confirmationType: clinic.bookingConfirmationType,
-                  depositType: clinic.depositType,
-                  depositValue: clinic.depositValue,
-                ),
-                const SizedBox(height: 24),
-              ],
-            );
-          }
+                }
 
-          return const SizedBox.shrink();
-        },
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    ...grouped.entries.map((
+                      MapEntry<ServiceCategory, List<ClinicServiceItem>> entry,
+                    ) {
+                      final ServiceCategory category = entry.key;
+                      final List<ClinicServiceItem> servicesList = entry.value;
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 32.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            _ServicesSectionHeader(
+                              title: category.name,
+                              count: l10n.clinicServicesCount(
+                                servicesList.length,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: servicesList.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 14),
+                              itemBuilder: (BuildContext context, int index) {
+                                final ClinicServiceItem service =
+                                    servicesList[index];
+
+                                return ClinicServiceCard(
+                                  title: service.name,
+                                  description: service.description,
+                                  durationMinutes: service.durationMinutes,
+                                  preparationMinutes:
+                                      service.preparationMinutes,
+                                  originalPrice: service.price.toDouble(),
+                                  finalPrice: service.finalPrice.toDouble(),
+                                  badge: service.salePrice != null
+                                      ? l10n.clinicServiceBadgeOffer
+                                      : (service.isFeatured
+                                            ? l10n.clinicServiceBadgeFeatured
+                                            : null),
+                                  darkBadge: service.salePrice != null
+                                      ? false
+                                      : true,
+                                  isFavorite: service.isFavorite,
+                                  onFavoriteToggle:
+                                      (bool isCurrentlyFavorite) async {
+                                        await context
+                                            .read<FavoritesCubit>()
+                                            .toggleServiceFavorite(
+                                              serviceId: service.id,
+                                              isCurrentlyFavorite:
+                                                  isCurrentlyFavorite,
+                                            );
+                                      },
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: 24),
+                    ClinicBookingPoliciesPanel(
+                      confirmationType: clinic.bookingConfirmationType,
+                      depositType: clinic.depositType,
+                      depositValue: clinic.depositValue,
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                );
+              }
+
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
       ),
     );
   }

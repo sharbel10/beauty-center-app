@@ -3,6 +3,7 @@ import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/core/utils/extensions.dart';
 import 'package:beauty_center_app/core/widgets/app_bottom_navigation.dart';
+import 'package:beauty_center_app/core/widgets/root_exit_guard.dart';
 import 'package:beauty_center_app/features/book_treatment/models/book_treatment_args.dart';
 import 'package:beauty_center_app/features/bookings/components/appointment_card.dart';
 import 'package:beauty_center_app/features/bookings/components/booking_tabs.dart';
@@ -72,51 +73,53 @@ class _BookingsViewState extends State<BookingsView> {
         builder: (BuildContext context, BookingsState state) {
           final AppLocalizations l10n = AppLocalizations.of(context);
 
-          return Scaffold(
-            backgroundColor: AppColors.background,
-            bottomNavigationBar: AppBottomNavigation(
-              currentItem: AppNavItem.bookings,
-              onItemSelected: (AppNavItem item) => _handleNav(context, item),
-            ),
-            body: SafeArea(
-              child: Column(
-                children: <Widget>[
-                  const BookingsHeader(),
-                  BookingTabs(
-                    selectedIndex: _selectedTab,
-                    onChanged: (int index) =>
-                        setState(() => _selectedTab = index),
-                  ),
-                  Expanded(
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 220),
-                      child: _selectedTab == 0
-                          ? _AppointmentsList(
-                              key: const ValueKey<String>('upcoming'),
-                              label: l10n.next30Days,
-                              appointments: state.upcoming,
-                              isLoading: state.isLoading && !state.hasData,
-                              emptyMessage: l10n.noUpcomingAppointments,
-                              onRefresh: _cubit.loadAppointments,
-                              onViewDetails: _showAppointmentDetails,
-                              onMorePressed: _showAppointmentActions,
-                              onRebookPressed: _openBooking,
-                            )
-                          : _AppointmentsList(
-                              key: const ValueKey<String>('past'),
-                              label: l10n.history,
-                              appointments: state.history,
-                              isPast: true,
-                              isLoading: state.isLoading && !state.hasData,
-                              emptyMessage: l10n.noPastAppointments,
-                              onRefresh: _cubit.loadAppointments,
-                              onViewDetails: _showAppointmentDetails,
-                              onMorePressed: _showAppointmentActions,
-                              onRebookPressed: _openBooking,
-                            ),
+          return RootExitGuard(
+            child: Scaffold(
+              backgroundColor: AppColors.background,
+              bottomNavigationBar: AppBottomNavigation(
+                currentItem: AppNavItem.bookings,
+                onItemSelected: (AppNavItem item) => _handleNav(context, item),
+              ),
+              body: SafeArea(
+                child: Column(
+                  children: <Widget>[
+                    const BookingsHeader(),
+                    BookingTabs(
+                      selectedIndex: _selectedTab,
+                      onChanged: (int index) =>
+                          setState(() => _selectedTab = index),
                     ),
-                  ),
-                ],
+                    Expanded(
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 220),
+                        child: _selectedTab == 0
+                            ? _AppointmentsList(
+                                key: const ValueKey<String>('upcoming'),
+                                label: l10n.next30Days,
+                                appointments: state.upcoming,
+                                isLoading: state.isLoading && !state.hasData,
+                                emptyMessage: l10n.noUpcomingAppointments,
+                                onRefresh: _cubit.loadAppointments,
+                                onViewDetails: _showAppointmentDetails,
+                                onMorePressed: _showAppointmentActions,
+                                onRebookPressed: _openBooking,
+                              )
+                            : _AppointmentsList(
+                                key: const ValueKey<String>('past'),
+                                label: l10n.history,
+                                appointments: state.history,
+                                isPast: true,
+                                isLoading: state.isLoading && !state.hasData,
+                                emptyMessage: l10n.noPastAppointments,
+                                onRefresh: _cubit.loadAppointments,
+                                onViewDetails: _showAppointmentDetails,
+                                onMorePressed: _showAppointmentActions,
+                                onRebookPressed: _openBooking,
+                              ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
@@ -358,10 +361,7 @@ class _EmptyAppointments extends StatelessWidget {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: AppTextStyles.subtitle.copyWith(
-              fontSize: 14,
-              height: 1.4,
-            ),
+            style: AppTextStyles.subtitle.copyWith(fontSize: 14, height: 1.4),
           ),
         ],
       ),
@@ -370,10 +370,7 @@ class _EmptyAppointments extends StatelessWidget {
 }
 
 class _AppointmentDetailsSheet extends StatelessWidget {
-  const _AppointmentDetailsSheet({
-    required this.appointment,
-    this.onRebook,
-  });
+  const _AppointmentDetailsSheet({required this.appointment, this.onRebook});
 
   final AppointmentModel appointment;
   final VoidCallback? onRebook;
@@ -501,7 +498,8 @@ class _AppointmentDetailsSheet extends StatelessWidget {
                         _DetailTileData(
                           icon: Icons.account_balance_wallet_outlined,
                           label: l10n.depositLabel,
-                          value: '${_formatPrice(appointment.depositRequired)} SP',
+                          value:
+                              '${_formatPrice(appointment.depositRequired)} SP',
                         ),
                     ],
                   ),

@@ -35,10 +35,7 @@ class ExploreCubit extends Cubit<ExploreState> {
 
     categoriesResult.fold(
       (failure) => emit(
-        state.copyWith(
-          status: ExploreStatus.failure,
-          message: failure.message,
-        ),
+        state.copyWith(status: ExploreStatus.failure, message: failure.message),
       ),
       (categoriesResponse) {
         centersResult.fold(
@@ -84,10 +81,7 @@ class ExploreCubit extends Cubit<ExploreState> {
 
     result.fold(
       (failure) => emit(
-        state.copyWith(
-          status: ExploreStatus.failure,
-          message: failure.message,
-        ),
+        state.copyWith(status: ExploreStatus.failure, message: failure.message),
       ),
       (response) => emit(
         state.copyWith(
@@ -118,10 +112,7 @@ class ExploreCubit extends Cubit<ExploreState> {
 
     result.fold(
       (failure) => emit(
-        state.copyWith(
-          status: ExploreStatus.failure,
-          message: failure.message,
-        ),
+        state.copyWith(status: ExploreStatus.failure, message: failure.message),
       ),
       (response) => emit(
         state.copyWith(
@@ -147,6 +138,54 @@ class ExploreCubit extends Cubit<ExploreState> {
     await refreshCenters();
   }
 
+  Future<void> loadInitialWithCategory(int? categoryId) async {
+    emit(
+      state.copyWith(
+        status: ExploreStatus.loading,
+        clearMessage: true,
+        clearCenters: true,
+        clearMeta: true,
+        selectedCategoryId: categoryId,
+      ),
+    );
+
+    final categoriesResult = await _exploreRepository.getCategories();
+    final centersResult = await _exploreRepository.getCenters(
+      page: 1,
+      perPage: defaultPerPage,
+      search: state.search,
+      categoryId: categoryId,
+      minPrice: state.hasPriceFilter ? state.minPrice : null,
+      maxPrice: state.hasPriceFilter ? state.maxPrice : null,
+      sortBy: state.sortBy,
+    );
+
+    categoriesResult.fold(
+      (failure) => emit(
+        state.copyWith(status: ExploreStatus.failure, message: failure.message),
+      ),
+      (categoriesResponse) {
+        centersResult.fold(
+          (failure) => emit(
+            state.copyWith(
+              status: ExploreStatus.failure,
+              categories: categoriesResponse.categories,
+              message: failure.message,
+            ),
+          ),
+          (centersResponse) => emit(
+            state.copyWith(
+              status: ExploreStatus.success,
+              categories: categoriesResponse.categories,
+              centers: centersResponse.centers,
+              meta: centersResponse.meta,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> applyFilters({
     required int? categoryId,
     required int minPrice,
@@ -158,8 +197,7 @@ class ExploreCubit extends Cubit<ExploreState> {
         minPrice: minPrice,
         maxPrice: maxPrice,
         clearCategory: categoryId == null,
-        clearPrice:
-            minPrice == 0 && maxPrice == ExploreState.defaultMaxPrice,
+        clearPrice: minPrice == 0 && maxPrice == ExploreState.defaultMaxPrice,
       ),
     );
     await refreshCenters();

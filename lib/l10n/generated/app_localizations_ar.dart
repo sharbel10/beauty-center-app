@@ -389,7 +389,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String priceRangeFilter(int min, int max) {
-    return '\$$min - \$$max';
+    return '$min ل.س- $max ل.س';
   }
 
   @override
@@ -967,4 +967,162 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errorUnexpected => 'حدث خطأ ما. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get editProfile => 'تعديل الملف الشخصي';
+
+  @override
+  String get save => 'حفظ';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get gender => 'الجنس';
+
+  @override
+  String get birthDate => 'تاريخ الميلاد';
+
+  @override
+  String get city => 'المدينة';
+
+  @override
+  String get address => 'العنوان';
+
+  @override
+  String get notificationsEnabled => 'الإشعارات مفعلة';
+
+  @override
+  String get myStats => 'إحصائياتي';
+
+  @override
+  String get appointmentsTotal => 'إجمالي المواعيد';
+
+  @override
+  String get appointmentsUpcoming => 'المواعيد القادمة';
+
+  @override
+  String get appointmentsCompleted => 'المواعيد المكتملة';
+
+  @override
+  String get favoriteCenters => 'المراكز المفضلة';
+
+  @override
+  String get favoriteServices => 'الخدمات المفضلة';
+
+  @override
+  String get reviews => 'التقييمات';
+
+  @override
+  String get unreadNotifications => 'الإشعارات غير المقروءة';
+
+  @override
+  String get profileUpdatedSuccessfully => 'تم تحديث الملف الشخصي بنجاح.';
+
+  @override
+  String get male => 'ذكر';
+
+  @override
+  String get female => 'أنثى';
+
+  @override
+  String get changeAvatar => 'تغيير الصورة الشخصية';
+
+  @override
+  String get uploadAvatar => 'رفع الصورة';
+
+  @override
+  String get avatarUpdatedSuccessfully => 'تم تحديث الصورة الشخصية بنجاح.';
+
+  @override
+  String get deleteAccount => 'حذف الحساب';
+
+  @override
+  String get deleteAccountConfirm =>
+      'هل أنت متأكد من حذف حسابك؟ هذا الإجراء لا يمكن التراجع عنه.';
+
+  @override
+  String get accountDeletedSuccessfully => 'تم حذف الحساب بنجاح.';
+
+  @override
+  String get selectImage => 'اختر صورة';
+
+  @override
+  String get camera => 'الكاميرا';
+
+  @override
+  String get gallery => 'المعرض';
+
+  @override
+  String get changePassword => 'تغيير كلمة المرور';
+
+  @override
+  String get currentPassword => 'كلمة المرور الحالية';
+
+  @override
+  String get passwordChangedSuccessfully => 'تم تغيير كلمة المرور بنجاح.';
+
+  @override
+  String get passwordChangedReLogin =>
+      'تم تغيير كلمة المرور بنجاح. يرجى تسجيل الدخول مرة أخرى.';
+
+  @override
+  String get passwordsDoNotMatch => 'كلمات المرور غير متطابقة.';
+
+  @override
+  String get currentPasswordRequired => 'كلمة المرور الحالية مطلوبة.';
+
+  @override
+  String get newPasswordRequired => 'كلمة المرور الجديدة مطلوبة.';
+
+  @override
+  String get confirmPasswordRequired => 'يرجى تأكيد كلمة المرور.';
+
+  @override
+  String get passwordTooShort =>
+      'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.';
+
+  @override
+  String get lastLogin => 'آخر تسجيل دخول';
+
+  @override
+  String get favorites => 'المفضلة';
+
+  @override
+  String get centers => 'المراكز';
+
+  @override
+  String get services => 'الخدمات';
+
+  @override
+  String get offers => 'العروض';
+
+  @override
+  String get noFavoriteCenters => 'لا توجد مراكز مفضلة';
+
+  @override
+  String get noFavoriteCentersSubtitle =>
+      'ابدأ بإضافة المراكز إلى مفضلتك لرؤيتها هنا.';
+
+  @override
+  String get noFavoriteServices => 'لا توجد خدمات مفضلة';
+
+  @override
+  String get noFavoriteServicesSubtitle =>
+      'ابدأ بإضافة الخدمات إلى مفضلتك لرؤيتها هنا.';
+
+  @override
+  String get exploreAndAddFavorites => 'استكشف وأضف للمفضلة';
+
+  @override
+  String get noResultsFound => 'لم يتم العثور على نتائج';
+
+  @override
+  String get noResultsFor => 'لا توجد نتائج لـ';
+
+  @override
+  String get currency => 'ل.س';
+
+  @override
+  String get pressBackAgainToExit => 'اضغط مرة أخرى للخروج من التطبيق';
 }

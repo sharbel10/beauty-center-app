@@ -1,14 +1,16 @@
 import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:beauty_center_app/core/router/app_router.dart';
+import 'package:beauty_center_app/core/storage/preference_manager.dart';
 import 'package:beauty_center_app/core/storage/secure_storage.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 
 @singleton
 class HeaderInterceptor extends InterceptorsWrapper {
-  HeaderInterceptor(this._secureStorage);
+  HeaderInterceptor(this._secureStorage, this._preferenceManager);
 
   final SecureStorage _secureStorage;
+  final PreferenceManager _preferenceManager;
 
   // Endpoints that should not trigger forced logout on 401.
   static const Set<String> _publicEndpoints = <String>{
@@ -27,6 +29,13 @@ class HeaderInterceptor extends InterceptorsWrapper {
     if (token != null && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
     }
+
+    // Attach Accept-Language header based on stored app language.
+    final String? languageCode = _preferenceManager.getLanguage();
+    if (languageCode != null && languageCode.isNotEmpty) {
+      options.headers['Accept-Language'] = languageCode;
+    }
+
     handler.next(options);
   }
 

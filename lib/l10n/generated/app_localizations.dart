@@ -815,7 +815,7 @@ abstract class AppLocalizations {
   /// No description provided for @priceRangeFilter.
   ///
   /// In en, this message translates to:
-  /// **'\${min} - \${max}'**
+  /// **'SP {min} - SP {max}'**
   String priceRangeFilter(int min, int max);
 
   /// No description provided for @couldNotOpenMaps.
@@ -1879,6 +1879,312 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Something went wrong. Please try again.'**
   String get errorUnexpected;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfile;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get gender;
+
+  /// No description provided for @birthDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Birth Date'**
+  String get birthDate;
+
+  /// No description provided for @city.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get city;
+
+  /// No description provided for @address.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get address;
+
+  /// No description provided for @notificationsEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications Enabled'**
+  String get notificationsEnabled;
+
+  /// No description provided for @myStats.
+  ///
+  /// In en, this message translates to:
+  /// **'My Stats'**
+  String get myStats;
+
+  /// No description provided for @appointmentsTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Appointments'**
+  String get appointmentsTotal;
+
+  /// No description provided for @appointmentsUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Appointments'**
+  String get appointmentsUpcoming;
+
+  /// No description provided for @appointmentsCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed Appointments'**
+  String get appointmentsCompleted;
+
+  /// No description provided for @favoriteCenters.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite Centers'**
+  String get favoriteCenters;
+
+  /// No description provided for @favoriteServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite Services'**
+  String get favoriteServices;
+
+  /// No description provided for @reviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews'**
+  String get reviews;
+
+  /// No description provided for @unreadNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread Notifications'**
+  String get unreadNotifications;
+
+  /// No description provided for @profileUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully.'**
+  String get profileUpdatedSuccessfully;
+
+  /// No description provided for @male.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get male;
+
+  /// No description provided for @female.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get female;
+
+  /// No description provided for @changeAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Avatar'**
+  String get changeAvatar;
+
+  /// No description provided for @uploadAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Avatar'**
+  String get uploadAvatar;
+
+  /// No description provided for @avatarUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar updated successfully.'**
+  String get avatarUpdatedSuccessfully;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete your account? This action cannot be undone.'**
+  String get deleteAccountConfirm;
+
+  /// No description provided for @accountDeletedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Account deleted successfully.'**
+  String get accountDeletedSuccessfully;
+
+  /// No description provided for @selectImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Image'**
+  String get selectImage;
+
+  /// No description provided for @camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get camera;
+
+  /// No description provided for @gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get gallery;
+
+  /// No description provided for @changePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get changePassword;
+
+  /// No description provided for @currentPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Password'**
+  String get currentPassword;
+
+  /// No description provided for @passwordChangedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed successfully.'**
+  String get passwordChangedSuccessfully;
+
+  /// No description provided for @passwordChangedReLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed successfully. Please log in again.'**
+  String get passwordChangedReLogin;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match.'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @currentPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Current password is required.'**
+  String get currentPasswordRequired;
+
+  /// No description provided for @newPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'New password is required.'**
+  String get newPasswordRequired;
+
+  /// No description provided for @confirmPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please confirm your password.'**
+  String get confirmPasswordRequired;
+
+  /// No description provided for @passwordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters.'**
+  String get passwordTooShort;
+
+  /// No description provided for @lastLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Login'**
+  String get lastLogin;
+
+  /// No description provided for @favorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get favorites;
+
+  /// No description provided for @centers.
+  ///
+  /// In en, this message translates to:
+  /// **'Centers'**
+  String get centers;
+
+  /// No description provided for @services.
+  ///
+  /// In en, this message translates to:
+  /// **'Services'**
+  String get services;
+
+  /// No description provided for @offers.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers'**
+  String get offers;
+
+  /// No description provided for @noFavoriteCenters.
+  ///
+  /// In en, this message translates to:
+  /// **'No favorite centers'**
+  String get noFavoriteCenters;
+
+  /// No description provided for @noFavoriteCentersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start adding centers to your favorites to see them here.'**
+  String get noFavoriteCentersSubtitle;
+
+  /// No description provided for @noFavoriteServices.
+  ///
+  /// In en, this message translates to:
+  /// **'No favorite services'**
+  String get noFavoriteServices;
+
+  /// No description provided for @noFavoriteServicesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start adding services to your favorites to see them here.'**
+  String get noFavoriteServicesSubtitle;
+
+  /// No description provided for @exploreAndAddFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore and add to favorites'**
+  String get exploreAndAddFavorites;
+
+  /// No description provided for @noResultsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get noResultsFound;
+
+  /// No description provided for @noResultsFor.
+  ///
+  /// In en, this message translates to:
+  /// **'No results for'**
+  String get noResultsFor;
+
+  /// No description provided for @currency.
+  ///
+  /// In en, this message translates to:
+  /// **'SYP'**
+  String get currency;
+
+  /// No description provided for @pressBackAgainToExit.
+  ///
+  /// In en, this message translates to:
+  /// **'Press back again to exit the app'**
+  String get pressBackAgainToExit;
 }
 
 class _AppLocalizationsDelegate

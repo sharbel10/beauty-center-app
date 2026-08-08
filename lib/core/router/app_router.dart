@@ -8,6 +8,8 @@ import 'package:beauty_center_app/features/bookings/cubit/bookings_cubit.dart';
 import 'package:beauty_center_app/features/bookings/views/bookings_view.dart';
 import 'package:beauty_center_app/features/explore/cubit/explore_cubit.dart';
 import 'package:beauty_center_app/features/explore/views/explore_view.dart';
+import 'package:beauty_center_app/features/favorites/cubit/favorites_cubit.dart';
+import 'package:beauty_center_app/features/favorites/views/favorites_view.dart';
 import 'package:beauty_center_app/features/home/cubit/home_cubit.dart';
 import 'package:beauty_center_app/features/auth/views/forgot_password_view.dart';
 import 'package:beauty_center_app/features/auth/views/login_view.dart';
@@ -105,9 +107,21 @@ class AppRouter {
         ),
         GoRoute(
           name: RouteNames.explore,
-          path: RouteNames.explorePath,
+          path: '${RouteNames.explorePath}/:category_id?',
+          builder: (context, state) {
+            final String? categoryId = state.pathParameters['category_id'];
+            final int? parsedCategoryId = categoryId != null ? int.tryParse(categoryId) : null;
+            return ExploreView(
+              cubit: getIt<ExploreCubit>(),
+              initialCategoryId: parsedCategoryId,
+            );
+          },
+        ),
+        GoRoute(
+          name: RouteNames.favorites,
+          path: RouteNames.favoritesPath,
           builder: (context, state) =>
-              ExploreView(cubit: getIt<ExploreCubit>()),
+              FavoritesView(cubit: getIt<FavoritesCubit>()),
         ),
         GoRoute(
           name: RouteNames.bookings,

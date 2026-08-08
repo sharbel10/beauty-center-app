@@ -1,5 +1,6 @@
 import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:beauty_center_app/features/home/models/clinic_center.dart';
+import 'package:beauty_center_app/features/home/models/search_response.dart';
 import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 
 class HomeClinicUiModel {
@@ -13,6 +14,7 @@ class HomeClinicUiModel {
     required this.rating,
     required this.ratingsCount,
     required this.isFeatured,
+    this.isFavorite = false,
     this.description,
     this.phone,
     this.city,
@@ -26,7 +28,7 @@ class HomeClinicUiModel {
   factory HomeClinicUiModel.fromCenter(ClinicCenter center) {
     return HomeClinicUiModel(
       id: center.id,
-      imageUrl: ApiEndpoints.mediaUrl(center.coverPath),
+      imageUrl: ApiEndpoints.mediaUrl(center.coverUrl ?? center.coverPath),
       name: center.name,
       location: center.locationLabel,
       distance: center.distance != null
@@ -36,6 +38,7 @@ class HomeClinicUiModel {
       rating: center.averageRating,
       ratingsCount: center.ratingsCount,
       isFeatured: center.isFeatured,
+      isFavorite: center.isFavorite,
       description: center.description,
       phone: center.phone,
       city: center.city,
@@ -44,6 +47,33 @@ class HomeClinicUiModel {
       latitude: center.latitude,
       longitude: center.longitude,
       priceLabel: null,
+    );
+  }
+
+  factory HomeClinicUiModel.fromSearchCenter(CenterSearchResult center) {
+    return HomeClinicUiModel(
+      id: center.id,
+      imageUrl: ApiEndpoints.mediaUrl(center.coverUrl ?? center.coverPath),
+      name: center.name,
+      location: center.locationLabel,
+      distance: center.distanceKm != null
+          ? '${center.distanceKm!.toStringAsFixed(1)} km'
+          : '-',
+      tags: const <String>[],
+      rating: center.averageRating,
+      ratingsCount: center.ratingsCount,
+      isFeatured: center.isFeatured,
+      isFavorite: center.isFavorite,
+      description: center.description,
+      phone: center.phone,
+      city: center.city,
+      area: center.area,
+      address: center.address,
+      latitude: center.latitude,
+      longitude: center.longitude,
+      priceLabel: center.priceRange == null
+          ? null
+          : '${center.priceRange!.min.toStringAsFixed(0)} - ${center.priceRange!.max.toStringAsFixed(0)}',
     );
   }
 
@@ -56,6 +86,7 @@ class HomeClinicUiModel {
   final double rating;
   final int ratingsCount;
   final bool isFeatured;
+  final bool isFavorite;
   final String? description;
   final String? phone;
   final String? city;

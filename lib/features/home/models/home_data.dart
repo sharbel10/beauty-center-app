@@ -11,6 +11,7 @@ class HomeData extends Equatable {
   const HomeData({
     required this.categories,
     required this.featuredCenters,
+    required this.nearbyCenters,
     required this.offers,
     required this.advertisements,
   });
@@ -27,6 +28,12 @@ class HomeData extends Equatable {
                     ClinicCenter.fromJson(item as Map<String, dynamic>),
               )
               .toList(),
+      nearbyCenters: (json['nearby_centers'] as List<dynamic>? ?? <dynamic>[])
+          .map(
+            (dynamic item) =>
+                ClinicCenter.fromJson(item as Map<String, dynamic>),
+          )
+          .toList(),
       offers: (json['offers'] as List<dynamic>? ?? <dynamic>[])
           .map((dynamic item) => Offer.fromJson(item as Map<String, dynamic>))
           .toList(),
@@ -42,6 +49,7 @@ class HomeData extends Equatable {
 
   final List<Category> categories;
   final List<ClinicCenter> featuredCenters;
+  final List<ClinicCenter> nearbyCenters;
   final List<Offer> offers;
   final List<Advertisement> advertisements;
 
@@ -51,6 +59,13 @@ class HomeData extends Equatable {
   List<ClinicCenter> get previewFeaturedCenters =>
       featuredCenters.take(featuredPreviewLimit).toList();
 
+  List<ClinicCenter> get previewNearbyCenters {
+    final List<ClinicCenter> source = nearbyCenters.isNotEmpty
+        ? nearbyCenters
+        : featuredCenters;
+    return source.take(featuredPreviewLimit).toList();
+  }
+
   List<Offer> get previewOffers =>
       offers.take(promotionsPreviewLimit).toList();
 
@@ -58,6 +73,7 @@ class HomeData extends Equatable {
   List<Object?> get props => [
     categories,
     featuredCenters,
+    nearbyCenters,
     offers,
     advertisements,
   ];

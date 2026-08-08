@@ -18,7 +18,7 @@ import 'package:beauty_center_app/core/services/device_registration_service.dart
     as _i361;
 import 'package:beauty_center_app/core/services/firebase_messaging_service.dart'
     as _i159;
-import 'package:beauty_center_app/core/services/location_service.dart' as _i441;
+import 'package:beauty_center_app/core/services/location_service.dart' as _i187;
 import 'package:beauty_center_app/core/storage/preference_manager.dart'
     as _i333;
 import 'package:beauty_center_app/core/storage/secure_storage.dart' as _i925;
@@ -49,15 +49,19 @@ import 'package:beauty_center_app/features/explore/cubit/explore_cubit.dart'
     as _i562;
 import 'package:beauty_center_app/features/explore/repository/explore_repository.dart'
     as _i187;
+import 'package:beauty_center_app/features/favorites/cubit/favorites_cubit.dart'
+    as _i141;
+import 'package:beauty_center_app/features/favorites/repository/favorites_repository.dart'
+    as _i1;
 import 'package:beauty_center_app/features/home/cubit/home_cubit.dart' as _i92;
 import 'package:beauty_center_app/features/home/repository/home_repository.dart'
     as _i668;
 import 'package:beauty_center_app/features/onboarding/cubit/onboarding_cubit.dart'
     as _i328;
 import 'package:beauty_center_app/features/profile/cubit/profile_cubit.dart'
-    as _i741;
+    as _i607;
 import 'package:beauty_center_app/features/profile/repository/profile_repository.dart'
-    as _i812;
+    as _i449;
 import 'package:beauty_center_app/features/splash/cubit/splash_cubit.dart'
     as _i420;
 import 'package:get_it/get_it.dart' as _i174;
@@ -79,19 +83,22 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i159.FirebaseMessagingService>(
       () => _i159.FirebaseMessagingService(),
     );
-    gh.lazySingleton<_i441.LocationService>(() => _i441.LocationService());
     gh.singleton<_i925.SecureStorage>(() => _i925.SecureStorage());
+    gh.lazySingleton<_i187.LocationService>(() => _i187.LocationService());
     gh.singleton<_i333.PreferenceManager>(
       () => _i333.PreferenceManager(gh<_i460.SharedPreferences>()),
     );
+    gh.factory<_i328.OnboardingCubit>(
+      () => _i328.OnboardingCubit(gh<_i333.PreferenceManager>()),
+    );
     gh.singleton<_i719.HeaderInterceptor>(
-      () => _i719.HeaderInterceptor(gh<_i925.SecureStorage>()),
+      () => _i719.HeaderInterceptor(
+        gh<_i925.SecureStorage>(),
+        gh<_i333.PreferenceManager>(),
+      ),
     );
     gh.singleton<_i1058.DioClient>(
       () => _i1058.DioClient(gh<_i719.HeaderInterceptor>()),
-    );
-    gh.factory<_i328.OnboardingCubit>(
-      () => _i328.OnboardingCubit(gh<_i333.PreferenceManager>()),
     );
     gh.factory<_i609.AuthRepository>(
       () => _i609.AuthRepository(gh<_i1058.DioClient>()),
@@ -108,11 +115,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i187.ExploreRepository>(
       () => _i187.ExploreRepository(gh<_i1058.DioClient>()),
     );
+    gh.factory<_i1.FavoritesRepository>(
+      () => _i1.FavoritesRepository(gh<_i1058.DioClient>()),
+    );
     gh.factory<_i668.HomeRepository>(
       () => _i668.HomeRepository(gh<_i1058.DioClient>()),
     );
-    gh.factory<_i812.ProfileRepository>(
-      () => _i812.ProfileRepository(gh<_i1058.DioClient>()),
+    gh.factory<_i449.ProfileRepository>(
+      () => _i449.ProfileRepository(gh<_i1058.DioClient>()),
     );
     gh.singleton<_i361.DeviceRegistrationService>(
       () => _i361.DeviceRegistrationService(
@@ -120,6 +130,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i954.DeviceRepository>(),
         gh<_i925.SecureStorage>(),
       ),
+    );
+    gh.factory<_i141.FavoritesCubit>(
+      () => _i141.FavoritesCubit(gh<_i1.FavoritesRepository>()),
     );
     gh.factory<_i539.BookTreatmentCubit>(
       () => _i539.BookTreatmentCubit(gh<_i668.BookingRepository>()),
@@ -136,13 +149,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i92.HomeCubit>(
       () => _i92.HomeCubit(gh<_i668.HomeRepository>()),
-    );
-    gh.factory<_i741.ProfileCubit>(
-      () => _i741.ProfileCubit(
-        gh<_i812.ProfileRepository>(),
-        gh<_i441.LocationService>(),
-        gh<_i196.AuthCubit>(),
-      ),
     );
     gh.factory<_i98.ClinicDetailsCubit>(
       () => _i98.ClinicDetailsCubit(gh<_i990.ClinicsRepository>()),
@@ -161,6 +167,13 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i562.ExploreCubit>(
       () => _i562.ExploreCubit(gh<_i187.ExploreRepository>()),
+    );
+    gh.factory<_i607.ProfileCubit>(
+      () => _i607.ProfileCubit(
+        gh<_i449.ProfileRepository>(),
+        gh<_i187.LocationService>(),
+        gh<_i196.AuthCubit>(),
+      ),
     );
     gh.factory<_i420.SplashCubit>(
       () => _i420.SplashCubit(

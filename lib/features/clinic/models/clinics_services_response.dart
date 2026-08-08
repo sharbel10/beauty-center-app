@@ -62,6 +62,7 @@ class ClinicServiceItem extends Equatable {
     required this.preparationMinutes,
     required this.imagePath,
     required this.isFeatured,
+    this.isFavorite = false,
     required this.category,
   });
 
@@ -77,6 +78,7 @@ class ClinicServiceItem extends Equatable {
       preparationMinutes: json['preparation_minutes'] as int? ?? 0,
       imagePath: json['image_path'] as String? ?? '',
       isFeatured: json['is_featured'] as bool? ?? false,
+      isFavorite: json['is_favorite'] as bool? ?? false,
       category: ServiceCategory.fromJson(
         json['category'] as Map<String, dynamic>? ?? <String, dynamic>{},
       ),
@@ -93,6 +95,7 @@ class ClinicServiceItem extends Equatable {
   final int preparationMinutes;
   final String imagePath;
   final bool isFeatured;
+  final bool isFavorite;
   final ServiceCategory category;
 
   @override
@@ -106,6 +109,7 @@ class ClinicServiceItem extends Equatable {
     durationMinutes,
     imagePath,
     isFeatured,
+    isFavorite,
     category,
   ];
 }

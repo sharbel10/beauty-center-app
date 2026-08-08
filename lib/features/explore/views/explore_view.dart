@@ -6,10 +6,14 @@ import 'package:beauty_center_app/core/utils/extensions.dart';
 import 'package:beauty_center_app/core/utils/map_launcher.dart';
 import 'package:beauty_center_app/core/widgets/app_bottom_navigation.dart';
 import 'package:beauty_center_app/core/widgets/app_button.dart';
+import 'package:beauty_center_app/core/widgets/root_exit_guard.dart';
 import 'package:beauty_center_app/features/clinic/cubit/clinic_details_cubit.dart';
 import 'package:beauty_center_app/features/clinic/views/clinic_details_view.dart';
 import 'package:beauty_center_app/features/explore/cubit/explore_cubit.dart';
 import 'package:beauty_center_app/features/explore/cubit/explore_state.dart';
+import 'package:beauty_center_app/features/favorites/cubit/favorites_cubit.dart';
+import 'package:beauty_center_app/features/favorites/cubit/favorites_state.dart';
+import 'package:beauty_center_app/features/favorites/widgets/favorite_heart_button.dart';
 import 'package:beauty_center_app/features/home/models/category.dart';
 import 'package:beauty_center_app/features/home/models/clinic_center.dart';
 import 'package:beauty_center_app/features/home/widgets/clinic_network_image.dart';
@@ -18,9 +22,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ExploreView extends StatefulWidget {
-  const ExploreView({required ExploreCubit cubit, super.key}) : _cubit = cubit;
+  const ExploreView({
+    required ExploreCubit cubit,
+    this.initialCategoryId,
+    super.key,
+  }) : _cubit = cubit;
 
   final ExploreCubit _cubit;
+  final int? initialCategoryId;
 
   @override
   State<ExploreView> createState() => _ExploreViewState();
@@ -38,7 +47,11 @@ class _ExploreViewState extends State<ExploreView> {
   void initState() {
     super.initState();
     _cubit = widget._cubit;
-    _cubit.loadInitial();
+    if (widget.initialCategoryId != null) {
+      _cubit.loadInitialWithCategory(widget.initialCategoryId);
+    } else {
+      _cubit.loadInitial();
+    }
   }
 
   @override
@@ -78,115 +91,144 @@ class _ExploreViewState extends State<ExploreView> {
   Widget build(BuildContext context) {
     return BlocProvider<ExploreCubit>.value(
       value: _cubit,
-      child: BlocConsumer<ExploreCubit, ExploreState>(
-        listenWhen: (ExploreState previous, ExploreState current) =>
-            previous.message != current.message &&
-            current.message != null &&
-            current.status == ExploreStatus.failure,
-        listener: (BuildContext context, ExploreState state) {
-          context.showSnackbar(state.message!, isError: true);
-        },
-        builder: (BuildContext context, ExploreState state) {
-          final AppLocalizations l10n = AppLocalizations.of(context);
+      child: BlocProvider<FavoritesCubit>(
+        create: (_) => getIt<FavoritesCubit>(),
+        child: BlocListener<FavoritesCubit, FavoritesState>(
+          listenWhen: (FavoritesState previous, FavoritesState current) {
+            return previous.message != current.message &&
+                current.message != null;
+          },
+          listener: (BuildContext context, FavoritesState state) {
+            if (state.message != null) {
+              context.showSnackbar(
+                state.message!,
+                isError: state.isMessageError,
+              );
+              context.read<FavoritesCubit>().clearMessage();
+            }
+          },
+          child: BlocConsumer<ExploreCubit, ExploreState>(
+            listenWhen: (ExploreState previous, ExploreState current) =>
+                previous.message != current.message &&
+                current.message != null &&
+                current.status == ExploreStatus.failure,
+            listener: (BuildContext context, ExploreState state) {
+              context.showSnackbar(state.message!, isError: true);
+            },
+            builder: (BuildContext context, ExploreState state) {
+              final AppLocalizations l10n = AppLocalizations.of(context);
 
-          return Scaffold(
-            backgroundColor: AppColors.scaffold,
-            extendBody: true,
-            bottomNavigationBar: const AppBottomNavigation(
-              currentItem: AppNavItem.explore,
-            ),
-            body: SafeArea(
-              bottom: false,
-              child: RefreshIndicator(
-                onRefresh: _cubit.refreshCenters,
-                child: CustomScrollView(
-                  slivers: <Widget>[
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 22, 24, 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            _SearchAndFilter(
-                              controller: _searchController,
-                              isLoading: state.isLoading,
-                              onSearch: _submitSearch,
-                              onFilter: () => _showFilters(context),
-                            ),
-                            const SizedBox(height: 14),
-                            _ActiveFilters(
-                              state: state,
-                              onClearCategory: () {
-                                _cubit.updateCategory(null);
-                              },
-                              onClearPrice: () {
-                                _cubit.resetPriceFilter();
-                              },
-                            ),
-                            const SizedBox(height: 24),
-                            Text(
-                              l10n.allClinics,
-                              style: AppTextStyles.headline.copyWith(
-                                fontSize: 24,
-                                height: 1.1,
+              return RootExitGuard(
+                child: Scaffold(
+                  backgroundColor: AppColors.scaffold,
+                  extendBody: true,
+                  bottomNavigationBar: const AppBottomNavigation(
+                    currentItem: AppNavItem.explore,
+                  ),
+                  body: SafeArea(
+                    bottom: false,
+                    child: RefreshIndicator(
+                      onRefresh: _cubit.refreshCenters,
+                      child: CustomScrollView(
+                        slivers: <Widget>[
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                24,
+                                22,
+                                24,
+                                20,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  _SearchAndFilter(
+                                    controller: _searchController,
+                                    isLoading: state.isLoading,
+                                    onSearch: _submitSearch,
+                                    onFilter: () => _showFilters(context),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  _ActiveFilters(
+                                    state: state,
+                                    onClearCategory: () {
+                                      _cubit.updateCategory(null);
+                                    },
+                                    onClearPrice: () {
+                                      _cubit.resetPriceFilter();
+                                    },
+                                  ),
+                                  const SizedBox(height: 24),
+                                  Text(
+                                    l10n.allClinics,
+                                    style: AppTextStyles.headline.copyWith(
+                                      fontSize: 24,
+                                      height: 1.1,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 18),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 18),
-                          ],
-                        ),
+                          ),
+                          if (state.isLoading && !state.hasCenters)
+                            const SliverFillRemaining(
+                              hasScrollBody: false,
+                              child: Center(child: CircularProgressIndicator()),
+                            )
+                          else if (!state.hasCenters)
+                            SliverFillRemaining(
+                              hasScrollBody: false,
+                              child: _EmptyClinicsState(
+                                onRetry: _cubit.loadInitial,
+                              ),
+                            )
+                          else
+                            SliverPadding(
+                              padding: EdgeInsets.fromLTRB(
+                                24,
+                                0,
+                                24,
+                                24 +
+                                    AppBottomNavigation.contentOverlap(context),
+                              ),
+                              sliver: SliverList.separated(
+                                itemCount:
+                                    state.centers.length +
+                                    (state.canLoadMore ? 1 : 0),
+                                separatorBuilder:
+                                    (BuildContext context, int index) =>
+                                        const SizedBox(height: 16),
+                                itemBuilder: (BuildContext context, int index) {
+                                  if (index >= state.centers.length) {
+                                    return Center(
+                                      child: SizedBox(
+                                        width: 190,
+                                        child: AppButton(
+                                          text: l10n.loadMore,
+                                          isLoading: state.isLoadingMore,
+                                          onPressed: _cubit.loadMore,
+                                          height: 48,
+                                        ),
+                                      ),
+                                    );
+                                  }
+
+                                  return _ClinicCard(
+                                    clinic: state.centers[index],
+                                  );
+                                },
+                              ),
+                            ),
+                        ],
                       ),
                     ),
-                    if (state.isLoading && !state.hasCenters)
-                      const SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: Center(child: CircularProgressIndicator()),
-                      )
-                    else if (!state.hasCenters)
-                      SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: _EmptyClinicsState(
-                          onRetry: _cubit.loadInitial,
-                        ),
-                      )
-                    else
-                      SliverPadding(
-                        padding: EdgeInsets.fromLTRB(
-                          24,
-                          0,
-                          24,
-                          24 + AppBottomNavigation.contentOverlap(context),
-                        ),
-                        sliver: SliverList.separated(
-                          itemCount:
-                              state.centers.length +
-                              (state.canLoadMore ? 1 : 0),
-                          separatorBuilder: (BuildContext context, int index) =>
-                              const SizedBox(height: 16),
-                          itemBuilder: (BuildContext context, int index) {
-                            if (index >= state.centers.length) {
-                              return Center(
-                                child: SizedBox(
-                                  width: 190,
-                                  child: AppButton(
-                                    text: l10n.loadMore,
-                                    isLoading: state.isLoadingMore,
-                                    onPressed: _cubit.loadMore,
-                                    height: 48,
-                                  ),
-                                ),
-                              );
-                            }
-
-                            return _ClinicCard(clinic: state.centers[index]);
-                          },
-                        ),
-                      ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          );
-        },
+              );
+            },
+          ),
+        ),
       ),
     );
   }
@@ -398,10 +440,7 @@ class _ClinicCardState extends State<_ClinicCard> {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
     if (clinic.latitude == null || clinic.longitude == null) {
-      context.showSnackbar(
-        l10n.locationUnavailableForClinic,
-        isError: true,
-      );
+      context.showSnackbar(l10n.locationUnavailableForClinic, isError: true);
       return;
     }
 
@@ -446,6 +485,23 @@ class _ClinicCardState extends State<_ClinicCard> {
                 fit: StackFit.expand,
                 children: <Widget>[
                   ClinicNetworkImage(imageUrl: _mediaUrl(clinic.coverPath)),
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: FavoriteHeartButton(
+                      isFavorite: clinic.isFavorite,
+                      size: 18,
+                      padding: const EdgeInsets.all(8),
+                      onToggle: (bool isCurrentlyFavorite) async {
+                        await context
+                            .read<FavoritesCubit>()
+                            .toggleCenterFavorite(
+                              centerId: clinic.id,
+                              isCurrentlyFavorite: isCurrentlyFavorite,
+                            );
+                      },
+                    ),
+                  ),
                   Align(
                     alignment: Alignment.topRight,
                     child: Container(
@@ -951,15 +1007,15 @@ class _PriceRangeSlider extends StatelessWidget {
             max: maxLimit.toDouble(),
             divisions: maxLimit ~/ 50,
             values: values,
-            labels: RangeLabels('\$$min', '\$$max'),
+            labels: RangeLabels('$min SP', '$max SP'),
             onChanged: onChanged,
           ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('\$0', style: AppTextStyles.bodySmall),
-            Text('\$$maxLimit', style: AppTextStyles.bodySmall),
+            Text('0 SP', style: AppTextStyles.bodySmall),
+            Text('$maxLimit SP', style: AppTextStyles.bodySmall),
           ],
         ),
       ],
@@ -994,7 +1050,7 @@ class _PricePill extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 3),
-            Text('\$$value', style: AppTextStyles.link.copyWith(fontSize: 14)),
+            Text('$value', style: AppTextStyles.link.copyWith(fontSize: 14)),
           ],
         ),
       ),
