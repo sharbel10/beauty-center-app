@@ -107,10 +107,12 @@ class AppRouter {
         ),
         GoRoute(
           name: RouteNames.explore,
-          path: '${RouteNames.explorePath}/:category_id?',
+          path: RouteNames.explorePath,
           builder: (context, state) {
-            final String? categoryId = state.pathParameters['category_id'];
-            final int? parsedCategoryId = categoryId != null ? int.tryParse(categoryId) : null;
+            final String? categoryId = state.uri.queryParameters['category_id'];
+            final int? parsedCategoryId = categoryId != null && categoryId.isNotEmpty 
+                ? int.tryParse(categoryId) 
+                : null;
             return ExploreView(
               cubit: getIt<ExploreCubit>(),
               initialCategoryId: parsedCategoryId,
