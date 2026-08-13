@@ -1127,4 +1127,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pressBackAgainToExit => 'Press back again to exit the app';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get notificationsAll => 'All';
+
+  @override
+  String get notificationsUnread => 'Unread';
+
+  @override
+  String get noNotifications => 'No notifications yet';
+
+  @override
+  String get noNotificationsSubtitle =>
+      'Booking updates and clinic alerts will appear here.';
+
+  @override
+  String get noUnreadNotifications => 'You\'re all caught up';
+
+  @override
+  String get noUnreadNotificationsSubtitle =>
+      'You have no unread notifications.';
+
+  @override
+  String get markAllAsRead => 'Mark all as read';
+
+  @override
+  String get deleteNotification => 'Delete notification';
+
+  @override
+  String get deleteNotificationConfirm =>
+      'Are you sure you want to delete this notification?';
+
+  @override
+  String get unableToLoadNotifications => 'Unable to load notifications';
+
+  @override
+  String get justNow => 'Just now';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String minutesAgo(int count) {
+    return '${count}m ago';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '${count}h ago';
+  }
+
+  @override
+  String daysAgo(int count) {
+    return '${count}d ago';
+  }
 }

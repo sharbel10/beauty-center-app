@@ -32,6 +32,16 @@ class ApiEndpoints {
   // Devices / FCM
   static const String devices = 'customer/devices';
 
+  // Notifications
+  static const String notifications = 'customer/notifications';
+  static const String notificationCounts = 'customer/notifications/counts';
+  static const String notificationsReadAll = 'customer/notifications/read-all';
+
+  static String notificationRead(int id) =>
+      'customer/notifications/$id/read';
+
+  static String notificationById(int id) => 'customer/notifications/$id';
+
   static const String storageUrl = 'http://192.168.1.106:8000/storage/';
 
   static String mediaUrl(String? path) {

@@ -1,7 +1,9 @@
+import 'package:beauty_center_app/core/di/injection.dart';
 import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:beauty_center_app/core/router/app_router.dart';
 import 'package:beauty_center_app/core/storage/preference_manager.dart';
 import 'package:beauty_center_app/core/storage/secure_storage.dart';
+import 'package:beauty_center_app/features/notifications/cubit/notifications_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 
@@ -52,6 +54,9 @@ class HeaderInterceptor extends InterceptorsWrapper {
     // and route user back to login for re-authentication.
     if (statusCode == 401 && !isPublicEndpoint) {
       await _secureStorage.clearToken();
+      if (getIt.isRegistered<NotificationsCubit>()) {
+        getIt<NotificationsCubit>().reset();
+      }
       AppRouter.redirectToLogin();
     }
     handler.next(err);

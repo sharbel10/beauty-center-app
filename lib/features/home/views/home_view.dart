@@ -1,6 +1,9 @@
 import 'package:beauty_center_app/core/di/injection.dart';
 import 'package:beauty_center_app/core/router/route_names.dart';
+import 'package:beauty_center_app/core/services/device_registration_service.dart';
+import 'package:beauty_center_app/core/services/firebase_messaging_service.dart';
 import 'package:beauty_center_app/core/services/location_service.dart';
+import 'package:beauty_center_app/features/notifications/cubit/notifications_cubit.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/core/utils/extensions.dart';
@@ -45,7 +48,7 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
   static const double _nearbyRadiusKm = 25;
 
   int? _selectedCategoryId;
@@ -64,9 +67,28 @@ class _HomeViewState extends State<HomeView> {
     super.initState();
     _homeCubit = widget._homeCubit;
     _locationService = getIt<LocationService>();
+    WidgetsBinding.instance.addObserver(this);
     _loadHomeForCurrentFilters();
     _favoritesCubit = getIt<FavoritesCubit>();
     _favoritesCubit.loadFavorites();
+    _bootstrapNotifications();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      getIt<NotificationsCubit>().loadCounts();
+    }
+  }
+
+  void _bootstrapNotifications() {
+    final DeviceRegistrationService devices = getIt<DeviceRegistrationService>();
+    devices.attachTokenRefreshListener();
+    // ignore: unawaited_futures
+    devices.syncDeviceToken();
+    // ignore: unawaited_futures
+    getIt<NotificationsCubit>().loadCounts();
+    getIt<FirebaseMessagingService>().consumePendingNavigation();
   }
 
   @override
@@ -79,6 +101,7 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _homeCubit.close();
     _favoritesCubit.close();
     super.dispose();

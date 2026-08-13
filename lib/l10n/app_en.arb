@@ -465,5 +465,42 @@
   "noResultsFound": "No results found",
   "noResultsFor": "No results for",
   "currency": "SYP",
-  "pressBackAgainToExit": "Press back again to exit the app"
+  "pressBackAgainToExit": "Press back again to exit the app",
+  "notifications": "Notifications",
+  "notificationsAll": "All",
+  "notificationsUnread": "Unread",
+  "noNotifications": "No notifications yet",
+  "noNotificationsSubtitle": "Booking updates and clinic alerts will appear here.",
+  "noUnreadNotifications": "You're all caught up",
+  "noUnreadNotificationsSubtitle": "You have no unread notifications.",
+  "markAllAsRead": "Mark all as read",
+  "deleteNotification": "Delete notification",
+  "deleteNotificationConfirm": "Are you sure you want to delete this notification?",
+  "unableToLoadNotifications": "Unable to load notifications",
+  "justNow": "Just now",
+  "yesterday": "Yesterday",
+  "minutesAgo": "{count}m ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count}h ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count}d ago",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

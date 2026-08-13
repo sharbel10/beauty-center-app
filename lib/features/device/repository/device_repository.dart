@@ -10,17 +10,19 @@ class DeviceRepository extends BaseRepository {
   DeviceRepository(super.dioClient);
 
   Future<Either<Failure, DeviceMessageResponse>> registerDevice({
-    required String fcmToken,
+    required String deviceToken,
     required String platform,
-    String appVersion = '1.0.0',
-  }) async {
+    required String deviceName,
+    required String locale,
+  }) {
     return callApiWithErrorParser(
       dio.post(
         ApiEndpoints.devices,
         data: <String, dynamic>{
-          'fcm_token': fcmToken,
+          'device_token': deviceToken,
           'platform': platform,
-          'app_version': appVersion,
+          'device_name': deviceName,
+          'locale': locale,
         },
       ),
       DeviceMessageResponse.fromJson,
@@ -28,12 +30,12 @@ class DeviceRepository extends BaseRepository {
   }
 
   Future<Either<Failure, DeviceMessageResponse>> unregisterDevice({
-    required String fcmToken,
-  }) async {
+    required String deviceToken,
+  }) {
     return callApiWithErrorParser(
       dio.delete(
         ApiEndpoints.devices,
-        data: <String, dynamic>{'fcm_token': fcmToken},
+        data: <String, dynamic>{'device_token': deviceToken},
       ),
       DeviceMessageResponse.fromJson,
     );

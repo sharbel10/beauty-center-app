@@ -1125,4 +1125,59 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pressBackAgainToExit => 'اضغط مرة أخرى للخروج من التطبيق';
+
+  @override
+  String get notifications => 'الإشعارات';
+
+  @override
+  String get notificationsAll => 'الكل';
+
+  @override
+  String get notificationsUnread => 'غير مقروءة';
+
+  @override
+  String get noNotifications => 'لا توجد إشعارات بعد';
+
+  @override
+  String get noNotificationsSubtitle =>
+      'ستظهر هنا تحديثات الحجوزات وتنبيهات العيادات.';
+
+  @override
+  String get noUnreadNotifications => 'لا يوجد جديد';
+
+  @override
+  String get noUnreadNotificationsSubtitle => 'ليس لديك إشعارات غير مقروءة.';
+
+  @override
+  String get markAllAsRead => 'تعليم الكل كمقروء';
+
+  @override
+  String get deleteNotification => 'حذف الإشعار';
+
+  @override
+  String get deleteNotificationConfirm => 'هل أنت متأكد من حذف هذا الإشعار؟';
+
+  @override
+  String get unableToLoadNotifications => 'تعذر تحميل الإشعارات';
+
+  @override
+  String get justNow => 'الآن';
+
+  @override
+  String get yesterday => 'أمس';
+
+  @override
+  String minutesAgo(int count) {
+    return 'منذ $count د';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return 'منذ $count س';
+  }
+
+  @override
+  String daysAgo(int count) {
+    return 'منذ $count ي';
+  }
 }

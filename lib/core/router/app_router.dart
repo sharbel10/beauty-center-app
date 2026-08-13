@@ -18,6 +18,7 @@ import 'package:beauty_center_app/features/auth/views/register_otp_view.dart';
 import 'package:beauty_center_app/features/auth/views/register_view.dart';
 import 'package:beauty_center_app/features/auth/views/reset_password_view.dart';
 import 'package:beauty_center_app/features/home/views/home_view.dart';
+import 'package:beauty_center_app/features/notifications/views/notifications_view.dart';
 import 'package:beauty_center_app/features/onboarding/cubit/onboarding_cubit.dart';
 import 'package:beauty_center_app/features/onboarding/views/onboarding_view.dart';
 import 'package:beauty_center_app/features/profile/cubit/profile_cubit.dart';
@@ -140,6 +141,11 @@ class AppRouter {
           ),
         ),
         GoRoute(
+          name: RouteNames.notifications,
+          path: RouteNames.notificationsPath,
+          builder: (context, state) => const NotificationsView(),
+        ),
+        GoRoute(
           name: RouteNames.bookTreatment,
           path: RouteNames.bookTreatmentPath,
           // Booking requires real navigation args; deep links or missing
@@ -196,6 +202,8 @@ class AppRouter {
   static void navigateFromNotification({
     required String type,
     String? id,
+    String? appointmentId,
+    String? centerId,
   }) {
     final GoRouter? router = _routerRef;
 
@@ -211,6 +219,8 @@ class AppRouter {
 
       case 'explore':
       case 'center':
+      case 'offer':
+      case 'promotion':
         router.goNamed(RouteNames.explore);
         break;
 
@@ -219,7 +229,7 @@ class AppRouter {
         break;
 
       default:
-        router.goNamed(RouteNames.home);
+        router.goNamed(RouteNames.notifications);
     }
   }
 }

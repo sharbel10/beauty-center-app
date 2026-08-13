@@ -56,6 +56,10 @@ import 'package:beauty_center_app/features/favorites/repository/favorites_reposi
 import 'package:beauty_center_app/features/home/cubit/home_cubit.dart' as _i92;
 import 'package:beauty_center_app/features/home/repository/home_repository.dart'
     as _i668;
+import 'package:beauty_center_app/features/notifications/cubit/notifications_cubit.dart'
+    as _i865;
+import 'package:beauty_center_app/features/notifications/repository/notifications_repository.dart'
+    as _i280;
 import 'package:beauty_center_app/features/onboarding/cubit/onboarding_cubit.dart'
     as _i328;
 import 'package:beauty_center_app/features/profile/cubit/profile_cubit.dart'
@@ -121,14 +125,21 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i668.HomeRepository>(
       () => _i668.HomeRepository(gh<_i1058.DioClient>()),
     );
+    gh.factory<_i280.NotificationsRepository>(
+      () => _i280.NotificationsRepository(gh<_i1058.DioClient>()),
+    );
     gh.factory<_i449.ProfileRepository>(
       () => _i449.ProfileRepository(gh<_i1058.DioClient>()),
+    );
+    gh.lazySingleton<_i865.NotificationsCubit>(
+      () => _i865.NotificationsCubit(gh<_i280.NotificationsRepository>()),
     );
     gh.singleton<_i361.DeviceRegistrationService>(
       () => _i361.DeviceRegistrationService(
         gh<_i159.FirebaseMessagingService>(),
         gh<_i954.DeviceRepository>(),
         gh<_i925.SecureStorage>(),
+        gh<_i333.PreferenceManager>(),
       ),
     );
     gh.factory<_i141.FavoritesCubit>(
@@ -139,13 +150,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i997.BookingsCubit>(
       () => _i997.BookingsCubit(gh<_i668.BookingRepository>()),
-    );
-    gh.singleton<_i196.AuthCubit>(
-      () => _i196.AuthCubit(
-        gh<_i609.AuthRepository>(),
-        gh<_i925.SecureStorage>(),
-        gh<_i333.PreferenceManager>(),
-      ),
     );
     gh.factory<_i92.HomeCubit>(
       () => _i92.HomeCubit(gh<_i668.HomeRepository>()),
@@ -168,11 +172,21 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i562.ExploreCubit>(
       () => _i562.ExploreCubit(gh<_i187.ExploreRepository>()),
     );
+    gh.singleton<_i196.AuthCubit>(
+      () => _i196.AuthCubit(
+        gh<_i609.AuthRepository>(),
+        gh<_i925.SecureStorage>(),
+        gh<_i333.PreferenceManager>(),
+        gh<_i361.DeviceRegistrationService>(),
+        gh<_i865.NotificationsCubit>(),
+      ),
+    );
     gh.factory<_i607.ProfileCubit>(
       () => _i607.ProfileCubit(
         gh<_i449.ProfileRepository>(),
         gh<_i187.LocationService>(),
         gh<_i196.AuthCubit>(),
+        gh<_i361.DeviceRegistrationService>(),
       ),
     );
     gh.factory<_i420.SplashCubit>(

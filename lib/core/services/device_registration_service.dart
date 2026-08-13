@@ -1,4 +1,6 @@
+import 'package:beauty_center_app/core/failures/failure.dart';
 import 'package:beauty_center_app/core/services/firebase_messaging_service.dart';
+import 'package:beauty_center_app/core/storage/preference_manager.dart';
 import 'package:beauty_center_app/core/storage/secure_storage.dart';
 import 'package:beauty_center_app/core/utils/app_logger.dart';
 import 'package:beauty_center_app/features/device/repository/device_repository.dart';
@@ -12,13 +14,15 @@ class DeviceRegistrationService {
     this._firebaseMessagingService,
     this._deviceRepository,
     this._secureStorage,
+    this._preferenceManager,
   );
 
   final FirebaseMessagingService _firebaseMessagingService;
   final DeviceRepository _deviceRepository;
   final SecureStorage _secureStorage;
+  final PreferenceManager _preferenceManager;
 
-  String? _lastFcmToken;
+  String? _lastDeviceToken;
   bool _tokenRefreshListenerAttached = false;
 
   void attachTokenRefreshListener() {
@@ -28,13 +32,13 @@ class DeviceRegistrationService {
     }
     _tokenRefreshListenerAttached = true;
     FirebaseMessaging.instance.onTokenRefresh.listen((String token) {
-      _lastFcmToken = token;
+      _lastDeviceToken = token;
       // ignore: unawaited_futures
-      syncDeviceToken(fcmToken: token);
+      syncDeviceToken(deviceToken: token);
     });
   }
 
-  Future<void> syncDeviceToken({String? fcmToken}) async {
+  Future<void> syncDeviceToken({String? deviceToken}) async {
     if (!_firebaseMessagingService.isFirebaseAvailable) {
       return;
     }
@@ -45,45 +49,60 @@ class DeviceRegistrationService {
     }
 
     final String? token =
-        fcmToken ?? await _firebaseMessagingService.requestPermissionAndGetToken();
+        deviceToken ??
+        await _firebaseMessagingService.requestPermissionAndGetToken();
     if (token == null || token.isEmpty) {
       return;
     }
 
-    _lastFcmToken = token;
-    final String platform = _platformName();
+    _lastDeviceToken = token;
     final result = await _deviceRepository.registerDevice(
-      fcmToken: token,
-      platform: platform,
+      deviceToken: token,
+      platform: _platformName(),
+      deviceName: _deviceName(),
+      locale: _preferenceManager.getLanguage() ?? 'ar',
     );
     result.fold(
-      (failure) => AppLogger.e('FCM device registration failed: ${failure.message}'),
+      (failure) =>
+          AppLogger.e('FCM device registration failed: ${failure.message}'),
       (_) => AppLogger.d('FCM device registered with backend'),
     );
   }
 
-  Future<void> unregisterDeviceToken() async {
+  Future<void> unregisterDeviceToken({bool deleteLocalToken = true}) async {
     if (!_firebaseMessagingService.isFirebaseAvailable) {
       return;
     }
 
     final String? token =
-        _lastFcmToken ?? await FirebaseMessaging.instance.getToken();
+        _lastDeviceToken ?? await FirebaseMessaging.instance.getToken();
     if (token != null && token.isNotEmpty) {
-      final result = await _deviceRepository.unregisterDevice(fcmToken: token);
+      final result = await _deviceRepository.unregisterDevice(
+        deviceToken: token,
+      );
       result.fold(
-        (failure) =>
-            AppLogger.e('FCM device unregister failed: ${failure.message}'),
+        (Failure failure) {
+          if (failure is UnauthorizedFailure) {
+            AppLogger.d(
+              'FCM device unregister skipped: token already invalid '
+              '(${failure.message})',
+            );
+            return;
+          }
+          AppLogger.e('FCM device unregister failed: ${failure.message}');
+        },
         (_) => AppLogger.d('FCM device unregistered from backend'),
       );
     }
 
-    try {
-      await FirebaseMessaging.instance.deleteToken();
-    } catch (error, stackTrace) {
-      AppLogger.e('Failed to delete local FCM token', error, stackTrace);
+    if (deleteLocalToken) {
+      try {
+        await FirebaseMessaging.instance.deleteToken();
+      } catch (error, stackTrace) {
+        AppLogger.e('Failed to delete local FCM token', error, stackTrace);
+      }
+      _lastDeviceToken = null;
     }
-    _lastFcmToken = null;
   }
 
   String _platformName() {
@@ -92,6 +111,16 @@ class DeviceRegistrationService {
     }
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       return 'ios';
+    }
+    return defaultTargetPlatform.name;
+  }
+
+  String _deviceName() {
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return 'Android Device';
+    }
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      return 'iOS Device';
     }
     return defaultTargetPlatform.name;
   }

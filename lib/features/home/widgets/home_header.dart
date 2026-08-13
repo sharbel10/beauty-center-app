@@ -3,6 +3,8 @@ import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/features/favorites/cubit/favorites_cubit.dart';
 import 'package:beauty_center_app/features/favorites/cubit/favorites_state.dart';
+import 'package:beauty_center_app/features/notifications/cubit/notifications_cubit.dart';
+import 'package:beauty_center_app/features/notifications/cubit/notifications_state.dart';
 import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,8 +38,6 @@ class HomeHeader extends StatelessWidget {
         const SizedBox(width: 12),
         BlocBuilder<FavoritesCubit, FavoritesState>(
           builder: (BuildContext context, FavoritesState state) {
-            final int totalFavorites =
-                state.centers.length + state.services.length;
             return _HeaderCircleButton(
               icon: Icons.favorite_rounded,
               badgeColor: AppColors.primary,
@@ -46,10 +46,18 @@ class HomeHeader extends StatelessWidget {
           },
         ),
         const SizedBox(width: 10),
-        _HeaderCircleButton(
-          icon: Icons.notifications_rounded,
-          hasIndicator: true,
-          onTap: () {},
+        BlocBuilder<NotificationsCubit, NotificationsState>(
+          buildWhen:
+              (NotificationsState previous, NotificationsState current) =>
+                  previous.unreadCount != current.unreadCount,
+          builder: (BuildContext context, NotificationsState state) {
+            return _HeaderCircleButton(
+              icon: Icons.notifications_rounded,
+              badgeCount: state.unreadCount,
+              badgeColor: AppColors.danger,
+              onTap: () => context.pushNamed(RouteNames.notifications),
+            );
+          },
         ),
       ],
     );
@@ -62,14 +70,12 @@ class _HeaderCircleButton extends StatelessWidget {
     required this.onTap,
     this.badgeCount = 0,
     this.badgeColor,
-    this.hasIndicator = false,
   });
 
   final IconData icon;
   final VoidCallback onTap;
   final int badgeCount;
   final Color? badgeColor;
-  final bool hasIndicator;
 
   @override
   Widget build(BuildContext context) {
@@ -96,9 +102,7 @@ class _HeaderCircleButton extends StatelessWidget {
             alignment: Alignment.center,
             children: <Widget>[
               Icon(icon, color: AppColors.primary, size: 24),
-              if (hasIndicator)
-                const Positioned(top: 15, right: 15, child: _IndicatorDot())
-              else if (badgeCount > 0)
+              if (badgeCount > 0)
                 Positioned(
                   top: 10,
                   right: 10,
@@ -152,18 +156,3 @@ class _CountBadge extends StatelessWidget {
   }
 }
 
-class _IndicatorDot extends StatelessWidget {
-  const _IndicatorDot();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 8,
-      height: 8,
-      decoration: const BoxDecoration(
-        color: AppColors.danger,
-        shape: BoxShape.circle,
-      ),
-    );
-  }
-}

@@ -1,5 +1,6 @@
 import 'package:beauty_center_app/core/di/injection.dart';
 import 'package:beauty_center_app/core/localization/app_locale_controller.dart';
+import 'package:beauty_center_app/core/services/device_registration_service.dart';
 import 'package:beauty_center_app/core/storage/preference_manager.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
@@ -25,6 +26,8 @@ class LanguageToggleButton extends StatelessWidget {
           onPressed: () async {
             final Locale nextLocale = isArabic ? _english : _arabic;
             await controller.setLocale(getIt<PreferenceManager>(), nextLocale);
+            // ignore: unawaited_futures
+            getIt<DeviceRegistrationService>().syncDeviceToken();
           },
           style: TextButton.styleFrom(
             foregroundColor: AppColors.primary,

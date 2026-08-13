@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:beauty_center_app/core/failures/failure.dart';
+import 'package:beauty_center_app/core/services/device_registration_service.dart';
 import 'package:beauty_center_app/core/services/location_service.dart';
 import 'package:beauty_center_app/features/auth/cubit/auth_cubit.dart';
 import 'package:beauty_center_app/features/auth/models/customer.dart';
@@ -13,12 +14,17 @@ import 'package:injectable/injectable.dart';
 
 @injectable
 class ProfileCubit extends Cubit<ProfileState> {
-  ProfileCubit(this._profileRepository, this._locationService, this._authCubit)
-    : super(const ProfileState());
+  ProfileCubit(
+    this._profileRepository,
+    this._locationService,
+    this._authCubit,
+    this._deviceRegistration,
+  ) : super(const ProfileState());
 
   final ProfileRepository _profileRepository;
   final LocationService _locationService;
   final AuthCubit _authCubit;
+  final DeviceRegistrationService _deviceRegistration;
 
   Future<void> loadProfile() async {
     emit(
@@ -122,6 +128,8 @@ class ProfileCubit extends Cubit<ProfileState> {
     bool? notificationsEnabled,
   }) async {
     emit(state.copyWith(status: ProfileStatus.updating, clearMessage: true));
+    final bool? previousNotificationsEnabled =
+        state.customer?.notificationsEnabled;
 
     final Map<String, dynamic> data = <String, dynamic>{
       'name': name,
@@ -177,6 +185,16 @@ class ProfileCubit extends Cubit<ProfileState> {
             message: response.message ?? 'profileUpdatedSuccessfully',
           ),
         );
+        if (notificationsEnabled != null &&
+            notificationsEnabled != previousNotificationsEnabled) {
+          if (notificationsEnabled) {
+            await _deviceRegistration.syncDeviceToken();
+          } else {
+            await _deviceRegistration.unregisterDeviceToken(
+              deleteLocalToken: false,
+            );
+          }
+        }
       },
     );
   }

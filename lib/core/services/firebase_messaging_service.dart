@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:beauty_center_app/core/di/injection.dart';
 import 'package:beauty_center_app/core/router/app_router.dart';
 import 'package:beauty_center_app/core/services/local_notifications_service.dart';
 import 'package:beauty_center_app/core/utils/app_logger.dart';
+import 'package:beauty_center_app/features/auth/cubit/auth_cubit.dart';
+import 'package:beauty_center_app/features/notifications/cubit/notifications_cubit.dart';
 import 'package:beauty_center_app/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -28,6 +31,7 @@ class FirebaseMessagingService {
 
   bool _isInitialized = false;
   bool _isFirebaseAvailable = false;
+  Map<String, dynamic>? _pendingNavigation;
 
   bool get isFirebaseAvailable => _isFirebaseAvailable;
 
@@ -46,8 +50,6 @@ class FirebaseMessagingService {
       await _localNotifications.initialize(
         onTap: _handleNotificationNavigation,
       );
-
-      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
       await FirebaseMessaging.instance
           .setForegroundNotificationPresentationOptions(
@@ -104,6 +106,9 @@ class FirebaseMessagingService {
       'data=${message.data}',
     );
     await _localNotifications.showFromRemoteMessage(message);
+    if (getIt.isRegistered<NotificationsCubit>()) {
+      await getIt<NotificationsCubit>().onPushReceived();
+    }
   }
 
   void _onMessageOpened(RemoteMessage message) {
@@ -111,11 +116,40 @@ class FirebaseMessagingService {
     _handleNotificationNavigation(message.data);
   }
 
-  void _handleNotificationNavigation(Map<String, dynamic> data) {
-    final String? type = data['type']?.toString();
-    if (type == null || type.isEmpty) {
+  void consumePendingNavigation() {
+    final Map<String, dynamic>? pending = _pendingNavigation;
+    if (pending == null) {
       return;
     }
-    AppRouter.navigateFromNotification(type: type, id: data['id']?.toString());
+    _pendingNavigation = null;
+    _openNotification(pending);
+  }
+
+  void _handleNotificationNavigation(Map<String, dynamic> data) {
+    if (!getIt.isRegistered<AuthCubit>() ||
+        !getIt<AuthCubit>().state.isAuthenticated) {
+      _pendingNavigation = data;
+      return;
+    }
+    _openNotification(data);
+  }
+
+  void _openNotification(Map<String, dynamic> data) {
+    final String type = data['type']?.toString() ?? '';
+    final String? notificationId =
+        data['notification_id']?.toString() ?? data['id']?.toString();
+    final int? parsedId = int.tryParse(notificationId ?? '');
+
+    if (parsedId != null && getIt.isRegistered<NotificationsCubit>()) {
+      // ignore: unawaited_futures
+      getIt<NotificationsCubit>().markAsRead(parsedId);
+    }
+
+    AppRouter.navigateFromNotification(
+      type: type.isEmpty ? 'notifications' : type,
+      id: notificationId,
+      appointmentId: data['appointment_id']?.toString(),
+      centerId: data['center_id']?.toString(),
+    );
   }
 }

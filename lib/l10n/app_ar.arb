@@ -350,5 +350,42 @@
   "noResultsFound": "لم يتم العثور على نتائج",
   "noResultsFor": "لا توجد نتائج لـ",
   "currency": "ل.س",
-  "pressBackAgainToExit": "اضغط مرة أخرى للخروج من التطبيق"
+  "pressBackAgainToExit": "اضغط مرة أخرى للخروج من التطبيق",
+  "notifications": "الإشعارات",
+  "notificationsAll": "الكل",
+  "notificationsUnread": "غير مقروءة",
+  "noNotifications": "لا توجد إشعارات بعد",
+  "noNotificationsSubtitle": "ستظهر هنا تحديثات الحجوزات وتنبيهات العيادات.",
+  "noUnreadNotifications": "لا يوجد جديد",
+  "noUnreadNotificationsSubtitle": "ليس لديك إشعارات غير مقروءة.",
+  "markAllAsRead": "تعليم الكل كمقروء",
+  "deleteNotification": "حذف الإشعار",
+  "deleteNotificationConfirm": "هل أنت متأكد من حذف هذا الإشعار؟",
+  "unableToLoadNotifications": "تعذر تحميل الإشعارات",
+  "justNow": "الآن",
+  "yesterday": "أمس",
+  "minutesAgo": "منذ {count} د",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "منذ {count} س",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "منذ {count} ي",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

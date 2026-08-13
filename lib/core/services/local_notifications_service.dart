@@ -24,9 +24,14 @@ class LocalNotificationsService {
 
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/launcher_icon');
+    const DarwinInitializationSettings darwinSettings =
+        DarwinInitializationSettings();
 
     await _plugin.initialize(
-      const InitializationSettings(android: androidSettings),
+      const InitializationSettings(
+        android: androidSettings,
+        iOS: darwinSettings,
+      ),
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         _handleTap(response, onTap);
       },
@@ -85,6 +90,11 @@ class LocalNotificationsService {
             importance: Importance.high,
             priority: Priority.high,
             icon: '@mipmap/launcher_icon',
+          ),
+          iOS: DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
           ),
         ),
         payload: jsonEncode(message.data),

@@ -1,20 +1,29 @@
 import 'package:beauty_center_app/core/failures/failure.dart';
+import 'package:beauty_center_app/core/services/device_registration_service.dart';
 import 'package:beauty_center_app/core/storage/preference_manager.dart';
 import 'package:beauty_center_app/core/storage/secure_storage.dart';
 import 'package:beauty_center_app/features/auth/cubit/auth_state.dart';
 import 'package:beauty_center_app/features/auth/models/customer.dart';
 import 'package:beauty_center_app/features/auth/repository/auth_repository.dart';
+import 'package:beauty_center_app/features/notifications/cubit/notifications_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
 @singleton
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit(this._authRepository, this._secureStorage, this._preferenceManager)
-    : super(const AuthState(isAuthenticated: false));
+  AuthCubit(
+    this._authRepository,
+    this._secureStorage,
+    this._preferenceManager,
+    this._deviceRegistration,
+    this._notificationsCubit,
+  ) : super(const AuthState(isAuthenticated: false));
 
   final AuthRepository _authRepository;
   final SecureStorage _secureStorage;
   final PreferenceManager _preferenceManager;
+  final DeviceRegistrationService _deviceRegistration;
+  final NotificationsCubit _notificationsCubit;
 
   Future<void> register({
     required String name,
@@ -115,6 +124,7 @@ class AuthCubit extends Cubit<AuthState> {
               token: response.token!.accessToken,
             ),
           );
+          await _startNotificationSession();
         } else {
           emit(
             state.copyWith(
@@ -201,6 +211,7 @@ class AuthCubit extends Cubit<AuthState> {
               token: response.token!.accessToken,
             ),
           );
+          await _startNotificationSession();
         } else {
           emit(
             state.copyWith(
@@ -231,6 +242,11 @@ class AuthCubit extends Cubit<AuthState> {
         clearErrors: true,
       ),
     );
+
+    // Unregister the device while the access token is still valid.
+    // Logout revokes the token on the server, so DELETE /devices must run first.
+    await _deviceRegistration.unregisterDeviceToken();
+
     final result = await _authRepository.logout();
     await result.fold<Future<void>>(
       (failure) async {
@@ -239,6 +255,7 @@ class AuthCubit extends Cubit<AuthState> {
         );
       },
       (response) async {
+        _notificationsCubit.reset();
         await _secureStorage.clearAll();
         await _preferenceManager.setLoggedIn(false);
         await _preferenceManager.clearCustomer();
@@ -380,5 +397,11 @@ class AuthCubit extends Cubit<AuthState> {
         );
       },
     );
+  }
+
+  Future<void> _startNotificationSession() async {
+    _deviceRegistration.attachTokenRefreshListener();
+    await _deviceRegistration.syncDeviceToken();
+    await _notificationsCubit.loadCounts();
   }
 }

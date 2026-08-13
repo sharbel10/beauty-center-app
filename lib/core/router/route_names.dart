@@ -15,6 +15,7 @@ class RouteNames {
   static const String bookings = 'bookings';
   static const String bookTreatment = 'bookTreatment';
   static const String profile = 'profile';
+  static const String notifications = 'notifications';
 
   static const String splashPath = '/splash';
   static const String loginPath = '/login';
@@ -30,4 +31,5 @@ class RouteNames {
   static const String bookingsPath = '/bookings';
   static const String bookTreatmentPath = '/book-treatment';
   static const String profilePath = '/profile';
+  static const String notificationsPath = '/notifications';
 }
