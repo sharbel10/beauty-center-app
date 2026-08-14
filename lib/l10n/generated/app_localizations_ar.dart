@@ -899,6 +899,43 @@ class AppLocalizationsAr extends AppLocalizations {
   String get timeLabel => 'الوقت';
 
   @override
+  String get paymentLabel => 'الدفع';
+
+  @override
+  String get paymentTitle => 'مراجعة ودفع';
+
+  @override
+  String get paymentSubtitle =>
+      'راجع تفاصيل موعدك قبل فتح نموذج الدفع الآمن من Stripe.';
+
+  @override
+  String get stripeTestMode => 'وضع Stripe التجريبي · لا يوجد خصم حقيقي';
+
+  @override
+  String get stripePaymentMethodTitle => 'ادفع بأمان عبر Stripe';
+
+  @override
+  String get stripePaymentMethodSubtitle =>
+      'بطاقات تجريبية والمحافظ الرقمية المدعومة';
+
+  @override
+  String get paymentBackendPendingTitle => 'بانتظار ربط الباك إند';
+
+  @override
+  String get paymentBackendPendingBody =>
+      'سيتم تفعيل زر الدفع عندما يعيد الـ API مفتاح PaymentIntent الخاص بعملية الدفع.';
+
+  @override
+  String get paymentSecureNotice =>
+      'تُدخل بيانات الدفع داخل واجهة Stripe الآمنة ولا يتم تخزينها في Lumina.';
+
+  @override
+  String get amountDueNow => 'المبلغ المطلوب الآن';
+
+  @override
+  String get payWithStripe => 'الدفع عبر Stripe';
+
+  @override
   String get estimatedTotal => 'الإجمالي التقديري';
 
   @override

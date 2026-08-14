@@ -1,5 +1,6 @@
 import 'package:beauty_center_app/core/di/injection.dart';
 import 'package:beauty_center_app/core/localization/app_locale_controller.dart';
+import 'package:beauty_center_app/core/payments/stripe_config.dart';
 import 'package:beauty_center_app/core/router/app_router.dart';
 import 'package:beauty_center_app/core/services/device_registration_service.dart';
 import 'package:beauty_center_app/core/services/firebase_messaging_service.dart';
@@ -16,6 +17,7 @@ import 'package:toastification/toastification.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await StripeConfig.initialize();
   await configureDependencies();
   getIt<AppRouter>();
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
@@ -34,9 +36,7 @@ class BeautyCenterApp extends StatelessWidget {
 
     return MultiBlocProvider(
       providers: <BlocProvider<dynamic>>[
-        BlocProvider<FavoritesCubit>(
-          create: (_) => getIt<FavoritesCubit>(),
-        ),
+        BlocProvider<FavoritesCubit>(create: (_) => getIt<FavoritesCubit>()),
         BlocProvider<NotificationsCubit>.value(
           value: getIt<NotificationsCubit>(),
         ),

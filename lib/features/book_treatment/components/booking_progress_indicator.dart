@@ -7,10 +7,12 @@ class BookingProgressIndicator extends StatelessWidget {
   const BookingProgressIndicator({
     required this.currentStep,
     required this.onStepTapped,
+    required this.includePayment,
     super.key,
   });
 
   final int currentStep;
+  final bool includePayment;
 
   /// Called when the user taps an already-completed step to go back.
   final ValueChanged<int> onStepTapped;
@@ -22,6 +24,7 @@ class BookingProgressIndicator extends StatelessWidget {
       l10n.serviceLabel,
       l10n.dateLabel,
       l10n.timeLabel,
+      if (includePayment) l10n.paymentLabel,
     ];
 
     return Row(

@@ -900,6 +900,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timeLabel => 'Time';
 
   @override
+  String get paymentLabel => 'Payment';
+
+  @override
+  String get paymentTitle => 'Review & pay';
+
+  @override
+  String get paymentSubtitle =>
+      'Review your appointment before opening Stripe\'s secure payment form.';
+
+  @override
+  String get stripeTestMode => 'Stripe test mode · No real charge';
+
+  @override
+  String get stripePaymentMethodTitle => 'Pay securely with Stripe';
+
+  @override
+  String get stripePaymentMethodSubtitle =>
+      'Test cards and supported digital wallets';
+
+  @override
+  String get paymentBackendPendingTitle => 'Backend connection pending';
+
+  @override
+  String get paymentBackendPendingBody =>
+      'The payment button will be enabled when the API returns a Stripe PaymentIntent client secret.';
+
+  @override
+  String get paymentSecureNotice =>
+      'Payment details are entered in Stripe\'s secure PaymentSheet and are never stored by Lumina.';
+
+  @override
+  String get amountDueNow => 'Amount due now';
+
+  @override
+  String get payWithStripe => 'Pay with Stripe';
+
+  @override
   String get estimatedTotal => 'Estimated Total';
 
   @override

@@ -1,7 +1,7 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = 'http://192.168.1.106:8000/api/';
+  static const String baseUrl = 'http://192.168.1.9:8000/api/';
 
   // Auth endpoints
   static const String login = 'customer/login';
@@ -49,7 +49,6 @@ class ApiEndpoints {
       return '';
     }
     if (path.startsWith('http')) {
-      // Replace localhost with actual server IP for mobile devices
       final String serverUrl = storageUrl.replaceAll('/storage/', '');
       return path.replaceAll('http://localhost', serverUrl);
     }

@@ -77,7 +77,7 @@ class BookTreatmentCubit extends Cubit<BookTreatmentState> {
   }
 
   void nextStep() {
-    if (state.currentStep >= BookingSteps.time) {
+    if (state.isLastStep) {
       return;
     }
     goToStep(state.currentStep + 1);
@@ -91,7 +91,7 @@ class BookTreatmentCubit extends Cubit<BookTreatmentState> {
   }
 
   void goToStep(int step) {
-    final int target = step.clamp(BookingSteps.service, BookingSteps.time);
+    final int target = step.clamp(BookingSteps.service, state.lastStep);
     if (target == state.currentStep) {
       return;
     }
@@ -155,7 +155,11 @@ class BookTreatmentCubit extends Cubit<BookTreatmentState> {
 
     final int requestId = ++_slotsRequestId;
     emit(
-      state.copyWith(status: BookTreatmentStatus.ready, slotsStatus: SlotsStatus.loading, clearSlotsMessage: true),
+      state.copyWith(
+        status: BookTreatmentStatus.ready,
+        slotsStatus: SlotsStatus.loading,
+        clearSlotsMessage: true,
+      ),
     );
     final result = await _repository.getAvailableSlots(
       centerId: args.centerId,

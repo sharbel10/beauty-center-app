@@ -1748,6 +1748,72 @@ abstract class AppLocalizations {
   /// **'Time'**
   String get timeLabel;
 
+  /// No description provided for @paymentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get paymentLabel;
+
+  /// No description provided for @paymentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review & pay'**
+  String get paymentTitle;
+
+  /// No description provided for @paymentSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your appointment before opening Stripe\'s secure payment form.'**
+  String get paymentSubtitle;
+
+  /// No description provided for @stripeTestMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Stripe test mode · No real charge'**
+  String get stripeTestMode;
+
+  /// No description provided for @stripePaymentMethodTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay securely with Stripe'**
+  String get stripePaymentMethodTitle;
+
+  /// No description provided for @stripePaymentMethodSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Test cards and supported digital wallets'**
+  String get stripePaymentMethodSubtitle;
+
+  /// No description provided for @paymentBackendPendingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Backend connection pending'**
+  String get paymentBackendPendingTitle;
+
+  /// No description provided for @paymentBackendPendingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The payment button will be enabled when the API returns a Stripe PaymentIntent client secret.'**
+  String get paymentBackendPendingBody;
+
+  /// No description provided for @paymentSecureNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment details are entered in Stripe\'s secure PaymentSheet and are never stored by Lumina.'**
+  String get paymentSecureNotice;
+
+  /// No description provided for @amountDueNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount due now'**
+  String get amountDueNow;
+
+  /// No description provided for @payWithStripe.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay with Stripe'**
+  String get payWithStripe;
+
   /// No description provided for @estimatedTotal.
   ///
   /// In en, this message translates to:

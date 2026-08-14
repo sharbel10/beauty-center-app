@@ -20,14 +20,17 @@ enum BookTreatmentStatus {
 /// hides the rest of the screen and a slots error is not fatal.
 enum SlotsStatus { initial, loading, ready, failure }
 
-/// Wizard steps: 0 = service + specialist, 1 = date, 2 = time + confirm.
+/// Wizard steps: service + specialist, date, time, then payment.
+/// Rescheduling intentionally stops at the time step because it does not open a
+/// new payment until the backend defines how price differences are handled.
 class BookingSteps {
   BookingSteps._();
 
   static const int service = 0;
   static const int date = 1;
   static const int time = 2;
-  static const int count = 3;
+  static const int payment = 3;
+  static const int count = 4;
 }
 
 class BookTreatmentState extends Equatable {
@@ -69,7 +72,11 @@ class BookTreatmentState extends Equatable {
   bool get areSlotsLoading => slotsStatus == SlotsStatus.loading;
   bool get hasData => services.isNotEmpty;
 
-  bool get isLastStep => currentStep == BookingSteps.time;
+  bool get isRescheduling => args?.isRescheduling ?? false;
+
+  int get lastStep => isRescheduling ? BookingSteps.time : BookingSteps.payment;
+
+  bool get isLastStep => currentStep == lastStep;
 
   /// Whether the current step's required selection is made.
   bool get canContinue {
@@ -78,12 +85,17 @@ class BookTreatmentState extends Equatable {
         return selectedServiceId != null;
       case BookingSteps.date:
         return selectedDate != null;
+      case BookingSteps.time:
+        return selectedSlot != null;
       default:
         return false;
     }
   }
 
+  /// New bookings cannot be submitted until Stripe's backend endpoint returns
+  /// a PaymentIntent client secret. Rescheduling keeps its existing behaviour.
   bool get canConfirm =>
+      isRescheduling &&
       selectedServiceId != null &&
       selectedDate != null &&
       selectedSlot != null &&

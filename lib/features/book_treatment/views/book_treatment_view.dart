@@ -6,6 +6,7 @@ import 'package:beauty_center_app/features/book_treatment/components/book_treatm
 import 'package:beauty_center_app/features/book_treatment/components/booking_progress_indicator.dart';
 import 'package:beauty_center_app/features/book_treatment/components/booking_summary_bar.dart';
 import 'package:beauty_center_app/features/book_treatment/components/date_step.dart';
+import 'package:beauty_center_app/features/book_treatment/components/payment_step.dart';
 import 'package:beauty_center_app/features/book_treatment/components/service_step.dart';
 import 'package:beauty_center_app/features/book_treatment/components/time_step.dart';
 import 'package:beauty_center_app/features/book_treatment/cubit/book_treatment_cubit.dart';
@@ -137,26 +138,30 @@ class _Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<BookTreatmentCubit, BookTreatmentState,
-        (BookTreatmentStatus, bool, String?)>(
+    return BlocSelector<
+      BookTreatmentCubit,
+      BookTreatmentState,
+      (BookTreatmentStatus, bool, String?)
+    >(
       selector: (BookTreatmentState state) =>
           (state.status, state.hasData, state.message),
-      builder: (BuildContext context, (BookTreatmentStatus, bool, String?) phase) {
-        final (BookTreatmentStatus status, bool hasData, String? message) =
-            phase;
+      builder:
+          (BuildContext context, (BookTreatmentStatus, bool, String?) phase) {
+            final (BookTreatmentStatus status, bool hasData, String? message) =
+                phase;
 
-        if (!hasData &&
-            (status == BookTreatmentStatus.initial ||
-                status == BookTreatmentStatus.loading)) {
-          return const Center(child: CircularProgressIndicator());
-        }
+            if (!hasData &&
+                (status == BookTreatmentStatus.initial ||
+                    status == BookTreatmentStatus.loading)) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-        if (!hasData) {
-          return _EmptyServicesState(message: message);
-        }
+            if (!hasData) {
+              return _EmptyServicesState(message: message);
+            }
 
-        return const _Stepper();
-      },
+            return const _Stepper();
+          },
     );
   }
 }
@@ -166,15 +171,18 @@ class _Stepper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<BookTreatmentCubit, BookTreatmentState, int>(
-      selector: (BookTreatmentState state) => state.currentStep,
-      builder: (BuildContext context, int currentStep) {
+    return BlocSelector<BookTreatmentCubit, BookTreatmentState, (int, bool)>(
+      selector: (BookTreatmentState state) =>
+          (state.currentStep, !state.isRescheduling),
+      builder: (BuildContext context, (int, bool) stepData) {
+        final (int currentStep, bool includePayment) = stepData;
         return Column(
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
               child: BookingProgressIndicator(
                 currentStep: currentStep,
+                includePayment: includePayment,
                 onStepTapped: context.read<BookTreatmentCubit>().goToStep,
               ),
             ),
@@ -188,8 +196,11 @@ class _Stepper extends StatelessWidget {
                   BookingSteps.date => const _DateStepSection(
                     key: ValueKey<int>(BookingSteps.date),
                   ),
-                  _ => const _TimeStepSection(
+                  BookingSteps.time => const _TimeStepSection(
                     key: ValueKey<int>(BookingSteps.time),
+                  ),
+                  _ => const _PaymentStepSection(
+                    key: ValueKey<int>(BookingSteps.payment),
                   ),
                 },
               ),
@@ -307,6 +318,33 @@ class _TimeStepSection extends StatelessWidget {
   }
 }
 
+class _PaymentStepSection extends StatelessWidget {
+  const _PaymentStepSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
+    return BlocBuilder<BookTreatmentCubit, BookTreatmentState>(
+      buildWhen: (BookTreatmentState previous, BookTreatmentState current) =>
+          previous.selectedServiceId != current.selectedServiceId ||
+          previous.selectedEmployeeId != current.selectedEmployeeId ||
+          previous.selectedDate != current.selectedDate ||
+          previous.selectedSlotStartsAt != current.selectedSlotStartsAt,
+      builder: (BuildContext context, BookTreatmentState state) {
+        return PaymentStep(
+          serviceName: state.selectedService?.name ?? '—',
+          specialistName:
+              state.selectedEmployee?.name ?? l10n.anySpecialistName,
+          dateLabel: state.selectedDateLabel,
+          timeLabel: state.selectedTimeLabel,
+          totalLabel: state.totalLabel,
+        );
+      },
+    );
+  }
+}
+
 class _BottomBar extends StatelessWidget {
   const _BottomBar();
 
@@ -342,7 +380,8 @@ class _BottomBar extends StatelessWidget {
         }
 
         final BookTreatmentCubit cubit = context.read<BookTreatmentCubit>();
-        final bool isLastStep = currentStep == BookingSteps.time;
+        final bool isLastStep = cubit.state.isLastStep;
+        final bool isPaymentStep = currentStep == BookingSteps.payment;
 
         return BookingSummaryBar(
           isLastStep: isLastStep,
@@ -350,10 +389,16 @@ class _BottomBar extends StatelessWidget {
           isLoading: isSubmitting,
           total: total,
           time: time,
-          confirmText: cubit.state.args?.isRescheduling ?? false
+          confirmText: isPaymentStep
+              ? l10n.payWithStripe
+              : (cubit.state.args?.isRescheduling ?? false)
               ? l10n.confirmReschedule
               : l10n.confirmBooking,
-          onPressed: isLastStep ? cubit.confirmBooking : cubit.nextStep,
+          onPressed: isPaymentStep
+              ? () {}
+              : isLastStep
+              ? cubit.confirmBooking
+              : cubit.nextStep,
         );
       },
     );
