@@ -121,7 +121,8 @@ class _NotificationsViewState extends State<NotificationsView> {
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
               sliver: SliverList.separated(
-                itemCount: state.notifications.length + (state.isLoadingMore ? 1 : 0),
+                itemCount:
+                    state.notifications.length + (state.isLoadingMore ? 1 : 0),
                 separatorBuilder: (_, _) => const SizedBox(height: 12),
                 itemBuilder: (BuildContext context, int index) {
                   if (index >= state.notifications.length) {
@@ -135,8 +136,10 @@ class _NotificationsViewState extends State<NotificationsView> {
                       state.notifications[index];
                   return NotificationCard(
                     notification: notification,
-                    onTap: () => _onNotificationTap(context, cubit, notification),
-                    onDelete: () => _confirmDelete(context, cubit, notification),
+                    onTap: () =>
+                        _onNotificationTap(context, cubit, notification),
+                    onDelete: () =>
+                        _confirmDelete(context, cubit, notification),
                   );
                 },
               ),
@@ -247,10 +250,7 @@ class _EmptyNotifications extends StatelessWidget {
             Text(
               subtitle,
               textAlign: TextAlign.center,
-              style: AppTextStyles.subtitle.copyWith(
-                fontSize: 13,
-                height: 1.4,
-              ),
+              style: AppTextStyles.subtitle.copyWith(fontSize: 13, height: 1.4),
             ),
             if (onAction != null && actionLabel != null) ...<Widget>[
               const SizedBox(height: 16),

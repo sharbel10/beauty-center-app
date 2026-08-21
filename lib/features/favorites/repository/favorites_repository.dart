@@ -23,10 +23,7 @@ class FavoritesRepository extends BaseRepository {
     return callApiWithErrorParser(
       dio.post(
         ApiEndpoints.favorites,
-        data: <String, dynamic>{
-          'type': 'center',
-          'id': centerId,
-        },
+        data: <String, dynamic>{'type': 'center', 'id': centerId},
       ),
       ToggleFavoriteResponse.fromJson,
     );
@@ -47,10 +44,7 @@ class FavoritesRepository extends BaseRepository {
     return callApiWithErrorParser(
       dio.post(
         ApiEndpoints.favorites,
-        data: <String, dynamic>{
-          'type': 'service',
-          'id': serviceId,
-        },
+        data: <String, dynamic>{'type': 'service', 'id': serviceId},
       ),
       ToggleFavoriteResponse.fromJson,
     );
@@ -62,10 +56,7 @@ class FavoritesRepository extends BaseRepository {
     return callApiWithErrorParser(
       dio.post(
         '${ApiEndpoints.favorites}/toggle',
-        data: <String, dynamic>{
-          'type': 'service',
-          'id': serviceId,
-        },
+        data: <String, dynamic>{'type': 'service', 'id': serviceId},
       ),
       ToggleFavoriteResponse.fromJson,
     );

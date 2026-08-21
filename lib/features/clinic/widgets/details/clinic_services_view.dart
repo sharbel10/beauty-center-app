@@ -8,6 +8,7 @@ import 'package:beauty_center_app/features/clinic/cubit/clinic_services_cubit.da
 import 'package:beauty_center_app/features/clinic/cubit/clinic_services_state.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_details_response.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_services_response.dart';
+import 'package:beauty_center_app/features/clinic/models/clinic_service_filters.dart';
 import 'package:beauty_center_app/features/clinic/widgets/clinic_service_card.dart';
 import 'package:beauty_center_app/features/favorites/cubit/favorites_cubit.dart';
 import 'package:beauty_center_app/features/favorites/cubit/favorites_state.dart';
@@ -45,7 +46,7 @@ class ClinicServicesView extends StatelessWidget {
           },
           child: BlocBuilder<ClinicServicesCubit, ClinicServicesState>(
             builder: (BuildContext context, ClinicServicesState state) {
-              if (state is ClinicServicesLoading) {
+              if (state.isLoading) {
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(32.0),
@@ -54,36 +55,64 @@ class ClinicServicesView extends StatelessWidget {
                 );
               }
 
-              if (state is ClinicServicesFailure) {
+              if (state.status == ClinicServicesStatus.failure) {
                 return Center(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      state.errorMessage,
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: Colors.red,
-                      ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Text(
+                          state.message ?? l10n.clinicDetailsLoadFailed,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: Colors.red,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 12),
+                        ElevatedButton(
+                          onPressed: () => context
+                              .read<ClinicServicesCubit>()
+                              .fetchClinicServices(clinic.id),
+                          child: Text(l10n.retry),
+                        ),
+                      ],
                     ),
                   ),
                 );
               }
 
-              if (state is ClinicServicesSuccess) {
+              if (state.status == ClinicServicesStatus.success) {
                 final Map<ServiceCategory, List<ClinicServiceItem>> grouped =
                     state.services.groupByCategory;
 
                 if (grouped.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(32.0),
-                      child: Text(l10n.clinicNoServices),
-                    ),
+                  return Column(
+                    children: <Widget>[
+                      _ClinicServiceFiltersBar(
+                        state: state,
+                        onSearchChanged: context
+                            .read<ClinicServicesCubit>()
+                            .onSearchChanged,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(32.0),
+                        child: Text(l10n.clinicNoServices),
+                      ),
+                    ],
                   );
                 }
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    _ClinicServiceFiltersBar(
+                      state: state,
+                      onSearchChanged: context
+                          .read<ClinicServicesCubit>()
+                          .onSearchChanged,
+                    ),
+                    const SizedBox(height: 20),
                     ...grouped.entries.map((
                       MapEntry<ServiceCategory, List<ClinicServiceItem>> entry,
                     ) {
@@ -165,6 +194,359 @@ class ClinicServicesView extends StatelessWidget {
     );
   }
 }
+
+class _ClinicServiceFiltersBar extends StatelessWidget {
+  const _ClinicServiceFiltersBar({
+    required this.state,
+    required this.onSearchChanged,
+  });
+  final ClinicServicesState state;
+  final ValueChanged<String> onSearchChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    final Map<int, ServiceCategory> categories = <int, ServiceCategory>{
+      for (final ClinicServiceItem service in state.services)
+        service.category.id: service.category,
+    };
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: TextFormField(
+                key: ValueKey<String>(state.filters.query),
+                initialValue: state.filters.query,
+                maxLength: 255,
+                onChanged: onSearchChanged,
+                decoration: InputDecoration(
+                  hintText: l10n.searchClinicsOrTreatments,
+                  counterText: '',
+                  prefixIcon: const Icon(Icons.search_rounded),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            IconButton.filledTonal(
+              onPressed: () {
+                final ClinicServicesCubit cubit = context
+                    .read<ClinicServicesCubit>();
+                showModalBottomSheet<void>(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (_) => BlocProvider<ClinicServicesCubit>.value(
+                    value: cubit,
+                    child: _ClinicServiceFilterSheet(
+                      initial: state.filters,
+                      categories: categories.values.toList(),
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.tune_rounded),
+            ),
+          ],
+        ),
+        if (state.filters.isActive) ...<Widget>[
+          const SizedBox(height: 8),
+          ActionChip(
+            avatar: const Icon(Icons.close_rounded, size: 16),
+            label: Text(l10n.clearFilters),
+            onPressed: context.read<ClinicServicesCubit>().resetFilters,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _ClinicServiceFilterSheet extends StatefulWidget {
+  const _ClinicServiceFilterSheet({
+    required this.initial,
+    required this.categories,
+  });
+  final ClinicServiceFilters initial;
+  final List<ServiceCategory> categories;
+  @override
+  State<_ClinicServiceFilterSheet> createState() =>
+      _ClinicServiceFilterSheetState();
+}
+
+class _ClinicServiceFilterSheetState extends State<_ClinicServiceFilterSheet> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late TextEditingController _minPrice;
+  late TextEditingController _maxPrice;
+  late TextEditingController _maxDuration;
+  int? _categoryId;
+  bool? _isFeatured;
+  String? _sortBy;
+
+  @override
+  void initState() {
+    super.initState();
+    _categoryId = widget.initial.categoryId;
+    _isFeatured = widget.initial.isFeatured;
+    _sortBy = widget.initial.sortBy;
+    _minPrice = TextEditingController(
+      text: widget.initial.minPrice?.toString() ?? '',
+    );
+    _maxPrice = TextEditingController(
+      text: widget.initial.maxPrice?.toString() ?? '',
+    );
+    _maxDuration = TextEditingController(
+      text: widget.initial.maxDuration?.toString() ?? '',
+    );
+  }
+
+  @override
+  void dispose() {
+    _minPrice.dispose();
+    _maxPrice.dispose();
+    _maxDuration.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * .85,
+      ),
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(
+            22,
+            16,
+            22,
+            22 + MediaQuery.viewInsetsOf(context).bottom,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      l10n.filters,
+                      style: AppTextStyles.title.copyWith(fontSize: 22),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ],
+              ),
+              DropdownButtonFormField<int?>(
+                initialValue: _categoryId,
+                isExpanded: true,
+                decoration: InputDecoration(
+                  labelText: l10n.categories,
+                  border: const OutlineInputBorder(),
+                ),
+                items: <DropdownMenuItem<int?>>[
+                  DropdownMenuItem<int?>(value: null, child: Text(l10n.all)),
+                  if (_categoryId != null &&
+                      !widget.categories.any(
+                        (ServiceCategory category) =>
+                            category.id == _categoryId,
+                      ))
+                    DropdownMenuItem<int?>(
+                      value: _categoryId,
+                      child: Text('#$_categoryId'),
+                    ),
+                  ...widget.categories.map(
+                    (category) => DropdownMenuItem<int?>(
+                      value: category.id,
+                      child: Text(category.name),
+                    ),
+                  ),
+                ],
+                onChanged: (value) => setState(() => _categoryId = value),
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<bool?>(
+                initialValue: _isFeatured,
+                decoration: InputDecoration(
+                  labelText: l10n.featuredOnly,
+                  border: const OutlineInputBorder(),
+                ),
+                items: <DropdownMenuItem<bool?>>[
+                  DropdownMenuItem<bool?>(
+                    value: null,
+                    child: Text(l10n.anyOption),
+                  ),
+                  DropdownMenuItem<bool?>(
+                    value: true,
+                    child: Text(l10n.yesOption),
+                  ),
+                  DropdownMenuItem<bool?>(
+                    value: false,
+                    child: Text(l10n.noOption),
+                  ),
+                ],
+                onChanged: (value) => setState(() => _isFeatured = value),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: _ServiceNumberField(
+                      label: l10n.min,
+                      controller: _minPrice,
+                      min: 0,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _ServiceNumberField(
+                      label: l10n.max,
+                      controller: _maxPrice,
+                      min: 0,
+                      validator: (_) => _priceError(l10n),
+                    ),
+                  ),
+                ],
+              ),
+              _ServiceNumberField(
+                label: l10n.maxDuration,
+                controller: _maxDuration,
+                min: 0,
+                integerOnly: true,
+              ),
+              DropdownButtonFormField<String?>(
+                initialValue: _sortBy,
+                decoration: InputDecoration(
+                  labelText: l10n.sortBy,
+                  border: const OutlineInputBorder(),
+                ),
+                items: <DropdownMenuItem<String?>>[
+                  DropdownMenuItem<String?>(
+                    value: null,
+                    child: Text(l10n.anyOption),
+                  ),
+                  ...clinicServiceSortOptions.map(
+                    (value) => DropdownMenuItem<String?>(
+                      value: value,
+                      child: Text(_serviceSortLabel(l10n, value)),
+                    ),
+                  ),
+                ],
+                onChanged: (value) => setState(() => _sortBy = value),
+              ),
+              const SizedBox(height: 18),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        final cubit = context.read<ClinicServicesCubit>();
+                        Navigator.pop(context);
+                        cubit.resetFilters();
+                      },
+                      child: Text(l10n.reset),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _apply,
+                      child: Text(l10n.apply),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String? _priceError(AppLocalizations l10n) {
+    final double? min = double.tryParse(_minPrice.text.trim());
+    final double? max = double.tryParse(_maxPrice.text.trim());
+    return min != null && max != null && max < min
+        ? l10n.invalidPriceRange
+        : null;
+  }
+
+  void _apply() {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    final cubit = context.read<ClinicServicesCubit>();
+    final filters = ClinicServiceFilters(
+      query: widget.initial.query,
+      categoryId: _categoryId,
+      isFeatured: _isFeatured,
+      minPrice: double.tryParse(_minPrice.text.trim()),
+      maxPrice: double.tryParse(_maxPrice.text.trim()),
+      maxDuration: int.tryParse(_maxDuration.text.trim()),
+      sortBy: _sortBy,
+    );
+    Navigator.pop(context);
+    cubit.applyFilters(filters);
+  }
+}
+
+class _ServiceNumberField extends StatelessWidget {
+  const _ServiceNumberField({
+    required this.label,
+    required this.controller,
+    required this.min,
+    this.validator,
+    this.integerOnly = false,
+  });
+  final String label;
+  final TextEditingController controller;
+  final double min;
+  final FormFieldValidator<String>? validator;
+  final bool integerOnly;
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: TextFormField(
+      controller: controller,
+      keyboardType: TextInputType.numberWithOptions(decimal: !integerOnly),
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+      ),
+      validator: (value) {
+        final input = value?.trim() ?? '';
+        if (input.isNotEmpty) {
+          final number = integerOnly
+              ? int.tryParse(input)?.toDouble()
+              : double.tryParse(input);
+          if (number == null || number < min) {
+            return AppLocalizations.of(context).invalidFilterValue;
+          }
+        }
+        return validator?.call(value);
+      },
+    ),
+  );
+}
+
+String _serviceSortLabel(AppLocalizations l10n, String value) =>
+    switch (value) {
+      'price_asc' => l10n.sortPriceAsc,
+      'price_desc' => l10n.sortPriceDesc,
+      'duration' => l10n.sortDuration,
+      'name' => l10n.sortName,
+      _ => l10n.sortLatest,
+    };
 
 class _ServicesSectionHeader extends StatelessWidget {
   const _ServicesSectionHeader({required this.title, required this.count});

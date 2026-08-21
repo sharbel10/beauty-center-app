@@ -54,14 +54,14 @@ class HomeState extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        status,
-        data,
-        message,
-        searchQuery,
-        isSearching,
-        searchData,
-        searchStatus,
-      ];
+    status,
+    data,
+    message,
+    searchQuery,
+    isSearching,
+    searchData,
+    searchStatus,
+  ];
 }
 
 enum SearchStatus { initial, loading, success, failure }

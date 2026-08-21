@@ -210,10 +210,7 @@ class _PeriodLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      label,
-      style: AppTextStyles.smallCaps.copyWith(fontSize: 12),
-    );
+    return Text(label, style: AppTextStyles.smallCaps.copyWith(fontSize: 12));
   }
 }
 

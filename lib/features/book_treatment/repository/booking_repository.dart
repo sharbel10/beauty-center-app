@@ -2,6 +2,8 @@ import 'package:beauty_center_app/core/failures/failure.dart';
 import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:beauty_center_app/core/network/base_repository.dart';
 import 'package:beauty_center_app/features/book_treatment/models/available_slots_response.dart';
+import 'package:beauty_center_app/features/book_treatment/models/payment_methods_response.dart';
+import 'package:beauty_center_app/features/book_treatment/models/payment_response.dart';
 import 'package:beauty_center_app/features/bookings/models/appointments_response.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_employees_response.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_services_response.dart';
@@ -62,6 +64,15 @@ class BookingRepository extends BaseRepository {
     );
   }
 
+  Future<Either<Failure, PaymentMethodsResponse>> getPaymentMethods({
+    required int centerId,
+  }) {
+    return callApiWithErrorParser(
+      dio.get(ApiEndpoints.centerPaymentMethods(centerId)),
+      PaymentMethodsResponse.fromJson,
+    );
+  }
+
   Future<Either<Failure, AppointmentsResponse>> getAppointments({
     String? scope,
   }) {
@@ -107,6 +118,32 @@ class BookingRepository extends BaseRepository {
     return callApiWithErrorParser(
       dio.post(ApiEndpoints.appointments, data: data),
       AppointmentResponse.fromJson,
+    );
+  }
+
+  Future<Either<Failure, PaymentResponse>> initiateDepositPayment({
+    required int appointmentId,
+    required int paymentGatewayId,
+  }) {
+    return callApiWithErrorParser(
+      dio.post(
+        ApiEndpoints.appointmentPayments(appointmentId),
+        data: <String, dynamic>{
+          'type': 'deposit',
+          'payment_gateway_id': paymentGatewayId,
+          'method': 'card',
+        },
+      ),
+      PaymentResponse.fromJson,
+    );
+  }
+
+  Future<Either<Failure, PaymentResponse>> getPayment({
+    required int paymentId,
+  }) {
+    return callApiWithErrorParser(
+      dio.get('${ApiEndpoints.payments}/$paymentId'),
+      PaymentResponse.fromJson,
     );
   }
 

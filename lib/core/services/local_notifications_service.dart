@@ -74,8 +74,7 @@ class LocalNotificationsService {
         message.data['body']?.toString() ??
         'You have a new notification';
 
-    final int notificationId =
-        message.messageId?.hashCode ?? message.hashCode;
+    final int notificationId = message.messageId?.hashCode ?? message.hashCode;
 
     try {
       await _plugin.show(
@@ -104,10 +103,7 @@ class LocalNotificationsService {
     }
   }
 
-  void _handleTap(
-    NotificationResponse response,
-    NotificationTapHandler onTap,
-  ) {
+  void _handleTap(NotificationResponse response, NotificationTapHandler onTap) {
     final String? payload = response.payload;
     if (payload == null || payload.isEmpty) {
       return;

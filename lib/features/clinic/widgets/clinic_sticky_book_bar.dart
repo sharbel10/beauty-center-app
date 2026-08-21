@@ -30,11 +30,7 @@ class ClinicStickyBookBar extends StatelessWidget {
         top: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
-          child: AppButton(
-            text: label,
-            onPressed: onPressed,
-            height: 58,
-          ),
+          child: AppButton(text: label, onPressed: onPressed, height: 58),
         ),
       ),
     );

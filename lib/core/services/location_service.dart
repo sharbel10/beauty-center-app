@@ -143,10 +143,7 @@ class LocationService {
 
     try {
       final List<Placemark> placemarks = await _geocoding
-          .placemarkFromCoordinates(
-            position.latitude,
-            position.longitude,
-          );
+          .placemarkFromCoordinates(position.latitude, position.longitude);
       if (placemarks.isNotEmpty) {
         final Placemark place = placemarks.first;
         locality = place.locality?.trim().isNotEmpty == true

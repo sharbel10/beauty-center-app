@@ -6,6 +6,7 @@ import 'package:beauty_center_app/features/clinic/models/clinics_employees_respo
 import 'package:beauty_center_app/features/clinic/models/clinics_offers_response.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_portfolio_response.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_services_response.dart';
+import 'package:beauty_center_app/features/clinic/models/clinic_service_filters.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 
@@ -60,9 +61,13 @@ class ClinicsRepository extends BaseRepository {
 
   Future<Either<Failure, ClinicServicesResponse>> getClinicServices({
     required int centerId,
+    ClinicServiceFilters filters = const ClinicServiceFilters(),
   }) {
     return callApiWithErrorParser(
-      dio.get('${ApiEndpoints.centers}/$centerId/services'),
+      dio.get(
+        '${ApiEndpoints.centers}/$centerId/services',
+        queryParameters: filters.toQueryParameters(),
+      ),
       ClinicServicesResponse.fromJson,
     );
   }

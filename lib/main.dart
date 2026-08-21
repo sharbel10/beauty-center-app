@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:beauty_center_app/core/di/injection.dart';
 import 'package:beauty_center_app/core/localization/app_locale_controller.dart';
 import 'package:beauty_center_app/core/payments/stripe_config.dart';
@@ -6,6 +8,7 @@ import 'package:beauty_center_app/core/services/device_registration_service.dart
 import 'package:beauty_center_app/core/services/firebase_messaging_service.dart';
 import 'package:beauty_center_app/core/storage/preference_manager.dart';
 import 'package:beauty_center_app/core/theme/app_theme.dart';
+import 'package:beauty_center_app/core/utils/app_logger.dart';
 import 'package:beauty_center_app/features/favorites/cubit/favorites_cubit.dart';
 import 'package:beauty_center_app/features/notifications/cubit/notifications_cubit.dart';
 import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
@@ -17,14 +20,30 @@ import 'package:toastification/toastification.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await StripeConfig.initialize();
   await configureDependencies();
   getIt<AppRouter>();
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  await getIt<FirebaseMessagingService>().initialize();
-  getIt<DeviceRegistrationService>().attachTokenRefreshListener();
   await AppLocaleController.instance.load(getIt<PreferenceManager>());
   runApp(const BeautyCenterApp());
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    unawaited(_initializeDeferredServices());
+  });
+}
+
+Future<void> _initializeDeferredServices() async {
+  try {
+    await StripeConfig.initialize();
+  } catch (error, stackTrace) {
+    AppLogger.e('Stripe initialization failed', error, stackTrace);
+  }
+
+  try {
+    await getIt<FirebaseMessagingService>().initialize();
+    getIt<DeviceRegistrationService>().attachTokenRefreshListener();
+  } catch (error, stackTrace) {
+    AppLogger.e('Messaging initialization failed', error, stackTrace);
+  }
 }
 
 class BeautyCenterApp extends StatelessWidget {

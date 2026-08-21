@@ -102,7 +102,8 @@ class _BookingsViewState extends State<BookingsView> {
                                 onRefresh: _cubit.loadAppointments,
                                 onViewDetails: _showAppointmentDetails,
                                 onMorePressed: _showAppointmentActions,
-                                onRebookPressed: _openBooking,
+                                onRebookPressed: _openRebooking,
+                                onPayPressed: _openPendingPayment,
                               )
                             : _AppointmentsList(
                                 key: const ValueKey<String>('past'),
@@ -114,7 +115,8 @@ class _BookingsViewState extends State<BookingsView> {
                                 onRefresh: _cubit.loadAppointments,
                                 onViewDetails: _showAppointmentDetails,
                                 onMorePressed: _showAppointmentActions,
-                                onRebookPressed: _openBooking,
+                                onRebookPressed: _openRebooking,
+                                onPayPressed: _openPendingPayment,
                               ),
                       ),
                     ),
@@ -148,10 +150,16 @@ class _BookingsViewState extends State<BookingsView> {
       builder: (BuildContext context) {
         return _AppointmentDetailsSheet(
           appointment: appointment,
+          onPay: appointment.canRetryPayment
+              ? () {
+                  Navigator.of(context).pop();
+                  _openPendingPayment(appointment);
+                }
+              : null,
           onRebook: appointment.isPast || appointment.startsAtIsPast
               ? () {
                   Navigator.of(context).pop();
-                  _openBooking(appointment);
+                  _openRebooking(appointment);
                 }
               : null,
         );
@@ -181,7 +189,7 @@ class _BookingsViewState extends State<BookingsView> {
           onReschedule: appointment.canReschedule
               ? () {
                   Navigator.of(sheetContext).pop();
-                  _openBooking(appointment);
+                  _openRescheduling(appointment);
                 }
               : null,
         );
@@ -221,7 +229,37 @@ class _BookingsViewState extends State<BookingsView> {
         false;
   }
 
-  void _openBooking(AppointmentModel appointment) {
+  void _openRebooking(AppointmentModel appointment) {
+    _openBooking(appointment, isRescheduling: false);
+  }
+
+  void _openRescheduling(AppointmentModel appointment) {
+    _openBooking(appointment, isRescheduling: true);
+  }
+
+  void _openPendingPayment(AppointmentModel appointment) {
+    final int? centerId = appointment.centerId;
+    if (centerId == null || !appointment.canRetryPayment) {
+      context.showSnackbar(
+        AppLocalizations.of(context).paymentNoLongerAvailable,
+        isError: true,
+      );
+      return;
+    }
+
+    context.pushNamed(
+      RouteNames.bookTreatment,
+      extra: BookTreatmentArgs(
+        centerId: centerId,
+        paymentAppointmentId: appointment.id,
+      ),
+    );
+  }
+
+  void _openBooking(
+    AppointmentModel appointment, {
+    required bool isRescheduling,
+  }) {
     final int? centerId = appointment.centerId;
     if (centerId == null) {
       context.showSnackbar(
@@ -236,7 +274,7 @@ class _BookingsViewState extends State<BookingsView> {
       extra: BookTreatmentArgs(
         centerId: centerId,
         initialServiceId: appointment.serviceId,
-        appointmentId: appointment.canReschedule ? appointment.id : null,
+        appointmentId: isRescheduling ? appointment.id : null,
       ),
     );
   }
@@ -252,6 +290,7 @@ class _AppointmentsList extends StatelessWidget {
     required this.onViewDetails,
     required this.onMorePressed,
     required this.onRebookPressed,
+    required this.onPayPressed,
     this.isPast = false,
     super.key,
   });
@@ -265,6 +304,7 @@ class _AppointmentsList extends StatelessWidget {
   final ValueChanged<AppointmentModel> onViewDetails;
   final ValueChanged<AppointmentModel> onMorePressed;
   final ValueChanged<AppointmentModel> onRebookPressed;
+  final ValueChanged<AppointmentModel> onPayPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -298,6 +338,7 @@ class _AppointmentsList extends StatelessWidget {
                       onViewDetails: () => onViewDetails(appointment),
                       onMorePressed: () => onMorePressed(appointment),
                       onRebookPressed: () => onRebookPressed(appointment),
+                      onPayPressed: () => onPayPressed(appointment),
                     ),
                     const SizedBox(height: 12),
                   ],
@@ -370,10 +411,15 @@ class _EmptyAppointments extends StatelessWidget {
 }
 
 class _AppointmentDetailsSheet extends StatelessWidget {
-  const _AppointmentDetailsSheet({required this.appointment, this.onRebook});
+  const _AppointmentDetailsSheet({
+    required this.appointment,
+    this.onRebook,
+    this.onPay,
+  });
 
   final AppointmentModel appointment;
   final VoidCallback? onRebook;
+  final VoidCallback? onPay;
 
   @override
   Widget build(BuildContext context) {
@@ -540,6 +586,21 @@ class _AppointmentDetailsSheet extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (onPay != null) ...<Widget>[
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton.icon(
+                        onPressed: onPay,
+                        icon: const Icon(Icons.payment_rounded, size: 18),
+                        label: Text(
+                          l10n.completePayment,
+                          style: AppTextStyles.button.copyWith(fontSize: 14),
                         ),
                       ),
                     ),

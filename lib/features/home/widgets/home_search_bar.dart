@@ -91,6 +91,7 @@ class _HomeSearchBarState extends State<HomeSearchBar> {
           Expanded(
             child: TextField(
               controller: _controller,
+              maxLength: 255,
               textInputAction: TextInputAction.search,
               style: AppTextStyles.bodyLarge.copyWith(
                 fontSize: 14,
@@ -109,6 +110,7 @@ class _HomeSearchBarState extends State<HomeSearchBar> {
                 errorBorder: InputBorder.none,
                 focusedErrorBorder: InputBorder.none,
                 isDense: true,
+                counterText: '',
                 contentPadding: EdgeInsets.zero,
               ),
             ),

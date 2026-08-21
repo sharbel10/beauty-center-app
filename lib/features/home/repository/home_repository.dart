@@ -16,13 +16,15 @@ class HomeRepository extends BaseRepository {
     double? radiusKm,
     int? categoryId,
   }) {
+    final bool hasLocation = latitude != null && longitude != null;
+
     return callApiWithErrorParser(
       dio.get(
         ApiEndpoints.home,
         queryParameters: <String, dynamic>{
-          'latitude': latitude,
-          'longitude': longitude,
-          'radius_km': radiusKm,
+          'latitude': hasLocation ? latitude : null,
+          'longitude': hasLocation ? longitude : null,
+          'radius_km': hasLocation ? radiusKm : null,
           'category_id': categoryId,
         }..removeWhere((String key, dynamic value) => value == null),
       ),
@@ -37,10 +39,7 @@ class HomeRepository extends BaseRepository {
     return callApiWithErrorParser(
       dio.get(
         ApiEndpoints.search,
-        queryParameters: <String, dynamic>{
-          'q': query,
-          'per_page': perPage,
-        },
+        queryParameters: <String, dynamic>{'q': query, 'per_page': perPage},
       ),
       SearchResponse.fromJson,
     );

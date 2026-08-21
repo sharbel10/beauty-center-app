@@ -37,19 +37,13 @@ class ProfileRepository extends BaseRepository {
     });
 
     return callApiWithErrorParser(
-      dio.post(
-        ApiEndpoints.profileAvatar,
-        data: formData,
-      ),
+      dio.post(ApiEndpoints.profileAvatar, data: formData),
       ProfileResponse.fromJson,
     );
   }
 
   Future<Either<Failure, void>> deleteAccount() {
-    return callApiWithErrorParser(
-      dio.delete(ApiEndpoints.profile),
-      (_) {},
-    );
+    return callApiWithErrorParser(dio.delete(ApiEndpoints.profile), (_) {});
   }
 
   Future<Either<Failure, ProfileResponse>> changePassword({

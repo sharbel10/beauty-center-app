@@ -1,17 +1,9 @@
 import 'package:beauty_center_app/features/favorites/models/favorites_response.dart';
 import 'package:equatable/equatable.dart';
 
-enum FavoritesStatus {
-  initial,
-  loading,
-  success,
-  failure,
-}
+enum FavoritesStatus { initial, loading, success, failure }
 
-enum FavoriteActionType {
-  add,
-  remove,
-}
+enum FavoriteActionType { add, remove }
 
 class FavoritesState extends Equatable {
   const FavoritesState({
@@ -38,14 +30,17 @@ class FavoritesState extends Equatable {
   bool get isEmpty => centers.isEmpty && services.isEmpty;
 
   bool isCenterToggling(int centerId) => togglingCenterIds.contains(centerId);
-  bool isServiceToggling(int serviceId) => togglingServiceIds.contains(serviceId);
+  bool isServiceToggling(int serviceId) =>
+      togglingServiceIds.contains(serviceId);
 
   bool isCenterFavorite(int centerId) {
     return centers.any((FavoriteCenter c) => c.id == centerId && c.isFavorite);
   }
 
   bool isServiceFavorite(int serviceId) {
-    return services.any((FavoriteService s) => s.id == serviceId && s.isFavorite);
+    return services.any(
+      (FavoriteService s) => s.id == serviceId && s.isFavorite,
+    );
   }
 
   FavoritesState copyWith({
@@ -63,7 +58,9 @@ class FavoritesState extends Equatable {
       centers: centers ?? this.centers,
       services: services ?? this.services,
       message: clearMessage ? null : (message ?? this.message),
-      isMessageError: clearMessage ? false : (isMessageError ?? this.isMessageError),
+      isMessageError: clearMessage
+          ? false
+          : (isMessageError ?? this.isMessageError),
       togglingCenterIds: togglingCenterIds ?? this.togglingCenterIds,
       togglingServiceIds: togglingServiceIds ?? this.togglingServiceIds,
     );

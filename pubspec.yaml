@@ -59,6 +59,9 @@ dependencies:
   geocoding: ^5.0.0
   toastification: ^3.2.0
   image_picker: ^1.1.2
+  camera: ^0.12.0+2
+  # 0.7.2 requests unpublished AndroidX CameraX 1.6.0 artifacts.
+  camera_android_camerax: 0.7.1+2
   flutter_stripe: ^12.6.0
 
 dev_dependencies:

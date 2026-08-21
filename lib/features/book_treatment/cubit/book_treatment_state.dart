@@ -1,5 +1,7 @@
 import 'package:beauty_center_app/features/book_treatment/models/available_slots_response.dart';
 import 'package:beauty_center_app/features/book_treatment/models/book_treatment_args.dart';
+import 'package:beauty_center_app/features/book_treatment/models/payment_methods_response.dart';
+import 'package:beauty_center_app/features/book_treatment/models/payment_response.dart';
 import 'package:beauty_center_app/features/book_treatment/utils/booking_formats.dart';
 import 'package:beauty_center_app/features/bookings/models/appointment_model.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_employees_response.dart';
@@ -19,6 +21,15 @@ enum BookTreatmentStatus {
 /// Independent status for the slots request, so reloading times never
 /// hides the rest of the screen and a slots error is not fatal.
 enum SlotsStatus { initial, loading, ready, failure }
+
+enum BookingPaymentStatus {
+  initial,
+  preparing,
+  presenting,
+  verifying,
+  ready,
+  failure,
+}
 
 /// Wizard steps: service + specialist, date, time, then payment.
 /// Rescheduling intentionally stops at the time step because it does not open a
@@ -47,6 +58,11 @@ class BookTreatmentState extends Equatable {
     this.selectedDate,
     this.selectedSlotStartsAt,
     this.appointment,
+    this.paymentMethods,
+    this.payment,
+    this.paymentStatus = BookingPaymentStatus.initial,
+    this.paymentSheetCompleted = false,
+    this.paymentMessage,
     this.message,
     this.slotsMessage,
   });
@@ -63,6 +79,11 @@ class BookTreatmentState extends Equatable {
   final DateTime? selectedDate;
   final String? selectedSlotStartsAt;
   final AppointmentModel? appointment;
+  final PaymentMethodsResponse? paymentMethods;
+  final PaymentAttempt? payment;
+  final BookingPaymentStatus paymentStatus;
+  final bool paymentSheetCompleted;
+  final String? paymentMessage;
   final String? message;
   final String? slotsMessage;
 
@@ -70,11 +91,21 @@ class BookTreatmentState extends Equatable {
   bool get isLoading => status == BookTreatmentStatus.loading;
   bool get isSubmitting => status == BookTreatmentStatus.submitting;
   bool get areSlotsLoading => slotsStatus == SlotsStatus.loading;
-  bool get hasData => services.isNotEmpty;
+  bool get hasData =>
+      services.isNotEmpty || (isPaymentContinuation && appointment != null);
 
   bool get isRescheduling => args?.isRescheduling ?? false;
+  bool get isPaymentContinuation => args?.isPaymentContinuation ?? false;
 
-  int get lastStep => isRescheduling ? BookingSteps.time : BookingSteps.payment;
+  bool get requiresDeposit =>
+      !isRescheduling &&
+      (isPaymentContinuation ||
+          (appointment?.depositDue ?? 0) > 0 ||
+          (appointment == null &&
+              (paymentMethods?.deposit.isRequired ?? false)));
+
+  int get lastStep =>
+      requiresDeposit ? BookingSteps.payment : BookingSteps.time;
 
   bool get isLastStep => currentStep == lastStep;
 
@@ -92,14 +123,23 @@ class BookTreatmentState extends Equatable {
     }
   }
 
-  /// New bookings cannot be submitted until Stripe's backend endpoint returns
-  /// a PaymentIntent client secret. Rescheduling keeps its existing behaviour.
-  bool get canConfirm =>
-      isRescheduling &&
-      selectedServiceId != null &&
-      selectedDate != null &&
-      selectedSlot != null &&
-      !isSubmitting;
+  bool get isPaymentBusy =>
+      paymentStatus == BookingPaymentStatus.preparing ||
+      paymentStatus == BookingPaymentStatus.presenting ||
+      paymentStatus == BookingPaymentStatus.verifying;
+
+  bool get canConfirm {
+    if (currentStep == BookingSteps.payment) {
+      return appointment != null &&
+          appointment!.canRetryPayment &&
+          paymentMethods?.stripeGateway != null &&
+          !isPaymentBusy;
+    }
+    return selectedServiceId != null &&
+        selectedDate != null &&
+        selectedSlot != null &&
+        !isSubmitting;
+  }
 
   ClinicServiceItem? get selectedService {
     final int? serviceId = selectedServiceId;
@@ -144,14 +184,39 @@ class BookTreatmentState extends Equatable {
 
   String get selectedDateLabel {
     final DateTime? date = selectedDate;
-    return date == null ? '' : BookingFormats.date(date);
+    return date == null ? appointment?.date ?? '' : BookingFormats.date(date);
   }
 
-  String get selectedTimeLabel => selectedSlot?.timeLabel ?? '';
+  String get selectedTimeLabel =>
+      selectedSlot?.timeLabel ?? appointment?.time ?? '';
 
   String get totalLabel {
     final ClinicServiceItem? service = selectedService;
     return BookingFormats.price(service?.finalPrice ?? 0);
+  }
+
+  String get depositAmountLabel {
+    final String currency =
+        payment?.currency ?? paymentMethods?.currency ?? 'USD';
+    final double appointmentAmount = (appointment?.depositDue ?? 0) > 0
+        ? appointment!.depositDue
+        : appointment?.depositRequired ?? 0;
+    final double amount =
+        payment?.amount ??
+        (appointment != null ? appointmentAmount : _estimatedDepositAmount);
+    return BookingFormats.money(amount, currency);
+  }
+
+  double get _estimatedDepositAmount {
+    final DepositPolicy? policy = paymentMethods?.deposit;
+    final double total = (selectedService?.finalPrice ?? 0).toDouble();
+    if (policy == null || !policy.isRequired) {
+      return 0;
+    }
+    if (policy.type.toLowerCase() == 'percentage') {
+      return total * policy.value / 100;
+    }
+    return policy.value;
   }
 
   BookTreatmentState copyWith({
@@ -167,11 +232,18 @@ class BookTreatmentState extends Equatable {
     DateTime? selectedDate,
     String? selectedSlotStartsAt,
     AppointmentModel? appointment,
+    PaymentMethodsResponse? paymentMethods,
+    PaymentAttempt? payment,
+    BookingPaymentStatus? paymentStatus,
+    bool? paymentSheetCompleted,
+    String? paymentMessage,
     String? message,
     String? slotsMessage,
     bool clearSelectedEmployee = false,
     bool clearSelectedSlot = false,
     bool clearAppointment = false,
+    bool clearPayment = false,
+    bool clearPaymentMessage = false,
     bool clearMessage = false,
     bool clearSlotsMessage = false,
   }) {
@@ -192,6 +264,14 @@ class BookTreatmentState extends Equatable {
           ? null
           : (selectedSlotStartsAt ?? this.selectedSlotStartsAt),
       appointment: clearAppointment ? null : (appointment ?? this.appointment),
+      paymentMethods: paymentMethods ?? this.paymentMethods,
+      payment: clearPayment ? null : (payment ?? this.payment),
+      paymentStatus: paymentStatus ?? this.paymentStatus,
+      paymentSheetCompleted:
+          paymentSheetCompleted ?? this.paymentSheetCompleted,
+      paymentMessage: clearPaymentMessage
+          ? null
+          : (paymentMessage ?? this.paymentMessage),
       message: clearMessage ? null : (message ?? this.message),
       slotsMessage: clearSlotsMessage
           ? null
@@ -213,6 +293,11 @@ class BookTreatmentState extends Equatable {
     selectedDate,
     selectedSlotStartsAt,
     appointment,
+    paymentMethods,
+    payment,
+    paymentStatus,
+    paymentSheetCompleted,
+    paymentMessage,
     message,
     slotsMessage,
   ];

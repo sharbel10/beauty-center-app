@@ -33,12 +33,12 @@ class ProfileStats extends Equatable {
 
   @override
   List<Object?> get props => [
-        appointmentsTotal,
-        appointmentsUpcoming,
-        appointmentsCompleted,
-        favoriteCenters,
-        favoriteServices,
-        reviews,
-        unreadNotifications,
-      ];
+    appointmentsTotal,
+    appointmentsUpcoming,
+    appointmentsCompleted,
+    favoriteCenters,
+    favoriteServices,
+    reviews,
+    unreadNotifications,
+  ];
 }

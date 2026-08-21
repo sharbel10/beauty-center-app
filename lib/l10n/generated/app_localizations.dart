@@ -890,6 +890,24 @@ abstract class AppLocalizations {
   /// **'Pricing'**
   String get pricing;
 
+  /// No description provided for @priceRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Price range'**
+  String get priceRange;
+
+  /// No description provided for @minimumPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum price'**
+  String get minimumPrice;
+
+  /// No description provided for @maximumPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum price'**
+  String get maximumPrice;
+
   /// No description provided for @clinicGalleryExperienceEyebrow.
   ///
   /// In en, this message translates to:
@@ -1814,6 +1832,60 @@ abstract class AppLocalizations {
   /// **'Pay with Stripe'**
   String get payWithStripe;
 
+  /// No description provided for @completePayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete payment'**
+  String get completePayment;
+
+  /// No description provided for @pendingPaymentNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'A deposit is required to keep this appointment. Complete payment before the booking expires.'**
+  String get pendingPaymentNotice;
+
+  /// No description provided for @pendingPaymentDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete payment by {deadline}. The appointment will be cancelled after this time.'**
+  String pendingPaymentDeadline(String deadline);
+
+  /// No description provided for @paymentNoLongerAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'The payment window has ended or this appointment no longer requires payment.'**
+  String get paymentNoLongerAvailable;
+
+  /// No description provided for @checkPaymentStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Check payment status'**
+  String get checkPaymentStatus;
+
+  /// No description provided for @paymentFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Stripe couldn\'t complete the payment. Please try again.'**
+  String get paymentFailed;
+
+  /// No description provided for @paymentVerificationPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment is still being verified. Tap the button to check again.'**
+  String get paymentVerificationPending;
+
+  /// No description provided for @stripeNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Stripe test key is not configured in the app.'**
+  String get stripeNotConfigured;
+
+  /// No description provided for @stripeGatewayUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Stripe is not enabled for this center.'**
+  String get stripeGatewayUnavailable;
+
   /// No description provided for @estimatedTotal.
   ///
   /// In en, this message translates to:
@@ -1903,6 +1975,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pending'**
   String get statusPending;
+
+  /// No description provided for @statusPendingPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment required'**
+  String get statusPendingPayment;
 
   /// No description provided for @statusConfirmed.
   ///
@@ -2342,11 +2420,407 @@ abstract class AppLocalizations {
   /// **'{count}h ago'**
   String hoursAgo(int count);
 
+  /// No description provided for @searchType.
+  ///
+  /// In en, this message translates to:
+  /// **'Result type'**
+  String get searchType;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get sortBy;
+
+  /// No description provided for @sortRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Highest rating'**
+  String get sortRating;
+
+  /// No description provided for @sortNearest.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearest'**
+  String get sortNearest;
+
+  /// No description provided for @sortName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get sortName;
+
+  /// No description provided for @sortLatest.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest'**
+  String get sortLatest;
+
+  /// No description provided for @sortPriceAsc.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: low to high'**
+  String get sortPriceAsc;
+
+  /// No description provided for @sortPriceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: high to low'**
+  String get sortPriceDesc;
+
+  /// No description provided for @sortDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get sortDuration;
+
+  /// No description provided for @centerFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Center'**
+  String get centerFilter;
+
+  /// No description provided for @anyOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get anyOption;
+
+  /// No description provided for @yesOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get yesOption;
+
+  /// No description provided for @noOption.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get noOption;
+
+  /// No description provided for @minRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum rating'**
+  String get minRating;
+
+  /// No description provided for @radiusKm.
+  ///
+  /// In en, this message translates to:
+  /// **'Radius (km)'**
+  String get radiusKm;
+
+  /// No description provided for @resultsLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Results limit'**
+  String get resultsLimit;
+
+  /// No description provided for @governorate.
+  ///
+  /// In en, this message translates to:
+  /// **'Governorate'**
+  String get governorate;
+
+  /// No description provided for @featuredOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured only'**
+  String get featuredOnly;
+
+  /// No description provided for @requiresDeposit.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires deposit'**
+  String get requiresDeposit;
+
+  /// No description provided for @maxDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum duration (minutes)'**
+  String get maxDuration;
+
+  /// No description provided for @invalidPriceRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum price cannot be lower than minimum price.'**
+  String get invalidPriceRange;
+
+  /// No description provided for @invalidFilterValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid value within the allowed range.'**
+  String get invalidFilterValue;
+
+  /// No description provided for @locationPermissionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Location access is needed to sort by nearest. Choose another sort option or allow location access.'**
+  String get locationPermissionRequired;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get clearFilters;
+
   /// No description provided for @daysAgo.
   ///
   /// In en, this message translates to:
   /// **'{count}d ago'**
   String daysAgo(int count);
+
+  /// No description provided for @aiBeautyAssistant.
+  ///
+  /// In en, this message translates to:
+  /// **'AI BEAUTY ASSISTANT'**
+  String get aiBeautyAssistant;
+
+  /// No description provided for @personalRecommendation.
+  ///
+  /// In en, this message translates to:
+  /// **'Your care, made personal'**
+  String get personalRecommendation;
+
+  /// No description provided for @personalRecommendationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us what you want to improve or let Lumina analyze your face to suggest suitable treatments.'**
+  String get personalRecommendationSubtitle;
+
+  /// No description provided for @describeYourNeeds.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your needs'**
+  String get describeYourNeeds;
+
+  /// No description provided for @describeYourNeedsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your goals, concerns, and the result you have in mind.'**
+  String get describeYourNeedsSubtitle;
+
+  /// No description provided for @scanYourFace.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan your face'**
+  String get scanYourFace;
+
+  /// No description provided for @scanYourFaceSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a guided face scan for a more visual recommendation.'**
+  String get scanYourFaceSubtitle;
+
+  /// No description provided for @startWithDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'START WITH A DESCRIPTION'**
+  String get startWithDescription;
+
+  /// No description provided for @startFaceScan.
+  ///
+  /// In en, this message translates to:
+  /// **'START FACE SCAN'**
+  String get startFaceScan;
+
+  /// No description provided for @yourBeautyGoals.
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like help with?'**
+  String get yourBeautyGoals;
+
+  /// No description provided for @beautyGoalsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For example: I want brighter skin and help with fine lines around my eyes...'**
+  String get beautyGoalsHint;
+
+  /// No description provided for @continueToRecommendation.
+  ///
+  /// In en, this message translates to:
+  /// **'GET MY RECOMMENDATION'**
+  String get continueToRecommendation;
+
+  /// No description provided for @uiPreviewNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommendation results will be connected when the AI service is ready.'**
+  String get uiPreviewNotice;
+
+  /// No description provided for @biometricAlignment.
+  ///
+  /// In en, this message translates to:
+  /// **'BIOMETRIC ALIGNMENT'**
+  String get biometricAlignment;
+
+  /// No description provided for @alignFaceWithinFrame.
+  ///
+  /// In en, this message translates to:
+  /// **'Align your face within the frame'**
+  String get alignFaceWithinFrame;
+
+  /// No description provided for @wellLitScanHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure your face is visible in a well-lit environment for the most accurate analysis.'**
+  String get wellLitScanHint;
+
+  /// No description provided for @luminaIntelligence.
+  ///
+  /// In en, this message translates to:
+  /// **'LUMINA INTELLIGENCE'**
+  String get luminaIntelligence;
+
+  /// No description provided for @scanAnalysisHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to analyze skin texture and facial balance'**
+  String get scanAnalysisHint;
+
+  /// No description provided for @scanFace.
+  ///
+  /// In en, this message translates to:
+  /// **'SCAN FACE'**
+  String get scanFace;
+
+  /// No description provided for @clinicalPrivacyNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR IMAGE STAYS PRIVATE AND SECURE'**
+  String get clinicalPrivacyNotice;
+
+  /// No description provided for @cameraPreviewPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera preview'**
+  String get cameraPreviewPlaceholder;
+
+  /// No description provided for @cameraUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera is unavailable'**
+  String get cameraUnavailable;
+
+  /// No description provided for @cameraUnavailableHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow camera access in your device settings, then try again.'**
+  String get cameraUnavailableHint;
+
+  /// No description provided for @tryCameraAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'TRY AGAIN'**
+  String get tryCameraAgain;
+
+  /// No description provided for @aiInputRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a description or take a face photo first.'**
+  String get aiInputRequired;
+
+  /// No description provided for @aiTextTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'The description must not exceed 1000 characters.'**
+  String get aiTextTooLong;
+
+  /// No description provided for @aiImageTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'The image must not exceed 5 MB.'**
+  String get aiImageTooLarge;
+
+  /// No description provided for @aiUnsupportedImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a JPG, PNG, or WebP image.'**
+  String get aiUnsupportedImage;
+
+  /// No description provided for @aiImageMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'The captured image is no longer available. Please try again.'**
+  String get aiImageMissing;
+
+  /// No description provided for @aiCaptureFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t capture the photo. Please try again.'**
+  String get aiCaptureFailed;
+
+  /// No description provided for @aiAnalyzingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating your recommendations'**
+  String get aiAnalyzingTitle;
+
+  /// No description provided for @aiAnalyzingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumina is analyzing your request and matching it with available services.'**
+  String get aiAnalyzingSubtitle;
+
+  /// No description provided for @aiResultsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended for you'**
+  String get aiResultsTitle;
+
+  /// No description provided for @aiResultsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestions are ranked by how closely they match your request.'**
+  String get aiResultsSubtitle;
+
+  /// No description provided for @aiSuggestedServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested services'**
+  String get aiSuggestedServices;
+
+  /// No description provided for @aiSuggestedCenters.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested centers'**
+  String get aiSuggestedCenters;
+
+  /// No description provided for @aiMatchPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% MATCH'**
+  String aiMatchPercent(int percent);
+
+  /// No description provided for @aiNoRecommendations.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching recommendations found'**
+  String get aiNoRecommendations;
+
+  /// No description provided for @aiNoRecommendationsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Try adding more detail or taking another photo in better lighting.'**
+  String get aiNoRecommendationsSubtitle;
+
+  /// No description provided for @aiNewRecommendation.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW RECOMMENDATION'**
+  String get aiNewRecommendation;
+
+  /// No description provided for @aiBookService.
+  ///
+  /// In en, this message translates to:
+  /// **'BOOK SERVICE'**
+  String get aiBookService;
+
+  /// No description provided for @aiViewCenter.
+  ///
+  /// In en, this message translates to:
+  /// **'VIEW CENTER'**
+  String get aiViewCenter;
 }
 
 class _AppLocalizationsDelegate

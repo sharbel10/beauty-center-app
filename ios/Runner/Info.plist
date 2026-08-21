@@ -62,5 +62,7 @@
 		<false/>
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string>Lumina uses your location to show nearby clinics and personalize your home experience.</string>
+		<key>NSCameraUsageDescription</key>
+		<string>Lumina uses the camera to preview your face for a guided beauty analysis.</string>
 	</dict>
 </plist>

@@ -44,10 +44,7 @@ class AppNotification extends Equatable {
 
   bool get isAppointment => type == 'appointment' || type == 'booking';
 
-  AppNotification copyWith({
-    bool? isRead,
-    DateTime? readAt,
-  }) {
+  AppNotification copyWith({bool? isRead, DateTime? readAt}) {
     return AppNotification(
       id: id,
       type: type,

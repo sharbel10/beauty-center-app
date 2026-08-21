@@ -2,6 +2,7 @@ import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:equatable/equatable.dart';
 
 enum AppointmentStatus {
+  pendingPayment,
   pending,
   confirmed,
   completed,
@@ -24,6 +25,10 @@ class AppointmentModel extends Equatable {
     required this.endsAt,
     required this.total,
     required this.depositRequired,
+    required this.depositPaid,
+    required this.depositDue,
+    required this.paymentStatus,
+    this.paymentExpiresAt,
     this.centerId,
     this.serviceId,
     this.employeeId,
@@ -64,6 +69,10 @@ class AppointmentModel extends Equatable {
       endsAt: endsAt,
       total: (json['total'] as num?)?.toDouble() ?? 0,
       depositRequired: (json['deposit_required'] as num?)?.toDouble() ?? 0,
+      depositPaid: (json['deposit_paid'] as num?)?.toDouble() ?? 0,
+      depositDue: (json['deposit_due'] as num?)?.toDouble() ?? 0,
+      paymentStatus: json['payment_status'] as String? ?? 'unpaid',
+      paymentExpiresAt: _parsePaymentExpiry(json),
       centerId: (center['id'] as num?)?.toInt(),
       serviceId: (firstItem['service_id'] as num?)?.toInt(),
       employeeId: (firstItem['employee_id'] as num?)?.toInt(),
@@ -85,6 +94,10 @@ class AppointmentModel extends Equatable {
   final DateTime? endsAt;
   final double total;
   final double depositRequired;
+  final double depositPaid;
+  final double depositDue;
+  final String paymentStatus;
+  final DateTime? paymentExpiresAt;
   final int? centerId;
   final int? serviceId;
   final int? employeeId;
@@ -103,7 +116,16 @@ class AppointmentModel extends Equatable {
       status == AppointmentStatus.pending ||
       status == AppointmentStatus.confirmed;
 
-  bool get canReschedule => canCancel && centerId != null && serviceId != null;
+  bool get isPaymentExpired {
+    final DateTime? expiresAt = paymentExpiresAt;
+    return expiresAt != null && !expiresAt.isAfter(DateTime.now());
+  }
+
+  bool get canRetryPayment =>
+      status == AppointmentStatus.pendingPayment && !isPaymentExpired;
+
+  bool get canReschedule =>
+      canCancel && !startsAtIsPast && centerId != null && serviceId != null;
 
   String get totalLabel => '${_formatPrice(total)} SP';
 
@@ -121,6 +143,10 @@ class AppointmentModel extends Equatable {
     endsAt,
     total,
     depositRequired,
+    depositPaid,
+    depositDue,
+    paymentStatus,
+    paymentExpiresAt,
     centerId,
     serviceId,
     employeeId,
@@ -132,6 +158,7 @@ class AppointmentModel extends Equatable {
 
 AppointmentStatus _statusFromString(String? status) {
   return switch (status) {
+    'pending_payment' => AppointmentStatus.pendingPayment,
     'pending' => AppointmentStatus.pending,
     'confirmed' => AppointmentStatus.confirmed,
     'completed' => AppointmentStatus.completed,
@@ -143,6 +170,7 @@ AppointmentStatus _statusFromString(String? status) {
 
 String _statusLabel(AppointmentStatus status, String? rawStatus) {
   return switch (status) {
+    AppointmentStatus.pendingPayment => 'Pending payment',
     AppointmentStatus.pending => 'Pending',
     AppointmentStatus.confirmed => 'Confirmed',
     AppointmentStatus.completed => 'Completed',
@@ -150,6 +178,18 @@ String _statusLabel(AppointmentStatus status, String? rawStatus) {
     AppointmentStatus.rejected => 'Rejected',
     AppointmentStatus.unknown => rawStatus ?? 'Unknown',
   };
+}
+
+DateTime? _parsePaymentExpiry(Map<String, dynamic> json) {
+  final dynamic raw =
+      json['payment_expires_at'] ??
+      json['pending_payment_expires_at'] ??
+      json['payment_due_at'] ??
+      json['payment_deadline_at'] ??
+      json['payment_deadline'] ??
+      json['hold_expires_at'] ??
+      json['expires_at'];
+  return DateTime.tryParse(raw?.toString() ?? '')?.toLocal();
 }
 
 String _formatDate(DateTime date) {

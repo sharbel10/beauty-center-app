@@ -155,4 +155,3 @@ class _CountBadge extends StatelessWidget {
     );
   }
 }
-

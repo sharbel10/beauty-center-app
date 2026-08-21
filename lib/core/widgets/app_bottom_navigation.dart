@@ -127,6 +127,8 @@ class AppBottomNavigation extends StatelessWidget {
       context.goNamed(RouteNames.bookings);
     } else if (item == AppNavItem.profile) {
       context.goNamed(RouteNames.profile);
+    } else if (item == AppNavItem.aiScan) {
+      context.goNamed(RouteNames.aiRecommendation);
     }
   }
 }

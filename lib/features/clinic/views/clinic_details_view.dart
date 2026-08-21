@@ -86,9 +86,7 @@ class _ClinicDetailsViewState extends State<ClinicDetailsView> {
               children: <Widget>[
                 if (showBookButton && centerId != null)
                   _StickyBookAppointmentBar(centerId: centerId),
-                const AppBottomNavigation(
-                  currentItem: AppNavItem.explore,
-                ),
+                const AppBottomNavigation(currentItem: AppNavItem.explore),
               ],
             ),
             body: SafeArea(
@@ -111,9 +109,8 @@ class _ClinicDetailsViewState extends State<ClinicDetailsView> {
                           ),
                           const SizedBox(height: 16),
                           ElevatedButton(
-                            onPressed: () => _cubit.loadClinicDetails(
-                              widget.centerId,
-                            ),
+                            onPressed: () =>
+                                _cubit.loadClinicDetails(widget.centerId),
                             child: Text(l10n.retry),
                           ),
                         ],
@@ -154,9 +151,7 @@ class _ClinicDetailsViewState extends State<ClinicDetailsView> {
                         ),
                       ),
                     ),
-                    const SliverToBoxAdapter(
-                      child: SizedBox(height: 24),
-                    ),
+                    const SliverToBoxAdapter(child: SizedBox(height: 24)),
                   ],
                 );
               }(),

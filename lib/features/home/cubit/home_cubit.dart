@@ -51,7 +51,7 @@ class HomeCubit extends Cubit<HomeState> {
   void onSearchQueryChanged(String query) {
     _debounceTimer?.cancel();
 
-    final String normalizedQuery = query.trim();
+    final String normalizedQuery = _normalizeQuery(query);
 
     emit(
       state.copyWith(
@@ -74,10 +74,7 @@ class HomeCubit extends Cubit<HomeState> {
     }
 
     emit(
-      state.copyWith(
-        searchStatus: SearchStatus.loading,
-        clearSearchData: true,
-      ),
+      state.copyWith(searchStatus: SearchStatus.loading, clearSearchData: true),
     );
 
     final int requestId = ++_searchRequestId;
@@ -90,7 +87,7 @@ class HomeCubit extends Cubit<HomeState> {
     if (isClosed) return;
 
     final int resolvedRequestId = requestId ?? ++_searchRequestId;
-    final String normalizedQuery = query.trim();
+    final String normalizedQuery = _normalizeQuery(query);
 
     if (normalizedQuery.isEmpty) {
       return;
@@ -167,8 +164,7 @@ class HomeCubit extends Cubit<HomeState> {
               .toList(),
           services: searchData.services
               .map(
-                (ServiceSearchResult service) =>
-                    service.center?.id == centerId
+                (ServiceSearchResult service) => service.center?.id == centerId
                     ? service.copyWith(
                         center: service.center!.copyWith(
                           isFavorite: isFavorite,
@@ -210,5 +206,10 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> close() {
     _debounceTimer?.cancel();
     return super.close();
+  }
+
+  static String _normalizeQuery(String query) {
+    final String value = query.trim();
+    return value.length <= 255 ? value : value.substring(0, 255);
   }
 }

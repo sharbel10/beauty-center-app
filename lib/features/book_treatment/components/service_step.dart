@@ -60,9 +60,7 @@ class _ServiceStepState extends State<ServiceStep> {
         return service.category.id;
       }
     }
-    return widget.services.isEmpty
-        ? 0
-        : widget.services.first.category.id;
+    return widget.services.isEmpty ? 0 : widget.services.first.category.id;
   }
 
   Map<int, _CategoryGroup> _groups(AppLocalizations l10n) {
@@ -95,7 +93,8 @@ class _ServiceStepState extends State<ServiceStep> {
           subtitle: l10n.selectServiceSubtitle,
         ),
         const SizedBox(height: 14),
-        for (final MapEntry<int, _CategoryGroup> entry in groups.entries) ...<Widget>[
+        for (final MapEntry<int, _CategoryGroup> entry
+            in groups.entries) ...<Widget>[
           _CategorySection(
             group: entry.value,
             isExpanded: _expandedCategoryIds.contains(entry.key),
@@ -142,8 +141,9 @@ class _CategorySection extends StatelessWidget {
   final VoidCallback onToggle;
   final ValueChanged<int> onServiceSelected;
 
-  bool get _containsSelection => group.services
-      .any((ClinicServiceItem service) => service.id == selectedServiceId);
+  bool get _containsSelection => group.services.any(
+    (ClinicServiceItem service) => service.id == selectedServiceId,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -224,12 +224,8 @@ class _CategorySection extends StatelessWidget {
             child: isExpanded
                 ? Column(
                     children: <Widget>[
-                      const Divider(
-                        height: 1,
-                        color: AppColors.divider,
-                      ),
-                      for (final ClinicServiceItem service
-                          in group.services)
+                      const Divider(height: 1, color: AppColors.divider),
+                      for (final ClinicServiceItem service in group.services)
                         _ServiceRow(
                           service: service,
                           isSelected: service.id == selectedServiceId,
@@ -275,9 +271,7 @@ class _ServiceRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    service.name.isEmpty
-                        ? service.category.name
-                        : service.name,
+                    service.name.isEmpty ? service.category.name : service.name,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.bodyMedium.copyWith(

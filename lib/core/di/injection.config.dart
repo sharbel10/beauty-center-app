@@ -13,6 +13,8 @@ import 'package:beauty_center_app/core/di/injection.dart' as _i606;
 import 'package:beauty_center_app/core/network/dio_client.dart' as _i1058;
 import 'package:beauty_center_app/core/network/header_interceptor.dart'
     as _i719;
+import 'package:beauty_center_app/core/payments/stripe_payment_service.dart'
+    as _i186;
 import 'package:beauty_center_app/core/router/app_router.dart' as _i329;
 import 'package:beauty_center_app/core/services/device_registration_service.dart'
     as _i361;
@@ -22,6 +24,10 @@ import 'package:beauty_center_app/core/services/location_service.dart' as _i187;
 import 'package:beauty_center_app/core/storage/preference_manager.dart'
     as _i333;
 import 'package:beauty_center_app/core/storage/secure_storage.dart' as _i925;
+import 'package:beauty_center_app/features/ai_recommendation/cubit/ai_recommendation_cubit.dart'
+    as _i173;
+import 'package:beauty_center_app/features/ai_recommendation/repository/ai_recommendation_repository.dart'
+    as _i822;
 import 'package:beauty_center_app/features/auth/cubit/auth_cubit.dart' as _i196;
 import 'package:beauty_center_app/features/auth/repository/auth_repository.dart'
     as _i609;
@@ -88,6 +94,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i159.FirebaseMessagingService(),
     );
     gh.singleton<_i925.SecureStorage>(() => _i925.SecureStorage());
+    gh.lazySingleton<_i186.StripePaymentService>(
+      () => _i186.StripePaymentService(),
+    );
     gh.lazySingleton<_i187.LocationService>(() => _i187.LocationService());
     gh.singleton<_i333.PreferenceManager>(
       () => _i333.PreferenceManager(gh<_i460.SharedPreferences>()),
@@ -103,6 +112,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.singleton<_i1058.DioClient>(
       () => _i1058.DioClient(gh<_i719.HeaderInterceptor>()),
+    );
+    gh.factory<_i822.AiRecommendationRepository>(
+      () => _i822.AiRecommendationRepository(gh<_i1058.DioClient>()),
     );
     gh.factory<_i609.AuthRepository>(
       () => _i609.AuthRepository(gh<_i1058.DioClient>()),
@@ -145,14 +157,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i141.FavoritesCubit>(
       () => _i141.FavoritesCubit(gh<_i1.FavoritesRepository>()),
     );
-    gh.factory<_i539.BookTreatmentCubit>(
-      () => _i539.BookTreatmentCubit(gh<_i668.BookingRepository>()),
-    );
     gh.factory<_i997.BookingsCubit>(
       () => _i997.BookingsCubit(gh<_i668.BookingRepository>()),
     );
     gh.factory<_i92.HomeCubit>(
       () => _i92.HomeCubit(gh<_i668.HomeRepository>()),
+    );
+    gh.factory<_i173.AiRecommendationCubit>(
+      () => _i173.AiRecommendationCubit(gh<_i822.AiRecommendationRepository>()),
     );
     gh.factory<_i98.ClinicDetailsCubit>(
       () => _i98.ClinicDetailsCubit(gh<_i990.ClinicsRepository>()),
@@ -179,6 +191,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i333.PreferenceManager>(),
         gh<_i361.DeviceRegistrationService>(),
         gh<_i865.NotificationsCubit>(),
+      ),
+    );
+    gh.factory<_i539.BookTreatmentCubit>(
+      () => _i539.BookTreatmentCubit(
+        gh<_i668.BookingRepository>(),
+        stripePaymentService: gh<_i186.StripePaymentService>(),
       ),
     );
     gh.factory<_i607.ProfileCubit>(

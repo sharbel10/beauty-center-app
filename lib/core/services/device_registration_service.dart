@@ -80,19 +80,16 @@ class DeviceRegistrationService {
       final result = await _deviceRepository.unregisterDevice(
         deviceToken: token,
       );
-      result.fold(
-        (Failure failure) {
-          if (failure is UnauthorizedFailure) {
-            AppLogger.d(
-              'FCM device unregister skipped: token already invalid '
-              '(${failure.message})',
-            );
-            return;
-          }
-          AppLogger.e('FCM device unregister failed: ${failure.message}');
-        },
-        (_) => AppLogger.d('FCM device unregistered from backend'),
-      );
+      result.fold((Failure failure) {
+        if (failure is UnauthorizedFailure) {
+          AppLogger.d(
+            'FCM device unregister skipped: token already invalid '
+            '(${failure.message})',
+          );
+          return;
+        }
+        AppLogger.e('FCM device unregister failed: ${failure.message}');
+      }, (_) => AppLogger.d('FCM device unregistered from backend'));
     }
 
     if (deleteLocalToken) {

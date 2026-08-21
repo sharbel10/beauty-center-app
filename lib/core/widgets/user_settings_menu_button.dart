@@ -28,7 +28,8 @@ class UserSettingsMenuButton extends StatelessWidget {
     final RenderBox button = context.findRenderObject()! as RenderBox;
     final Offset offset = button.localToGlobal(Offset.zero);
     final Size size = button.size;
-    final Locale activeLocale = AppLocaleController.instance.locale.value ??
+    final Locale activeLocale =
+        AppLocaleController.instance.locale.value ??
         Localizations.localeOf(context);
 
     showMenu<void>(
@@ -171,8 +172,9 @@ class _LanguageMenuItemState extends State<_LanguageMenuItem> {
                 widget.label,
                 style: AppTextStyles.subtitle.copyWith(
                   fontSize: 14,
-                  fontWeight:
-                      widget.isSelected ? FontWeight.w700 : FontWeight.w500,
+                  fontWeight: widget.isSelected
+                      ? FontWeight.w700
+                      : FontWeight.w500,
                   color: widget.isSelected
                       ? AppColors.primary
                       : AppColors.textSecondary,
@@ -180,11 +182,7 @@ class _LanguageMenuItemState extends State<_LanguageMenuItem> {
               ),
             ),
             if (widget.isSelected)
-              const Icon(
-                Icons.check_rounded,
-                color: AppColors.gold,
-                size: 20,
-              ),
+              const Icon(Icons.check_rounded, color: AppColors.gold, size: 20),
           ],
         ),
       ),

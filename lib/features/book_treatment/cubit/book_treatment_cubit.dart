@@ -1,7 +1,12 @@
+import 'package:beauty_center_app/core/payments/stripe_config.dart';
+import 'package:beauty_center_app/core/payments/stripe_payment_service.dart';
 import 'package:beauty_center_app/features/book_treatment/cubit/book_treatment_state.dart';
 import 'package:beauty_center_app/features/book_treatment/models/available_slots_response.dart';
 import 'package:beauty_center_app/features/book_treatment/models/book_treatment_args.dart';
+import 'package:beauty_center_app/features/book_treatment/models/payment_methods_response.dart';
+import 'package:beauty_center_app/features/book_treatment/models/payment_response.dart';
 import 'package:beauty_center_app/features/book_treatment/repository/booking_repository.dart';
+import 'package:beauty_center_app/features/bookings/models/appointment_model.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_employees_response.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_services_response.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,13 +20,23 @@ abstract final class BookTreatmentMessageKeys {
       'pleaseChooseServiceDateTime';
   static const String appointmentBookedSuccessfully =
       'appointmentBookedSuccessfully';
+  static const String paymentFailed = 'paymentFailed';
+  static const String paymentVerificationPending = 'paymentVerificationPending';
+  static const String stripeNotConfigured = 'stripeNotConfigured';
+  static const String stripeGatewayUnavailable = 'stripeGatewayUnavailable';
+  static const String paymentNoLongerAvailable = 'paymentNoLongerAvailable';
 }
 
 @injectable
 class BookTreatmentCubit extends Cubit<BookTreatmentState> {
-  BookTreatmentCubit(this._repository) : super(const BookTreatmentState());
+  BookTreatmentCubit(
+    this._repository, {
+    StripePaymentService? stripePaymentService,
+  }) : _stripePaymentService = stripePaymentService ?? StripePaymentService(),
+       super(const BookTreatmentState());
 
   final BookingRepository _repository;
+  final StripePaymentService _stripePaymentService;
 
   /// Monotonic id used to discard responses of superseded slot requests
   /// (rapid date/specialist taps would otherwise race each other).
@@ -38,6 +53,11 @@ class BookTreatmentCubit extends Cubit<BookTreatmentState> {
         clearAppointment: true,
       ),
     );
+
+    if (args.isPaymentContinuation) {
+      await _initializePaymentContinuation(args);
+      return;
+    }
 
     final servicesResult = await _repository.getClinicServices(
       centerId: args.centerId,
@@ -69,10 +89,81 @@ class BookTreatmentCubit extends Cubit<BookTreatmentState> {
             clearMessage: true,
           ),
         );
-        if (serviceId != null) {
-          await _loadEmployeesAndSlots(serviceId);
-        }
+        await Future.wait(<Future<void>>[
+          _loadPaymentMethods(args.centerId),
+          if (serviceId != null) _loadEmployeesAndSlots(serviceId),
+        ]);
       },
+    );
+  }
+
+  Future<void> _initializePaymentContinuation(BookTreatmentArgs args) async {
+    final appointmentResult = await _repository.getAppointment(
+      appointmentId: args.paymentAppointmentId!,
+    );
+    if (isClosed) {
+      return;
+    }
+
+    AppointmentModel? appointment;
+    String? failureMessage;
+    appointmentResult.fold(
+      (failure) => failureMessage = failure.message,
+      (response) => appointment = response.appointment,
+    );
+
+    if (appointment == null) {
+      emit(
+        state.copyWith(
+          status: BookTreatmentStatus.failure,
+          message: failureMessage,
+        ),
+      );
+      return;
+    }
+    if (!appointment!.canRetryPayment) {
+      emit(
+        state.copyWith(
+          status: BookTreatmentStatus.failure,
+          message: BookTreatmentMessageKeys.paymentNoLongerAvailable,
+        ),
+      );
+      return;
+    }
+
+    final paymentMethodsResult = await _repository.getPaymentMethods(
+      centerId: args.centerId,
+    );
+    if (isClosed) {
+      return;
+    }
+
+    PaymentMethodsResponse? paymentMethods;
+    failureMessage = null;
+    paymentMethodsResult.fold(
+      (failure) => failureMessage = failure.message,
+      (response) => paymentMethods = response,
+    );
+    if (paymentMethods == null) {
+      emit(
+        state.copyWith(
+          status: BookTreatmentStatus.failure,
+          message: failureMessage,
+        ),
+      );
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        status: BookTreatmentStatus.ready,
+        currentStep: BookingSteps.payment,
+        appointment: appointment,
+        paymentMethods: paymentMethods,
+        paymentStatus: BookingPaymentStatus.ready,
+        clearMessage: true,
+        clearPaymentMessage: true,
+      ),
     );
   }
 
@@ -91,6 +182,11 @@ class BookTreatmentCubit extends Cubit<BookTreatmentState> {
   }
 
   void goToStep(int step) {
+    if (state.currentStep == BookingSteps.payment &&
+        state.appointment != null &&
+        step != BookingSteps.payment) {
+      return;
+    }
     final int target = step.clamp(BookingSteps.service, state.lastStep);
     if (target == state.currentStep) {
       return;
@@ -201,6 +297,17 @@ class BookTreatmentCubit extends Cubit<BookTreatmentState> {
     emit(state.copyWith(selectedSlotStartsAt: startsAt, clearMessage: true));
   }
 
+  Future<void> _loadPaymentMethods(int centerId) async {
+    final result = await _repository.getPaymentMethods(centerId: centerId);
+    if (isClosed) {
+      return;
+    }
+    result.fold(
+      (_) {},
+      (response) => emit(state.copyWith(paymentMethods: response)),
+    );
+  }
+
   Future<void> confirmBooking() async {
     final BookTreatmentArgs? args = state.args;
     final int? serviceId = state.selectedServiceId;
@@ -254,6 +361,22 @@ class BookTreatmentCubit extends Cubit<BookTreatmentState> {
         );
       },
       (response) {
+        final bool needsDeposit =
+            !args.isRescheduling && response.appointment.depositDue > 0;
+        if (needsDeposit) {
+          emit(
+            state.copyWith(
+              status: BookTreatmentStatus.ready,
+              currentStep: BookingSteps.payment,
+              appointment: response.appointment,
+              paymentStatus: BookingPaymentStatus.ready,
+              clearMessage: true,
+              clearPaymentMessage: true,
+            ),
+          );
+          return;
+        }
+
         emit(
           state.copyWith(
             status: BookTreatmentStatus.success,
@@ -264,6 +387,190 @@ class BookTreatmentCubit extends Cubit<BookTreatmentState> {
           ),
         );
       },
+    );
+  }
+
+  Future<void> payDeposit() async {
+    if (state.isPaymentBusy) {
+      return;
+    }
+    final AppointmentModel? appointment = state.appointment;
+    if (appointment == null || !appointment.canRetryPayment) {
+      emit(
+        state.copyWith(
+          paymentStatus: BookingPaymentStatus.failure,
+          paymentMessage: BookTreatmentMessageKeys.paymentNoLongerAvailable,
+        ),
+      );
+      return;
+    }
+    if (!StripeConfig.hasPublishableKey) {
+      emit(
+        state.copyWith(
+          paymentStatus: BookingPaymentStatus.failure,
+          paymentMessage: BookTreatmentMessageKeys.stripeNotConfigured,
+        ),
+      );
+      return;
+    }
+
+    final gateway = state.paymentMethods?.stripeGateway;
+    if (gateway == null) {
+      emit(
+        state.copyWith(
+          paymentStatus: BookingPaymentStatus.failure,
+          paymentMessage: BookTreatmentMessageKeys.stripeGatewayUnavailable,
+        ),
+      );
+      return;
+    }
+
+    if (state.paymentSheetCompleted && state.payment != null) {
+      await _verifyPayment(state.payment!);
+      return;
+    }
+
+    PaymentAttempt? payment = state.payment;
+    if (payment == null || !payment.isPending) {
+      emit(
+        state.copyWith(
+          paymentStatus: BookingPaymentStatus.preparing,
+          clearPayment: true,
+          clearPaymentMessage: true,
+        ),
+      );
+      final result = await _repository.initiateDepositPayment(
+        appointmentId: appointment.id,
+        paymentGatewayId: gateway.id,
+      );
+      if (isClosed) {
+        return;
+      }
+
+      result.fold(
+        (failure) => emit(
+          state.copyWith(
+            paymentStatus: BookingPaymentStatus.failure,
+            paymentMessage: failure.message,
+          ),
+        ),
+        (response) => payment = response.payment,
+      );
+      if (payment == null) {
+        return;
+      }
+      emit(state.copyWith(payment: payment));
+    }
+
+    final String? clientSecret = payment!.clientSecret;
+    if (clientSecret == null || clientSecret.isEmpty) {
+      emit(
+        state.copyWith(
+          paymentStatus: BookingPaymentStatus.failure,
+          paymentMessage: BookTreatmentMessageKeys.paymentFailed,
+        ),
+      );
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        paymentStatus: BookingPaymentStatus.presenting,
+        clearPaymentMessage: true,
+      ),
+    );
+    try {
+      final StripeSheetResult sheetResult = await _stripePaymentService
+          .presentPaymentSheet(clientSecret: clientSecret);
+      if (isClosed) {
+        return;
+      }
+      if (sheetResult == StripeSheetResult.cancelled) {
+        emit(state.copyWith(paymentStatus: BookingPaymentStatus.ready));
+        return;
+      }
+
+      emit(state.copyWith(paymentSheetCompleted: true));
+      await _verifyPayment(payment!);
+    } catch (_) {
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            paymentStatus: BookingPaymentStatus.failure,
+            paymentMessage: BookTreatmentMessageKeys.paymentFailed,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _verifyPayment(PaymentAttempt payment) async {
+    emit(
+      state.copyWith(
+        paymentStatus: BookingPaymentStatus.verifying,
+        clearPaymentMessage: true,
+      ),
+    );
+
+    for (int attempt = 0; attempt < 8; attempt++) {
+      final result = await _repository.getPayment(paymentId: payment.id);
+      if (isClosed) {
+        return;
+      }
+
+      PaymentAttempt? refreshed;
+      String? failureMessage;
+      result.fold(
+        (failure) => failureMessage = failure.message,
+        (response) => refreshed = response.payment,
+      );
+      if (failureMessage != null) {
+        emit(
+          state.copyWith(
+            paymentStatus: BookingPaymentStatus.failure,
+            paymentMessage: failureMessage,
+          ),
+        );
+        return;
+      }
+
+      if (refreshed != null) {
+        payment = refreshed!;
+        emit(state.copyWith(payment: payment));
+        if (payment.isPaid) {
+          emit(
+            state.copyWith(
+              status: BookTreatmentStatus.success,
+              paymentStatus: BookingPaymentStatus.ready,
+              message: BookTreatmentMessageKeys.appointmentBookedSuccessfully,
+            ),
+          );
+          return;
+        }
+        if (payment.isFailed) {
+          emit(
+            state.copyWith(
+              paymentStatus: BookingPaymentStatus.failure,
+              paymentSheetCompleted: false,
+              paymentMessage:
+                  payment.failureReason ??
+                  BookTreatmentMessageKeys.paymentFailed,
+            ),
+          );
+          return;
+        }
+      }
+
+      if (attempt < 7) {
+        await Future<void>.delayed(const Duration(seconds: 1));
+      }
+    }
+
+    emit(
+      state.copyWith(
+        paymentStatus: BookingPaymentStatus.ready,
+        paymentMessage: BookTreatmentMessageKeys.paymentVerificationPending,
+      ),
     );
   }
 

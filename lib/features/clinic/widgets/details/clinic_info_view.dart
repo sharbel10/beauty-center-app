@@ -281,8 +281,9 @@ class _ContactCard extends StatelessWidget {
           const SizedBox(height: 14),
           _ContactRow(
             label: l10n.clinicWebsite,
-            value:
-                clinic.website.isNotEmpty ? clinic.website : l10n.notAvailable,
+            value: clinic.website.isNotEmpty
+                ? clinic.website
+                : l10n.notAvailable,
           ),
           const SizedBox(height: 24),
           AppButton(

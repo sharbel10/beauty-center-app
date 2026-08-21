@@ -107,10 +107,9 @@ class NotificationsCubit extends Cubit<NotificationsState> {
         final List<AppNotification> merged = <AppNotification>[
           ...state.notifications,
           ...response.notifications.where(
-            (AppNotification item) =>
-                !state.notifications.any(
-                  (AppNotification existing) => existing.id == item.id,
-                ),
+            (AppNotification item) => !state.notifications.any(
+              (AppNotification existing) => existing.id == item.id,
+            ),
           ),
         ];
         emit(
@@ -174,9 +173,8 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     }
 
     result.fold(
-      (failure) => emit(
-        state.copyWith(message: failure.message, isMessageError: true),
-      ),
+      (failure) =>
+          emit(state.copyWith(message: failure.message, isMessageError: true)),
       (response) {
         final List<AppNotification> updated = state.notifications
             .map(
@@ -251,9 +249,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
 
   List<AppNotification> _replace(AppNotification updated) {
     return state.notifications
-        .map(
-          (AppNotification item) => item.id == updated.id ? updated : item,
-        )
+        .map((AppNotification item) => item.id == updated.id ? updated : item)
         .toList();
   }
 }

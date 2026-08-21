@@ -343,10 +343,7 @@ class _ServiceImage extends StatelessWidget {
 }
 
 class _SearchCategoryCard extends StatelessWidget {
-  const _SearchCategoryCard({
-    required this.category,
-    required this.onTap,
-  });
+  const _SearchCategoryCard({required this.category, required this.onTap});
 
   final Category category;
   final VoidCallback onTap;

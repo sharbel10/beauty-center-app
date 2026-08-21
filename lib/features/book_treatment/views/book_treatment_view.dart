@@ -65,6 +65,11 @@ class _BookTreatmentViewState extends State<BookTreatmentView> {
 
   void _handleBack(BuildContext context) {
     final BookTreatmentCubit cubit = context.read<BookTreatmentCubit>();
+    if (cubit.state.currentStep == BookingSteps.payment &&
+        cubit.state.appointment != null) {
+      context.goNamed(RouteNames.bookings);
+      return;
+    }
     if (cubit.state.currentStep > BookingSteps.service) {
       cubit.previousStep();
       return;
@@ -82,6 +87,16 @@ class _BookTreatmentViewState extends State<BookTreatmentView> {
         return l10n.pleaseChooseServiceDateTime;
       case BookTreatmentMessageKeys.appointmentBookedSuccessfully:
         return l10n.appointmentBookedSuccessfully;
+      case BookTreatmentMessageKeys.paymentFailed:
+        return l10n.paymentFailed;
+      case BookTreatmentMessageKeys.paymentVerificationPending:
+        return l10n.paymentVerificationPending;
+      case BookTreatmentMessageKeys.stripeNotConfigured:
+        return l10n.stripeNotConfigured;
+      case BookTreatmentMessageKeys.stripeGatewayUnavailable:
+        return l10n.stripeGatewayUnavailable;
+      case BookTreatmentMessageKeys.paymentNoLongerAvailable:
+        return l10n.paymentNoLongerAvailable;
       default:
         return message ?? l10n.appointmentBookedSuccessfully;
     }
@@ -93,7 +108,8 @@ class _BookTreatmentViewState extends State<BookTreatmentView> {
       value: _cubit,
       child: BlocListener<BookTreatmentCubit, BookTreatmentState>(
         listenWhen: (BookTreatmentState previous, BookTreatmentState current) =>
-            previous.status != current.status,
+            previous.status != current.status ||
+            previous.paymentMessage != current.paymentMessage,
         listener: (BuildContext context, BookTreatmentState state) {
           final AppLocalizations l10n = AppLocalizations.of(context);
           if (state.status == BookTreatmentStatus.failure &&
@@ -101,6 +117,12 @@ class _BookTreatmentViewState extends State<BookTreatmentView> {
             context.showSnackbar(
               _localizeMessage(l10n, state.message),
               isError: true,
+            );
+          }
+          if (state.paymentMessage != null) {
+            context.showSnackbar(
+              _localizeMessage(l10n, state.paymentMessage),
+              isError: state.paymentStatus == BookingPaymentStatus.failure,
             );
           }
           if (state.status == BookTreatmentStatus.success) {
@@ -173,19 +195,20 @@ class _Stepper extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocSelector<BookTreatmentCubit, BookTreatmentState, (int, bool)>(
       selector: (BookTreatmentState state) =>
-          (state.currentStep, !state.isRescheduling),
+          (state.currentStep, state.requiresDeposit),
       builder: (BuildContext context, (int, bool) stepData) {
         final (int currentStep, bool includePayment) = stepData;
         return Column(
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
-              child: BookingProgressIndicator(
-                currentStep: currentStep,
-                includePayment: includePayment,
-                onStepTapped: context.read<BookTreatmentCubit>().goToStep,
+            if (!context.read<BookTreatmentCubit>().state.isPaymentContinuation)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+                child: BookingProgressIndicator(
+                  currentStep: currentStep,
+                  includePayment: includePayment,
+                  onStepTapped: context.read<BookTreatmentCubit>().goToStep,
+                ),
               ),
-            ),
             Expanded(
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 200),
@@ -330,15 +353,22 @@ class _PaymentStepSection extends StatelessWidget {
           previous.selectedServiceId != current.selectedServiceId ||
           previous.selectedEmployeeId != current.selectedEmployeeId ||
           previous.selectedDate != current.selectedDate ||
-          previous.selectedSlotStartsAt != current.selectedSlotStartsAt,
+          previous.selectedSlotStartsAt != current.selectedSlotStartsAt ||
+          previous.appointment != current.appointment ||
+          previous.payment != current.payment,
       builder: (BuildContext context, BookTreatmentState state) {
         return PaymentStep(
-          serviceName: state.selectedService?.name ?? '—',
+          serviceName:
+              state.selectedService?.name ??
+              state.appointment?.serviceName ??
+              '—',
           specialistName:
-              state.selectedEmployee?.name ?? l10n.anySpecialistName,
+              state.selectedEmployee?.name ??
+              state.appointment?.employeeName ??
+              l10n.anySpecialistName,
           dateLabel: state.selectedDateLabel,
           timeLabel: state.selectedTimeLabel,
-          totalLabel: state.totalLabel,
+          amountDueLabel: state.depositAmountLabel,
         );
       },
     );
@@ -355,15 +385,18 @@ class _BottomBar extends StatelessWidget {
     return BlocSelector<
       BookTreatmentCubit,
       BookTreatmentState,
-      (int, bool, bool, bool, String, String)
+      (int, bool, bool, bool, String, String, bool)
     >(
       selector: (BookTreatmentState state) => (
         state.currentStep,
         state.isLastStep ? state.canConfirm : state.canContinue,
-        state.isSubmitting,
+        state.isSubmitting || state.isPaymentBusy,
         state.hasData,
-        state.totalLabel,
+        state.currentStep == BookingSteps.payment
+            ? state.depositAmountLabel
+            : state.totalLabel,
         state.selectedTimeLabel,
+        state.paymentSheetCompleted,
       ),
       builder: (BuildContext context, data) {
         final (
@@ -373,6 +406,7 @@ class _BottomBar extends StatelessWidget {
           bool hasData,
           String total,
           String time,
+          bool paymentSheetCompleted,
         ) = data;
 
         if (!hasData) {
@@ -390,13 +424,15 @@ class _BottomBar extends StatelessWidget {
           total: total,
           time: time,
           confirmText: isPaymentStep
-              ? l10n.payWithStripe
+              ? paymentSheetCompleted
+                    ? l10n.checkPaymentStatus
+                    : l10n.payWithStripe
               : (cubit.state.args?.isRescheduling ?? false)
               ? l10n.confirmReschedule
               : l10n.confirmBooking,
           onPressed: isPaymentStep
-              ? () {}
-              : isLastStep
+              ? cubit.payDeposit
+              : currentStep == BookingSteps.time
               ? cubit.confirmBooking
               : cubit.nextStep,
         );
@@ -413,6 +449,10 @@ class _EmptyServicesState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
+    final String? localizedMessage =
+        message == BookTreatmentMessageKeys.paymentNoLongerAvailable
+        ? l10n.paymentNoLongerAvailable
+        : message;
 
     return Center(
       child: Padding(
@@ -421,7 +461,7 @@ class _EmptyServicesState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
-              message ?? l10n.noServicesAvailable,
+              localizedMessage ?? l10n.noServicesAvailable,
               textAlign: TextAlign.center,
               style: AppTextStyles.subtitle.copyWith(fontSize: 14),
             ),

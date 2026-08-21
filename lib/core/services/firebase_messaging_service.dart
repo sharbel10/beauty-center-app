@@ -61,8 +61,8 @@ class FirebaseMessagingService {
       FirebaseMessaging.onMessage.listen(_onForegroundMessage);
       FirebaseMessaging.onMessageOpenedApp.listen(_onMessageOpened);
 
-      final RemoteMessage? initialMessage =
-          await FirebaseMessaging.instance.getInitialMessage();
+      final RemoteMessage? initialMessage = await FirebaseMessaging.instance
+          .getInitialMessage();
       if (initialMessage != null) {
         _onMessageOpened(initialMessage);
       }
@@ -112,7 +112,9 @@ class FirebaseMessagingService {
   }
 
   void _onMessageOpened(RemoteMessage message) {
-    AppLogger.d('Opened FCM message: ${message.messageId} data=${message.data}');
+    AppLogger.d(
+      'Opened FCM message: ${message.messageId} data=${message.data}',
+    );
     _handleNotificationNavigation(message.data);
   }
 

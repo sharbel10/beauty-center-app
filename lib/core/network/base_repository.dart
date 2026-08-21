@@ -32,8 +32,8 @@ abstract class BaseRepository {
       if (payload is Map<String, dynamic>) {
         final bool success = payload['success'] as bool? ?? true;
         if (!success) {
-          final String message = payload['message']?.toString() ??
-              ApiErrorMessages.unexpected;
+          final String message =
+              payload['message']?.toString() ?? ApiErrorMessages.unexpected;
           final Map<String, dynamic>? errors =
               payload['errors'] as Map<String, dynamic>?;
           return Left(ValidationFailure(message, errors: errors));

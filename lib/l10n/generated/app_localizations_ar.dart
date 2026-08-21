@@ -429,6 +429,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pricing => 'الأسعار';
 
   @override
+  String get priceRange => 'نطاق السعر';
+
+  @override
+  String get minimumPrice => 'أقل سعر';
+
+  @override
+  String get maximumPrice => 'أعلى سعر';
+
+  @override
   String get clinicGalleryExperienceEyebrow => 'التجربة';
 
   @override
@@ -936,6 +945,41 @@ class AppLocalizationsAr extends AppLocalizations {
   String get payWithStripe => 'الدفع عبر Stripe';
 
   @override
+  String get completePayment => 'إكمال الدفع';
+
+  @override
+  String get pendingPaymentNotice =>
+      'يجب دفع العربون لتثبيت هذا الحجز. أكمل الدفع قبل انتهاء مهلة الحجز.';
+
+  @override
+  String pendingPaymentDeadline(String deadline) {
+    return 'أكمل الدفع قبل $deadline، وإلا سيتم إلغاء الحجز تلقائياً.';
+  }
+
+  @override
+  String get paymentNoLongerAvailable =>
+      'انتهت مهلة الدفع أو لم يعد هذا الحجز بحاجة إلى دفع.';
+
+  @override
+  String get checkPaymentStatus => 'التحقق من حالة الدفع';
+
+  @override
+  String get paymentFailed =>
+      'تعذر إتمام الدفع عبر Stripe. يرجى المحاولة مجدداً.';
+
+  @override
+  String get paymentVerificationPending =>
+      'ما زال الدفع قيد التحقق. اضغط على الزر للتحقق مجدداً.';
+
+  @override
+  String get stripeNotConfigured =>
+      'مفتاح Stripe التجريبي غير مضاف إلى التطبيق.';
+
+  @override
+  String get stripeGatewayUnavailable =>
+      'الدفع عبر Stripe غير مفعّل لهذا المركز.';
+
+  @override
   String get estimatedTotal => 'الإجمالي التقديري';
 
   @override
@@ -981,6 +1025,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get statusPending => 'قيد الانتظار';
+
+  @override
+  String get statusPendingPayment => 'بانتظار الدفع';
 
   @override
   String get statusConfirmed => 'مؤكد';
@@ -1214,7 +1261,220 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get searchType => 'نوع النتائج';
+
+  @override
+  String get sortBy => 'الترتيب حسب';
+
+  @override
+  String get sortRating => 'الأعلى تقييماً';
+
+  @override
+  String get sortNearest => 'الأقرب';
+
+  @override
+  String get sortName => 'الاسم';
+
+  @override
+  String get sortLatest => 'الأحدث';
+
+  @override
+  String get sortPriceAsc => 'السعر: من الأقل للأعلى';
+
+  @override
+  String get sortPriceDesc => 'السعر: من الأعلى للأقل';
+
+  @override
+  String get sortDuration => 'المدة';
+
+  @override
+  String get centerFilter => 'المركز';
+
+  @override
+  String get anyOption => 'أي قيمة';
+
+  @override
+  String get yesOption => 'نعم';
+
+  @override
+  String get noOption => 'لا';
+
+  @override
+  String get minRating => 'الحد الأدنى للتقييم';
+
+  @override
+  String get radiusKm => 'نطاق المسافة (كم)';
+
+  @override
+  String get resultsLimit => 'عدد النتائج';
+
+  @override
+  String get governorate => 'المحافظة';
+
+  @override
+  String get featuredOnly => 'المميزة فقط';
+
+  @override
+  String get requiresDeposit => 'يتطلب عربوناً';
+
+  @override
+  String get maxDuration => 'المدة القصوى (دقائق)';
+
+  @override
+  String get invalidPriceRange =>
+      'لا يمكن أن يكون الحد الأقصى للسعر أقل من الحد الأدنى.';
+
+  @override
+  String get invalidFilterValue => 'أدخل قيمة صحيحة ضمن المجال المسموح.';
+
+  @override
+  String get locationPermissionRequired =>
+      'يلزم السماح بالموقع للترتيب حسب الأقرب. اختر ترتيباً آخر أو اسمح بالوصول إلى الموقع.';
+
+  @override
+  String get clearFilters => 'مسح الفلاتر';
+
+  @override
   String daysAgo(int count) {
     return 'منذ $count ي';
   }
+
+  @override
+  String get aiBeautyAssistant => 'مساعد الجمال الذكي';
+
+  @override
+  String get personalRecommendation => 'عناية مصممة خصيصاً لك';
+
+  @override
+  String get personalRecommendationSubtitle =>
+      'اخبرينا ما الذي ترغبين بتحسينه أو دعي Lumina يحلل وجهك ليقترح العلاجات المناسبة.';
+
+  @override
+  String get describeYourNeeds => 'صفي احتياجك';
+
+  @override
+  String get describeYourNeedsSubtitle =>
+      'شاركينا أهدافك والمشكلة التي تزعجك والنتيجة التي تتمنينها.';
+
+  @override
+  String get scanYourFace => 'امسحي وجهك';
+
+  @override
+  String get scanYourFaceSubtitle =>
+      'استخدمي مسح الوجه الموجّه للحصول على توصية بصرية أدق.';
+
+  @override
+  String get startWithDescription => 'ابدئي بوصف احتياجك';
+
+  @override
+  String get startFaceScan => 'ابدئي مسح الوجه';
+
+  @override
+  String get yourBeautyGoals => 'بماذا ترغبين أن نساعدك؟';
+
+  @override
+  String get beautyGoalsHint =>
+      'مثلاً: أرغب ببشرة أكثر إشراقاً ومعالجة الخطوط الرفيعة حول العينين...';
+
+  @override
+  String get continueToRecommendation => 'احصلي على توصيتك';
+
+  @override
+  String get uiPreviewNotice =>
+      'سيتم ربط نتائج التوصية عند تجهيز خدمة الذكاء الاصطناعي.';
+
+  @override
+  String get biometricAlignment => 'محاذاة الوجه الذكية';
+
+  @override
+  String get alignFaceWithinFrame => 'ضعي وجهك داخل الإطار';
+
+  @override
+  String get wellLitScanHint =>
+      'تأكدي من وضوح وجهك ووجود إضاءة جيدة للحصول على أدق تحليل.';
+
+  @override
+  String get luminaIntelligence => 'ذكاء LUMINA';
+
+  @override
+  String get scanAnalysisHint => 'جاهز لتحليل ملمس البشرة وتوازن ملامح الوجه';
+
+  @override
+  String get scanFace => 'امسحي الوجه';
+
+  @override
+  String get clinicalPrivacyNotice => 'صورتك خاصة ومحمية بأمان';
+
+  @override
+  String get cameraPreviewPlaceholder => 'معاينة الكاميرا';
+
+  @override
+  String get cameraUnavailable => 'الكاميرا غير متاحة';
+
+  @override
+  String get cameraUnavailableHint =>
+      'اسمحي بالوصول إلى الكاميرا من إعدادات الجهاز ثم حاولي مجدداً.';
+
+  @override
+  String get tryCameraAgain => 'إعادة المحاولة';
+
+  @override
+  String get aiInputRequired => 'أدخلي وصفاً أو التقطي صورة للوجه أولاً.';
+
+  @override
+  String get aiTextTooLong => 'يجب ألا يتجاوز الوصف 1000 حرف.';
+
+  @override
+  String get aiImageTooLarge => 'يجب ألا يتجاوز حجم الصورة 5 ميغابايت.';
+
+  @override
+  String get aiUnsupportedImage => 'استخدمي صورة بصيغة JPG أو PNG أو WebP.';
+
+  @override
+  String get aiImageMissing =>
+      'الصورة الملتقطة لم تعد متاحة. يرجى المحاولة مجدداً.';
+
+  @override
+  String get aiCaptureFailed => 'تعذر التقاط الصورة. يرجى المحاولة مجدداً.';
+
+  @override
+  String get aiAnalyzingTitle => 'نحضّر توصياتك';
+
+  @override
+  String get aiAnalyzingSubtitle =>
+      'يقوم Lumina بتحليل طلبك ومطابقته مع الخدمات المتاحة.';
+
+  @override
+  String get aiResultsTitle => 'توصيات مناسبة لك';
+
+  @override
+  String get aiResultsSubtitle =>
+      'تم ترتيب الاقتراحات حسب مدى تطابقها مع طلبك.';
+
+  @override
+  String get aiSuggestedServices => 'الخدمات المقترحة';
+
+  @override
+  String get aiSuggestedCenters => 'المراكز المقترحة';
+
+  @override
+  String aiMatchPercent(int percent) {
+    return 'تطابق $percent%';
+  }
+
+  @override
+  String get aiNoRecommendations => 'لم نجد توصيات مطابقة';
+
+  @override
+  String get aiNoRecommendationsSubtitle =>
+      'حاولي إضافة تفاصيل أكثر أو التقاط صورة أخرى بإضاءة أفضل.';
+
+  @override
+  String get aiNewRecommendation => 'توصية جديدة';
+
+  @override
+  String get aiBookService => 'احجزي الخدمة';
+
+  @override
+  String get aiViewCenter => 'عرض المركز';
 }

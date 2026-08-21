@@ -35,25 +35,29 @@ class SearchData extends Equatable {
     return SearchData(
       query: json['query'] as String? ?? '',
       type: json['type'] as String? ?? 'all',
-      centers: (json['centers'] as List<dynamic>?)
+      centers:
+          (json['centers'] as List<dynamic>?)
               ?.map(
                 (dynamic e) =>
                     CenterSearchResult.fromJson(e as Map<String, dynamic>),
               )
               .toList() ??
           const [],
-      services: (json['services'] as List<dynamic>?)
+      services:
+          (json['services'] as List<dynamic>?)
               ?.map(
                 (dynamic e) =>
                     ServiceSearchResult.fromJson(e as Map<String, dynamic>),
               )
               .toList() ??
           const [],
-      categories: (json['categories'] as List<dynamic>?)
+      categories:
+          (json['categories'] as List<dynamic>?)
               ?.map((dynamic e) => Category.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      offers: (json['offers'] as List<dynamic>?)
+      offers:
+          (json['offers'] as List<dynamic>?)
               ?.map(
                 (dynamic e) =>
                     OfferSearchResult.fromJson(e as Map<String, dynamic>),
@@ -100,14 +104,14 @@ class SearchData extends Equatable {
 
   @override
   List<Object?> get props => [
-        query,
-        type,
-        centers,
-        services,
-        categories,
-        offers,
-        total,
-      ];
+    query,
+    type,
+    centers,
+    services,
+    categories,
+    offers,
+    total,
+  ];
 }
 
 class CenterSearchResult extends Equatable {
@@ -195,9 +199,7 @@ class CenterSearchResult extends Equatable {
     return city ?? '';
   }
 
-  CenterSearchResult copyWith({
-    bool? isFavorite,
-  }) {
+  CenterSearchResult copyWith({bool? isFavorite}) {
     return CenterSearchResult(
       id: id,
       name: name,
@@ -236,36 +238,33 @@ class CenterSearchResult extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        slug,
-        description,
-        phone,
-        city,
-        area,
-        address,
-        latitude,
-        longitude,
-        logoPath,
-        logoUrl,
-        coverPath,
-        coverUrl,
-        averageRating,
-        ratingsCount,
-        isFeatured,
-        isFavorite,
-        bookingConfirmationType,
-        bookingConfirmationLabel,
-        distanceKm,
-        priceRange,
-      ];
+    id,
+    name,
+    slug,
+    description,
+    phone,
+    city,
+    area,
+    address,
+    latitude,
+    longitude,
+    logoPath,
+    logoUrl,
+    coverPath,
+    coverUrl,
+    averageRating,
+    ratingsCount,
+    isFeatured,
+    isFavorite,
+    bookingConfirmationType,
+    bookingConfirmationLabel,
+    distanceKm,
+    priceRange,
+  ];
 }
 
 class PriceRange extends Equatable {
-  const PriceRange({
-    required this.min,
-    required this.max,
-  });
+  const PriceRange({required this.min, required this.max});
 
   factory PriceRange.fromJson(Map<String, dynamic> json) {
     return PriceRange(
@@ -362,10 +361,7 @@ class ServiceSearchResult extends Equatable {
   final Category? category;
   final CenterSearchResult? center;
 
-  ServiceSearchResult copyWith({
-    bool? isFavorite,
-    CenterSearchResult? center,
-  }) {
+  ServiceSearchResult copyWith({bool? isFavorite, CenterSearchResult? center}) {
     return ServiceSearchResult(
       id: id,
       centerId: centerId,
@@ -401,26 +397,26 @@ class ServiceSearchResult extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        centerId,
-        categoryId,
-        name,
-        slug,
-        description,
-        price,
-        salePrice,
-        finalPrice,
-        hasDiscount,
-        durationMinutes,
-        preparationMinutes,
-        imagePath,
-        imageUrl,
-        requiresEmployee,
-        isFeatured,
-        isFavorite,
-        category,
-        center,
-      ];
+    id,
+    centerId,
+    categoryId,
+    name,
+    slug,
+    description,
+    price,
+    salePrice,
+    finalPrice,
+    hasDiscount,
+    durationMinutes,
+    preparationMinutes,
+    imagePath,
+    imageUrl,
+    requiresEmployee,
+    isFeatured,
+    isFavorite,
+    category,
+    center,
+  ];
 }
 
 class OfferSearchResult extends Equatable {
@@ -464,9 +460,7 @@ class OfferSearchResult extends Equatable {
 
   String get discountLabel {
     if (discountType == 'percentage') {
-      return '${discountValue.toStringAsFixed(
-        discountValue.truncateToDouble() == discountValue ? 0 : 1,
-      )}% OFF';
+      return '${discountValue.toStringAsFixed(discountValue.truncateToDouble() == discountValue ? 0 : 1)}% OFF';
     }
     return '${discountValue.toStringAsFixed(0)} OFF';
   }
@@ -483,14 +477,14 @@ class OfferSearchResult extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        centerId,
-        title,
-        description,
-        discountType,
-        discountValue,
-        startsAt,
-        endsAt,
-        center,
-      ];
+    id,
+    centerId,
+    title,
+    description,
+    discountType,
+    discountValue,
+    startsAt,
+    endsAt,
+    center,
+  ];
 }

@@ -68,7 +68,7 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
     _homeCubit = widget._homeCubit;
     _locationService = getIt<LocationService>();
     WidgetsBinding.instance.addObserver(this);
-    _loadHomeForCurrentFilters();
+    _initializeHome();
     _favoritesCubit = getIt<FavoritesCubit>();
     _favoritesCubit.loadFavorites();
     _bootstrapNotifications();
@@ -82,7 +82,8 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
   }
 
   void _bootstrapNotifications() {
-    final DeviceRegistrationService devices = getIt<DeviceRegistrationService>();
+    final DeviceRegistrationService devices =
+        getIt<DeviceRegistrationService>();
     devices.attachTokenRefreshListener();
     // ignore: unawaited_futures
     devices.syncDeviceToken();
@@ -107,20 +108,36 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
     super.dispose();
   }
 
+  Future<void> _initializeHome() async {
+    // Location improves nearby ordering, but it must never block the rest of
+    // Home from loading when permission is denied or GPS is unavailable.
+    await _loadHomeForCurrentFilters();
+
+    if (!mounted || _homeCubit.isClosed || _didTryResolveLocation) {
+      return;
+    }
+
+    _didTryResolveLocation = true;
+    final LocationResult locationResult = await _locationService
+        .getCurrentLocation();
+
+    if (!mounted || _homeCubit.isClosed || !locationResult.isSuccess) {
+      return;
+    }
+
+    _userLocation = locationResult.location;
+    await _loadHomeForCurrentFilters();
+  }
+
   Future<void> _loadHomeForCurrentFilters() async {
-    if (!_didTryResolveLocation && _userLocation == null) {
-      _didTryResolveLocation = true;
-      final LocationResult locationResult = await _locationService
-          .getCurrentLocation();
-      if (locationResult.isSuccess) {
-        _userLocation = locationResult.location;
-      }
+    if (!mounted || _homeCubit.isClosed) {
+      return;
     }
 
     await _homeCubit.loadHome(
       latitude: _userLocation?.latitude,
       longitude: _userLocation?.longitude,
-      radiusKm: _nearbyRadiusKm,
+      radiusKm: _userLocation == null ? null : _nearbyRadiusKm,
       categoryId: _selectedCategoryId,
     );
   }

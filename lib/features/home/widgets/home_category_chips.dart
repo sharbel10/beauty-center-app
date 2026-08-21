@@ -95,11 +95,7 @@ class _CategoryChip extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              _ChipIcon(
-                isActive: isActive,
-                icon: icon,
-                iconUrl: iconUrl,
-              ),
+              _ChipIcon(isActive: isActive, icon: icon, iconUrl: iconUrl),
               const SizedBox(width: 6),
               Text(
                 label,
@@ -118,11 +114,7 @@ class _CategoryChip extends StatelessWidget {
 }
 
 class _ChipIcon extends StatelessWidget {
-  const _ChipIcon({
-    required this.isActive,
-    this.icon,
-    this.iconUrl,
-  });
+  const _ChipIcon({required this.isActive, this.icon, this.iconUrl});
 
   final bool isActive;
   final IconData? icon;
@@ -139,22 +131,15 @@ class _ChipIcon extends StatelessWidget {
         height: 15,
         fit: BoxFit.contain,
         errorBuilder:
-            (
-              BuildContext context,
-              Object error,
-              StackTrace? stackTrace,
-            ) => Icon(
-              icon ?? Icons.category_outlined,
-              color: iconColor,
-              size: 15,
-            ),
+            (BuildContext context, Object error, StackTrace? stackTrace) =>
+                Icon(
+                  icon ?? Icons.category_outlined,
+                  color: iconColor,
+                  size: 15,
+                ),
       );
     }
 
-    return Icon(
-      icon ?? Icons.category_outlined,
-      color: iconColor,
-      size: 15,
-    );
+    return Icon(icon ?? Icons.category_outlined, color: iconColor, size: 15);
   }
 }

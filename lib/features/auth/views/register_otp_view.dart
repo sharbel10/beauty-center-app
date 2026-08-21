@@ -67,24 +67,6 @@ class _RegisterOtpViewState extends State<RegisterOtpView> {
     }
 
     await widget._cubit.resendOtp(email: email);
-
-    if (!mounted) {
-      return;
-    }
-
-    final AuthState state = widget._cubit.state;
-    if (state.status == AuthStatus.success) {
-      showAuthSnackBar(
-        context,
-        message: state.message ?? l10n.otpSentSuccessfully,
-      );
-    } else if (state.status == AuthStatus.failure) {
-      showAuthSnackBar(
-        context,
-        message: state.message ?? l10n.failedToResendOtp,
-        isError: true,
-      );
-    }
   }
 
   bool _validate() {
@@ -111,10 +93,32 @@ class _RegisterOtpViewState extends State<RegisterOtpView> {
       value: widget._cubit,
       child: BlocListener<AuthCubit, AuthState>(
         listenWhen: (previous, current) =>
-            previous.status != current.status ||
-            previous.isAuthenticated != current.isAuthenticated,
+            current.operation != AuthOperation.none &&
+            (previous.status != current.status ||
+                previous.operation != current.operation ||
+                previous.isAuthenticated != current.isAuthenticated),
         listener: (context, state) {
           final AppLocalizations l10n = AppLocalizations.of(context);
+          if (state.operation == AuthOperation.resendOtp) {
+            if (state.status == AuthStatus.success) {
+              showAuthSnackBar(
+                context,
+                message: state.message ?? l10n.otpSentSuccessfully,
+              );
+            } else if (state.status == AuthStatus.failure) {
+              showAuthSnackBar(
+                context,
+                message: state.message ?? l10n.failedToResendOtp,
+                isError: true,
+              );
+            }
+            return;
+          }
+
+          if (state.operation != AuthOperation.verifyOtp) {
+            return;
+          }
+
           if (state.status == AuthStatus.success) {
             if (state.message != null) {
               showAuthSnackBar(context, message: state.message!);

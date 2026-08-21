@@ -156,6 +156,9 @@
   "noClinicsFound": "No clinics found.",
   "categories": "Categories",
   "pricing": "Pricing",
+  "priceRange": "Price range",
+  "minimumPrice": "Minimum price",
+  "maximumPrice": "Maximum price",
   "clinicGalleryExperienceEyebrow": "THE EXPERIENCE",
   "clinicGalleryInteriorTitle": "Clinic Interior",
   "clinicGalleryNoInteriorPhotos": "No interior photos available",
@@ -394,6 +397,22 @@
   "paymentSecureNotice": "Payment details are entered in Stripe's secure PaymentSheet and are never stored by Lumina.",
   "amountDueNow": "Amount due now",
   "payWithStripe": "Pay with Stripe",
+  "completePayment": "Complete payment",
+  "pendingPaymentNotice": "A deposit is required to keep this appointment. Complete payment before the booking expires.",
+  "pendingPaymentDeadline": "Complete payment by {deadline}. The appointment will be cancelled after this time.",
+  "@pendingPaymentDeadline": {
+    "placeholders": {
+      "deadline": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentNoLongerAvailable": "The payment window has ended or this appointment no longer requires payment.",
+  "checkPaymentStatus": "Check payment status",
+  "paymentFailed": "Stripe couldn't complete the payment. Please try again.",
+  "paymentVerificationPending": "Payment is still being verified. Tap the button to check again.",
+  "stripeNotConfigured": "Stripe test key is not configured in the app.",
+  "stripeGatewayUnavailable": "Stripe is not enabled for this center.",
   "estimatedTotal": "Estimated Total",
   "bookingTotal": "Total  {total}",
   "@bookingTotal": {
@@ -416,6 +435,7 @@
   "notesLabel": "Notes",
   "cancellationReasonLabel": "Cancellation reason",
   "statusPending": "Pending",
+  "statusPendingPayment": "Payment required",
   "statusConfirmed": "Confirmed",
   "statusCompleted": "Completed",
   "statusCancelled": "Cancelled",
@@ -506,6 +526,33 @@
       }
     }
   },
+  "searchType": "Result type",
+  "centers": "Centers",
+  "services": "Services",
+  "offers": "Offers",
+  "sortBy": "Sort by",
+  "sortRating": "Highest rating",
+  "sortNearest": "Nearest",
+  "sortName": "Name",
+  "sortLatest": "Latest",
+  "sortPriceAsc": "Price: low to high",
+  "sortPriceDesc": "Price: high to low",
+  "sortDuration": "Duration",
+  "centerFilter": "Center",
+  "anyOption": "Any",
+  "yesOption": "Yes",
+  "noOption": "No",
+  "minRating": "Minimum rating",
+  "radiusKm": "Radius (km)",
+  "resultsLimit": "Results limit",
+  "governorate": "Governorate",
+  "featuredOnly": "Featured only",
+  "requiresDeposit": "Requires deposit",
+  "maxDuration": "Maximum duration (minutes)",
+  "invalidPriceRange": "Maximum price cannot be lower than minimum price.",
+  "invalidFilterValue": "Enter a valid value within the allowed range.",
+  "locationPermissionRequired": "Location access is needed to sort by nearest. Choose another sort option or allow location access.",
+  "clearFilters": "Clear filters",
   "daysAgo": "{count}d ago",
   "@daysAgo": {
     "placeholders": {
@@ -513,5 +560,48 @@
         "type": "int"
       }
     }
-  }
+  },
+  "aiBeautyAssistant": "AI BEAUTY ASSISTANT",
+  "personalRecommendation": "Your care, made personal",
+  "personalRecommendationSubtitle": "Tell us what you want to improve or let Lumina analyze your face to suggest suitable treatments.",
+  "describeYourNeeds": "Describe your needs",
+  "describeYourNeedsSubtitle": "Share your goals, concerns, and the result you have in mind.",
+  "scanYourFace": "Scan your face",
+  "scanYourFaceSubtitle": "Use a guided face scan for a more visual recommendation.",
+  "startWithDescription": "START WITH A DESCRIPTION",
+  "startFaceScan": "START FACE SCAN",
+  "yourBeautyGoals": "What would you like help with?",
+  "beautyGoalsHint": "For example: I want brighter skin and help with fine lines around my eyes...",
+  "continueToRecommendation": "GET MY RECOMMENDATION",
+  "uiPreviewNotice": "Recommendation results will be connected when the AI service is ready.",
+  "biometricAlignment": "BIOMETRIC ALIGNMENT",
+  "alignFaceWithinFrame": "Align your face within the frame",
+  "wellLitScanHint": "Make sure your face is visible in a well-lit environment for the most accurate analysis.",
+  "luminaIntelligence": "LUMINA INTELLIGENCE",
+  "scanAnalysisHint": "Ready to analyze skin texture and facial balance",
+  "scanFace": "SCAN FACE",
+  "clinicalPrivacyNotice": "YOUR IMAGE STAYS PRIVATE AND SECURE",
+  "cameraPreviewPlaceholder": "Camera preview",
+  "cameraUnavailable": "Camera is unavailable",
+  "cameraUnavailableHint": "Allow camera access in your device settings, then try again.",
+  "tryCameraAgain": "TRY AGAIN"
+  ,"aiInputRequired": "Enter a description or take a face photo first."
+  ,"aiTextTooLong": "The description must not exceed 1000 characters."
+  ,"aiImageTooLarge": "The image must not exceed 5 MB."
+  ,"aiUnsupportedImage": "Use a JPG, PNG, or WebP image."
+  ,"aiImageMissing": "The captured image is no longer available. Please try again."
+  ,"aiCaptureFailed": "We couldn't capture the photo. Please try again."
+  ,"aiAnalyzingTitle": "Creating your recommendations"
+  ,"aiAnalyzingSubtitle": "Lumina is analyzing your request and matching it with available services."
+  ,"aiResultsTitle": "Recommended for you"
+  ,"aiResultsSubtitle": "Suggestions are ranked by how closely they match your request."
+  ,"aiSuggestedServices": "Suggested services"
+  ,"aiSuggestedCenters": "Suggested centers"
+  ,"aiMatchPercent": "{percent}% MATCH"
+  ,"@aiMatchPercent": {"placeholders": {"percent": {"type": "int"}}}
+  ,"aiNoRecommendations": "No matching recommendations found"
+  ,"aiNoRecommendationsSubtitle": "Try adding more detail or taking another photo in better lighting."
+  ,"aiNewRecommendation": "NEW RECOMMENDATION"
+  ,"aiBookService": "BOOK SERVICE"
+  ,"aiViewCenter": "VIEW CENTER"
 }

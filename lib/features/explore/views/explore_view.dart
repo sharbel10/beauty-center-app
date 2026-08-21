@@ -1,5 +1,6 @@
 import 'package:beauty_center_app/core/di/injection.dart';
 import 'package:beauty_center_app/core/network/api_endpoints.dart';
+import 'package:beauty_center_app/core/services/location_service.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/core/utils/extensions.dart';
@@ -11,12 +12,14 @@ import 'package:beauty_center_app/features/clinic/cubit/clinic_details_cubit.dar
 import 'package:beauty_center_app/features/clinic/views/clinic_details_view.dart';
 import 'package:beauty_center_app/features/explore/cubit/explore_cubit.dart';
 import 'package:beauty_center_app/features/explore/cubit/explore_state.dart';
+import 'package:beauty_center_app/features/explore/models/center_filters.dart';
 import 'package:beauty_center_app/features/favorites/cubit/favorites_cubit.dart';
 import 'package:beauty_center_app/features/favorites/cubit/favorites_state.dart';
 import 'package:beauty_center_app/features/favorites/widgets/favorite_heart_button.dart';
 import 'package:beauty_center_app/features/home/models/category.dart';
 import 'package:beauty_center_app/features/home/models/clinic_center.dart';
 import 'package:beauty_center_app/features/home/widgets/clinic_network_image.dart';
+import 'package:beauty_center_app/features/home/widgets/home_category_chips.dart';
 import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -70,7 +73,7 @@ class _ExploreViewState extends State<ExploreView> {
   }
 
   Future<void> _submitSearch() async {
-    await _cubit.updateSearch(_searchController.text);
+    await _cubit.submitSearch(_searchController.text);
   }
 
   void _showFilters(BuildContext context) {
@@ -146,16 +149,14 @@ class _ExploreViewState extends State<ExploreView> {
                                     controller: _searchController,
                                     isLoading: state.isLoading,
                                     onSearch: _submitSearch,
+                                    onChanged: _cubit.onSearchChanged,
                                     onFilter: () => _showFilters(context),
                                   ),
                                   const SizedBox(height: 14),
                                   _ActiveFilters(
                                     state: state,
-                                    onClearCategory: () {
-                                      _cubit.updateCategory(null);
-                                    },
                                     onClearPrice: () {
-                                      _cubit.resetPriceFilter();
+                                      _cubit.clearPrice();
                                     },
                                   ),
                                   const SizedBox(height: 24),
@@ -165,6 +166,34 @@ class _ExploreViewState extends State<ExploreView> {
                                       fontSize: 24,
                                       height: 1.1,
                                     ),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  HomeCategoryChips(
+                                    categories: state.categories
+                                        .where(
+                                          (Category category) =>
+                                              category.isTopLevel,
+                                        )
+                                        .toList(),
+                                    selectedCategoryId:
+                                        state.filters.categoryId,
+                                    onCategorySelected: (int? categoryId) {
+                                      _cubit.applyFilters(
+                                        CenterFilters(
+                                          categoryId: categoryId,
+                                          governorate:
+                                              state.filters.governorate,
+                                          isFeatured: state.filters.isFeatured,
+                                          requiresDeposit:
+                                              state.filters.requiresDeposit,
+                                          minPrice: state.filters.minPrice,
+                                          maxPrice: state.filters.maxPrice,
+                                          latitude: state.filters.latitude,
+                                          longitude: state.filters.longitude,
+                                          sortBy: state.filters.sortBy,
+                                        ),
+                                      );
+                                    },
                                   ),
                                   const SizedBox(height: 18),
                                 ],
@@ -239,12 +268,14 @@ class _SearchAndFilter extends StatelessWidget {
     required this.controller,
     required this.isLoading,
     required this.onSearch,
+    required this.onChanged,
     required this.onFilter,
   });
 
   final TextEditingController controller;
   final bool isLoading;
   final VoidCallback onSearch;
+  final ValueChanged<String> onChanged;
   final VoidCallback onFilter;
 
   @override
@@ -272,6 +303,8 @@ class _SearchAndFilter extends StatelessWidget {
               controller: controller,
               enabled: !isLoading,
               textInputAction: TextInputAction.search,
+              maxLength: 255,
+              onChanged: onChanged,
               onSubmitted: (_) => onSearch(),
               style: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
               decoration: InputDecoration(
@@ -283,6 +316,7 @@ class _SearchAndFilter extends StatelessWidget {
                   horizontal: 14,
                   vertical: 15,
                 ),
+                counterText: '',
                 hintText: l10n.searchClinics,
                 hintStyle: AppTextStyles.hint.copyWith(fontSize: 14),
                 prefixIcon: const Icon(
@@ -332,40 +366,33 @@ class _SearchAndFilter extends StatelessWidget {
 }
 
 class _ActiveFilters extends StatelessWidget {
-  const _ActiveFilters({
-    required this.state,
-    required this.onClearCategory,
-    required this.onClearPrice,
-  });
+  const _ActiveFilters({required this.state, required this.onClearPrice});
 
   final ExploreState state;
-  final VoidCallback onClearCategory;
   final VoidCallback onClearPrice;
 
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final List<Widget> chips = <Widget>[];
-    final int? selectedCategoryId = state.selectedCategoryId;
-
-    if (selectedCategoryId != null) {
-      Category? category;
-      for (final Category item in state.categories) {
-        if (item.id == selectedCategoryId) {
-          category = item;
-          break;
-        }
-      }
-      if (category != null) {
-        chips.add(_FilterChip(label: category.name, onClear: onClearCategory));
-      }
-    }
-
-    if (state.hasPriceFilter) {
+    final CenterFilters filters = state.filters;
+    if (filters.minPrice != null || filters.maxPrice != null) {
       chips.add(
         _FilterChip(
-          label: l10n.priceRangeFilter(state.minPrice, state.maxPrice),
+          label: '${filters.minPrice ?? 0}–${filters.maxPrice ?? '∞'}',
           onClear: onClearPrice,
+        ),
+      );
+    }
+
+    if (filters.governorate != null ||
+        filters.isFeatured != null ||
+        filters.requiresDeposit != null ||
+        filters.sortBy != 'rating') {
+      chips.add(
+        _FilterChip(
+          label: l10n.filters,
+          onClear: () => context.read<ExploreCubit>().resetFilters(),
         ),
       );
     }
@@ -754,18 +781,40 @@ class _FilterBottomSheet extends StatefulWidget {
 class _FilterBottomSheetState extends State<_FilterBottomSheet> {
   bool _initialized = false;
   int? _selectedCategoryId;
-  late RangeValues _priceValues;
+  late TextEditingController _minPriceController;
+  late TextEditingController _maxPriceController;
+  String? _governorate;
+  bool? _isFeatured;
+  bool? _requiresDeposit;
+  String _sortBy = 'rating';
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   void _ensureInitialValues(ExploreState state) {
     if (_initialized) {
       return;
     }
-    _selectedCategoryId = state.selectedCategoryId;
-    _priceValues = RangeValues(
-      state.minPrice.toDouble(),
-      state.maxPrice.toDouble(),
+    final CenterFilters filters = state.filters;
+    _selectedCategoryId = filters.categoryId;
+    _minPriceController = TextEditingController(
+      text: _number(filters.minPrice),
     );
+    _maxPriceController = TextEditingController(
+      text: _number(filters.maxPrice),
+    );
+    _governorate = filters.governorate;
+    _isFeatured = filters.isFeatured;
+    _requiresDeposit = filters.requiresDeposit;
+    _sortBy = filters.sortBy;
     _initialized = true;
+  }
+
+  @override
+  void dispose() {
+    if (_initialized) {
+      _minPriceController.dispose();
+      _maxPriceController.dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -774,10 +823,6 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
       builder: (BuildContext context, ExploreState state) {
         final AppLocalizations l10n = AppLocalizations.of(context);
         _ensureInitialValues(state);
-        final List<Category> topLevelCategories = state.categories
-            .where((Category category) => category.isTopLevel)
-            .toList();
-
         return Container(
           constraints: BoxConstraints(
             maxHeight: MediaQuery.sizeOf(context).height * 0.78,
@@ -786,135 +831,219 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
             color: AppColors.surface,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
-          child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(
-              22,
-              10,
-              22,
-              22 + MediaQuery.paddingOf(context).bottom,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Center(
-                  child: Container(
-                    width: 42,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: AppColors.divider,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 18),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Text(
-                        l10n.filters,
-                        style: AppTextStyles.title.copyWith(
-                          fontSize: 22,
-                          height: 1.1,
-                        ),
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(
+                22,
+                10,
+                22,
+                22 + MediaQuery.paddingOf(context).bottom,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Center(
+                    child: Container(
+                      width: 42,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AppColors.divider,
+                        borderRadius: BorderRadius.circular(999),
                       ),
                     ),
-                    _SheetIconButton(
-                      icon: Icons.close_rounded,
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 18),
-                _FilterSection(
-                  title: l10n.categories,
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                  ),
+                  const SizedBox(height: 18),
+                  Row(
                     children: <Widget>[
-                      _FilterChoice(
-                        label: l10n.all,
-                        selected: _selectedCategoryId == null,
-                        onSelected: () {
-                          setState(() => _selectedCategoryId = null);
-                        },
-                      ),
-                      for (final Category category in topLevelCategories)
-                        _FilterChoice(
-                          label: category.name,
-                          selected: _selectedCategoryId == category.id,
-                          onSelected: () {
-                            setState(() => _selectedCategoryId = category.id);
-                          },
-                        ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 18),
-                _FilterSection(
-                  title: l10n.pricing,
-                  child: _PriceRangeSlider(
-                    values: _priceValues,
-                    maxLimit: ExploreState.defaultMaxPrice,
-                    onChanged: (RangeValues values) {
-                      setState(() => _priceValues = values);
-                    },
-                  ),
-                ),
-                const SizedBox(height: 22),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedCategoryId = null;
-                            _priceValues = RangeValues(
-                              0.0,
-                              ExploreState.defaultMaxPrice.toDouble(),
-                            );
-                          });
-                        },
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(46),
-                          foregroundColor: AppColors.primary,
-                          side: const BorderSide(color: AppColors.divider),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                      Expanded(
+                        child: Text(
+                          l10n.filters,
+                          style: AppTextStyles.title.copyWith(
+                            fontSize: 22,
+                            height: 1.1,
                           ),
                         ),
-                        child: Text(
-                          l10n.reset,
-                          style: AppTextStyles.link.copyWith(fontSize: 13),
+                      ),
+                      _SheetIconButton(
+                        icon: Icons.close_rounded,
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+                  _FilterDropdown<String>(
+                    label: l10n.sortBy,
+                    value: _sortBy,
+                    items: centerSortOptions,
+                    itemLabel: (value) => _centerSortLabel(l10n, value),
+                    onChanged: (value) => setState(() => _sortBy = value!),
+                  ),
+                  _FilterDropdown<String?>(
+                    label: l10n.governorate,
+                    value: _governorate,
+                    items: <String?>[null, ...centerGovernorates],
+                    itemLabel: (value) => value == null
+                        ? l10n.anyOption
+                        : value.replaceAll('_', ' '),
+                    onChanged: (value) => setState(() => _governorate = value),
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: _FilterDropdown<bool?>(
+                          label: l10n.featuredOnly,
+                          value: _isFeatured,
+                          items: const <bool?>[null, true, false],
+                          itemLabel: (value) => value == null
+                              ? l10n.anyOption
+                              : value
+                              ? l10n.yesOption
+                              : l10n.noOption,
+                          onChanged: (value) =>
+                              setState(() => _isFeatured = value),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: AppButton(
-                        text: l10n.apply,
-                        onPressed: () async {
-                          final ExploreCubit cubit = context
-                              .read<ExploreCubit>();
-                          Navigator.of(context).pop();
-                          await cubit.applyFilters(
-                            categoryId: _selectedCategoryId,
-                            minPrice: _priceValues.start.round(),
-                            maxPrice: _priceValues.end.round(),
-                          );
-                        },
-                        height: 46,
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _FilterDropdown<bool?>(
+                          label: l10n.requiresDeposit,
+                          value: _requiresDeposit,
+                          items: const <bool?>[null, true, false],
+                          itemLabel: (value) => value == null
+                              ? l10n.anyOption
+                              : value
+                              ? l10n.yesOption
+                              : l10n.noOption,
+                          onChanged: (value) =>
+                              setState(() => _requiresDeposit = value),
+                        ),
                       ),
+                    ],
+                  ),
+                  _FilterSection(
+                    title: l10n.priceRange,
+                    child: Column(
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: _FilterNumberField(
+                                label: l10n.minimumPrice,
+                                controller: _minPriceController,
+                                min: 0,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: _FilterNumberField(
+                                label: l10n.maximumPrice,
+                                controller: _maxPriceController,
+                                min: 0,
+                                validator: (_) => _validatePrices(l10n),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          l10n.currency,
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.textMuted,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(height: 18),
+                  const SizedBox(height: 22),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            context.read<ExploreCubit>().resetFilters();
+                          },
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(46),
+                            foregroundColor: AppColors.primary,
+                            side: const BorderSide(color: AppColors.divider),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          child: Text(
+                            l10n.reset,
+                            style: AppTextStyles.link.copyWith(fontSize: 13),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: AppButton(
+                          text: l10n.apply,
+                          onPressed: _apply,
+                          height: 46,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );
       },
     );
   }
+
+  String? _validatePrices(AppLocalizations l10n) {
+    final double? min = _parse(_minPriceController.text);
+    final double? max = _parse(_maxPriceController.text);
+    return min != null && max != null && max < min
+        ? l10n.invalidPriceRange
+        : null;
+  }
+
+  Future<void> _apply() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    double? latitude;
+    double? longitude;
+    if (_sortBy == 'nearest') {
+      final LocationResult result = await getIt<LocationService>()
+          .getCurrentLocation();
+      if (!mounted) return;
+      if (!result.isSuccess) {
+        context.showSnackbar(
+          AppLocalizations.of(context).locationPermissionRequired,
+          isError: true,
+        );
+        return;
+      }
+      latitude = result.location!.latitude;
+      longitude = result.location!.longitude;
+    }
+    final CenterFilters filters = CenterFilters(
+      categoryId: _selectedCategoryId,
+      governorate: _governorate,
+      isFeatured: _isFeatured,
+      requiresDeposit: _requiresDeposit,
+      minPrice: _parse(_minPriceController.text),
+      maxPrice: _parse(_maxPriceController.text),
+      latitude: latitude,
+      longitude: longitude,
+      sortBy: _sortBy,
+    );
+    if (!mounted) return;
+    final ExploreCubit cubit = context.read<ExploreCubit>();
+    Navigator.of(context).pop();
+    await cubit.applyFilters(filters);
+  }
+
+  static String _number(double? value) => value == null ? '' : value.toString();
+  static double? _parse(String value) =>
+      value.trim().isEmpty ? null : double.tryParse(value.trim());
 }
 
 class _FilterSection extends StatelessWidget {
@@ -952,142 +1081,85 @@ class _FilterSection extends StatelessWidget {
   }
 }
 
-class _PriceRangeSlider extends StatelessWidget {
-  const _PriceRangeSlider({
-    required this.values,
-    required this.maxLimit,
+class _FilterNumberField extends StatelessWidget {
+  const _FilterNumberField({
+    required this.label,
+    required this.controller,
+    required this.min,
+    this.validator,
+  });
+  final String label;
+  final TextEditingController controller;
+  final double min;
+  final FormFieldValidator<String>? validator;
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: TextFormField(
+      controller: controller,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+      ),
+      validator: (value) {
+        final String input = value?.trim() ?? '';
+        if (input.isNotEmpty) {
+          final double? number = double.tryParse(input);
+          if (number == null || number < min) {
+            return AppLocalizations.of(context).invalidFilterValue;
+          }
+        }
+        return validator?.call(value);
+      },
+    ),
+  );
+}
+
+class _FilterDropdown<T> extends StatelessWidget {
+  const _FilterDropdown({
+    required this.label,
+    required this.value,
+    required this.items,
+    required this.itemLabel,
     required this.onChanged,
   });
-
-  final RangeValues values;
-  final int maxLimit;
-  final ValueChanged<RangeValues> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final AppLocalizations l10n = AppLocalizations.of(context);
-    final int min = values.start.round();
-    final int max = values.end.round();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: _PricePill(label: l10n.min, value: min),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _PricePill(label: l10n.max, value: max),
-            ),
-          ],
-        ),
-        const SizedBox(height: 14),
-        SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            activeTrackColor: AppColors.primary,
-            inactiveTrackColor: AppColors.divider,
-            thumbColor: AppColors.surface,
-            overlayColor: AppColors.primary.withValues(alpha: 0.12),
-            rangeThumbShape: const RoundRangeSliderThumbShape(
-              enabledThumbRadius: 10,
-              elevation: 3,
-            ),
-            rangeTrackShape: const RoundedRectRangeSliderTrackShape(),
-            trackHeight: 4,
-            valueIndicatorColor: AppColors.primary,
-            valueIndicatorTextStyle: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.surface,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          child: RangeSlider(
-            min: 0,
-            max: maxLimit.toDouble(),
-            divisions: maxLimit ~/ 50,
-            values: values,
-            labels: RangeLabels('$min SP', '$max SP'),
-            onChanged: onChanged,
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text('0 SP', style: AppTextStyles.bodySmall),
-            Text('$maxLimit SP', style: AppTextStyles.bodySmall),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _PricePill extends StatelessWidget {
-  const _PricePill({required this.label, required this.value});
-
   final String label;
-  final int value;
-
+  final T value;
+  final List<T> items;
+  final String Function(T) itemLabel;
+  final ValueChanged<T?> onChanged;
   @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.divider),
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: DropdownButtonFormField<T>(
+      initialValue: value,
+      isExpanded: true,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              label,
-              style: AppTextStyles.smallCaps.copyWith(
-                fontSize: 9,
-                color: AppColors.textMuted,
-              ),
+      items: items
+          .map(
+            (item) => DropdownMenuItem<T>(
+              value: item,
+              child: Text(itemLabel(item), overflow: TextOverflow.ellipsis),
             ),
-            const SizedBox(height: 3),
-            Text('$value', style: AppTextStyles.link.copyWith(fontSize: 14)),
-          ],
-        ),
-      ),
-    );
-  }
+          )
+          .toList(),
+      onChanged: onChanged,
+    ),
+  );
 }
 
-class _FilterChoice extends StatelessWidget {
-  const _FilterChoice({
-    required this.label,
-    required this.selected,
-    required this.onSelected,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return ChoiceChip(
-      label: Text(label),
-      selected: selected,
-      onSelected: (_) => onSelected(),
-      showCheckmark: false,
-      labelStyle: AppTextStyles.bodySmall.copyWith(
-        color: selected ? AppColors.surface : AppColors.textSecondary,
-        fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-      ),
-      selectedColor: AppColors.primary,
-      backgroundColor: AppColors.surface,
-      side: BorderSide(color: selected ? AppColors.primary : AppColors.divider),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-    );
-  }
-}
+String _centerSortLabel(AppLocalizations l10n, String value) => switch (value) {
+  'nearest' => l10n.sortNearest,
+  'name' => l10n.sortName,
+  'latest' => l10n.sortLatest,
+  'price_asc' => l10n.sortPriceAsc,
+  'price_desc' => l10n.sortPriceDesc,
+  _ => l10n.sortRating,
+};
 
 class _SheetIconButton extends StatelessWidget {
   const _SheetIconButton({required this.icon, required this.onPressed});

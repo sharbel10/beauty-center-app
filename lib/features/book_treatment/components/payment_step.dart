@@ -4,15 +4,14 @@ import 'package:beauty_center_app/features/book_treatment/components/booking_ste
 import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
-/// Frontend-ready payment review. The actual Stripe sheet stays disabled until
-/// the backend returns a PaymentIntent client secret for this booking.
+/// Reviews the deposit before opening Stripe's native PaymentSheet.
 class PaymentStep extends StatelessWidget {
   const PaymentStep({
     required this.serviceName,
     required this.specialistName,
     required this.dateLabel,
     required this.timeLabel,
-    required this.totalLabel,
+    required this.amountDueLabel,
     super.key,
   });
 
@@ -20,7 +19,7 @@ class PaymentStep extends StatelessWidget {
   final String specialistName;
   final String dateLabel;
   final String timeLabel;
-  final String totalLabel;
+  final String amountDueLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -43,17 +42,12 @@ class PaymentStep extends StatelessWidget {
             specialistName: specialistName,
             dateLabel: dateLabel,
             timeLabel: timeLabel,
-            totalLabel: totalLabel,
+            totalLabel: amountDueLabel,
           ),
           const SizedBox(height: 16),
           _PaymentMethodCard(
             title: l10n.stripePaymentMethodTitle,
             subtitle: l10n.stripePaymentMethodSubtitle,
-          ),
-          const SizedBox(height: 16),
-          _BackendPendingCard(
-            title: l10n.paymentBackendPendingTitle,
-            body: l10n.paymentBackendPendingBody,
           ),
           const SizedBox(height: 18),
           Row(
@@ -270,56 +264,6 @@ class _PaymentMethodCard extends StatelessWidget {
             ),
           ),
           const Icon(Icons.chevron_right_rounded, color: AppColors.textFaint),
-        ],
-      ),
-    );
-  }
-}
-
-class _BackendPendingCard extends StatelessWidget {
-  const _BackendPendingCard({required this.title, required this.body});
-
-  final String title;
-  final String body;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: AppColors.inputFill,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          const Icon(
-            Icons.info_outline_rounded,
-            color: AppColors.primary,
-            size: 20,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  title,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  body,
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
-                    height: 1.45,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );

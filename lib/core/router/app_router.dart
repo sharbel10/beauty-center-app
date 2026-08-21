@@ -17,6 +17,8 @@ import 'package:beauty_center_app/features/auth/views/otp_view.dart';
 import 'package:beauty_center_app/features/auth/views/register_otp_view.dart';
 import 'package:beauty_center_app/features/auth/views/register_view.dart';
 import 'package:beauty_center_app/features/auth/views/reset_password_view.dart';
+import 'package:beauty_center_app/features/ai_recommendation/views/ai_recommendation_view.dart';
+import 'package:beauty_center_app/features/ai_recommendation/cubit/ai_recommendation_cubit.dart';
 import 'package:beauty_center_app/features/home/views/home_view.dart';
 import 'package:beauty_center_app/features/notifications/views/notifications_view.dart';
 import 'package:beauty_center_app/features/onboarding/cubit/onboarding_cubit.dart';
@@ -111,8 +113,9 @@ class AppRouter {
           path: RouteNames.explorePath,
           builder: (context, state) {
             final String? categoryId = state.uri.queryParameters['category_id'];
-            final int? parsedCategoryId = categoryId != null && categoryId.isNotEmpty 
-                ? int.tryParse(categoryId) 
+            final int? parsedCategoryId =
+                categoryId != null && categoryId.isNotEmpty
+                ? int.tryParse(categoryId)
                 : null;
             return ExploreView(
               cubit: getIt<ExploreCubit>(),
@@ -144,6 +147,12 @@ class AppRouter {
           name: RouteNames.notifications,
           path: RouteNames.notificationsPath,
           builder: (context, state) => const NotificationsView(),
+        ),
+        GoRoute(
+          name: RouteNames.aiRecommendation,
+          path: RouteNames.aiRecommendationPath,
+          builder: (context, state) =>
+              AiRecommendationView(cubit: getIt<AiRecommendationCubit>()),
         ),
         GoRoute(
           name: RouteNames.bookTreatment,
@@ -197,7 +206,6 @@ class AppRouter {
     // Used by network layer when token expires or 401 is received.
     _routerRef?.goNamed(RouteNames.login);
   }
-
 
   static void navigateFromNotification({
     required String type,

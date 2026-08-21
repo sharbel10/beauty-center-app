@@ -35,6 +35,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(
       state.copyWith(
         status: AuthStatus.submitting,
+        operation: AuthOperation.register,
         clearMessage: true,
         clearErrors: true,
       ),
@@ -81,6 +82,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(
       state.copyWith(
         status: AuthStatus.submitting,
+        operation: AuthOperation.verifyOtp,
         clearMessage: true,
         clearErrors: true,
       ),
@@ -142,6 +144,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(
       state.copyWith(
         status: AuthStatus.submitting,
+        operation: AuthOperation.resendOtp,
         clearMessage: true,
         clearErrors: true,
       ),
@@ -165,6 +168,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(
       state.copyWith(
         status: AuthStatus.submitting,
+        operation: AuthOperation.login,
         clearMessage: true,
         clearErrors: true,
       ),

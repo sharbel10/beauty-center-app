@@ -12,6 +12,7 @@ class AppointmentCard extends StatelessWidget {
     this.onViewDetails,
     this.onMorePressed,
     this.onRebookPressed,
+    this.onPayPressed,
     super.key,
   });
 
@@ -20,6 +21,7 @@ class AppointmentCard extends StatelessWidget {
   final VoidCallback? onViewDetails;
   final VoidCallback? onMorePressed;
   final VoidCallback? onRebookPressed;
+  final VoidCallback? onPayPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +56,7 @@ class AppointmentCard extends StatelessWidget {
               appointment: appointment,
               onViewDetails: onViewDetails,
               onMorePressed: onMorePressed,
+              onPayPressed: onPayPressed,
             ),
     );
   }
@@ -64,11 +67,13 @@ class _UpcomingContent extends StatelessWidget {
     required this.appointment,
     this.onViewDetails,
     this.onMorePressed,
+    this.onPayPressed,
   });
 
   final AppointmentModel appointment;
   final VoidCallback? onViewDetails;
   final VoidCallback? onMorePressed;
+  final VoidCallback? onPayPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -130,6 +135,10 @@ class _UpcomingContent extends StatelessWidget {
             _MetaItem(icon: Icons.schedule_rounded, text: appointment.time),
           ],
         ),
+        if (appointment.status == AppointmentStatus.pendingPayment) ...<Widget>[
+          const SizedBox(height: 12),
+          _PendingPaymentNotice(appointment: appointment),
+        ],
         const SizedBox(height: 16),
         Row(
           children: <Widget>[
@@ -137,7 +146,9 @@ class _UpcomingContent extends StatelessWidget {
               child: SizedBox(
                 height: 44,
                 child: ElevatedButton(
-                  onPressed: onViewDetails,
+                  onPressed: appointment.canRetryPayment
+                      ? onPayPressed
+                      : onViewDetails,
                   style: ElevatedButton.styleFrom(
                     elevation: 0,
                     backgroundColor: AppColors.primary,
@@ -147,7 +158,9 @@ class _UpcomingContent extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    l10n.viewDetails,
+                    appointment.canRetryPayment
+                        ? l10n.completePayment
+                        : l10n.viewDetails,
                     style: AppTextStyles.button.copyWith(fontSize: 13),
                   ),
                 ),
@@ -158,7 +171,10 @@ class _UpcomingContent extends StatelessWidget {
               width: 44,
               height: 44,
               child: IconButton(
-                onPressed: onMorePressed,
+                onPressed:
+                    appointment.status == AppointmentStatus.pendingPayment
+                    ? onViewDetails
+                    : onMorePressed,
                 style: IconButton.styleFrom(
                   backgroundColor: AppColors.surfaceMuted,
                   foregroundColor: AppColors.primary,
@@ -166,7 +182,12 @@ class _UpcomingContent extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                icon: const Icon(Icons.more_horiz_rounded, size: 20),
+                icon: Icon(
+                  appointment.status == AppointmentStatus.pendingPayment
+                      ? Icons.info_outline_rounded
+                      : Icons.more_horiz_rounded,
+                  size: 20,
+                ),
               ),
             ),
           ],
@@ -351,10 +372,7 @@ class AppointmentStatusBadge extends StatelessWidget {
           Container(
             width: 7,
             height: 7,
-            decoration: BoxDecoration(
-              color: style.dot,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: style.dot, shape: BoxShape.circle),
           ),
           const SizedBox(width: 7),
           Text(
@@ -378,6 +396,12 @@ class AppointmentStatusBadge extends StatelessWidget {
         dot: Color(0xFFE0A800),
         label: '',
       ).copyWith(label: l10n.statusPending),
+      AppointmentStatus.pendingPayment => const _StatusStyle(
+        background: Color(0xFFFFF4D6),
+        foreground: Color(0xFF8A5A00),
+        dot: Color(0xFFE0A800),
+        label: '',
+      ).copyWith(label: l10n.statusPendingPayment),
       AppointmentStatus.confirmed => const _StatusStyle(
         background: Color(0xFFC8F6DE),
         foreground: Color(0xFF05694A),
@@ -409,6 +433,55 @@ class AppointmentStatusBadge extends StatelessWidget {
         label: l10n.statusPending,
       ),
     };
+  }
+}
+
+class _PendingPaymentNotice extends StatelessWidget {
+  const _PendingPaymentNotice({required this.appointment});
+
+  final AppointmentModel appointment;
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    final DateTime? expiresAt = appointment.paymentExpiresAt;
+    final MaterialLocalizations material = MaterialLocalizations.of(context);
+    final String message = expiresAt == null
+        ? l10n.pendingPaymentNotice
+        : l10n.pendingPaymentDeadline(
+            '${material.formatMediumDate(expiresAt)} · '
+            '${material.formatTimeOfDay(TimeOfDay.fromDateTime(expiresAt))}',
+          );
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF9E8),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFFFD978)),
+      ),
+      child: Row(
+        children: <Widget>[
+          const Icon(
+            Icons.schedule_rounded,
+            size: 18,
+            color: Color(0xFF8A5A00),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              message,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: const Color(0xFF8A5A00),
+                fontWeight: FontWeight.w600,
+                height: 1.35,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

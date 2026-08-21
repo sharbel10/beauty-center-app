@@ -427,6 +427,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pricing => 'Pricing';
 
   @override
+  String get priceRange => 'Price range';
+
+  @override
+  String get minimumPrice => 'Minimum price';
+
+  @override
+  String get maximumPrice => 'Maximum price';
+
+  @override
   String get clinicGalleryExperienceEyebrow => 'THE EXPERIENCE';
 
   @override
@@ -937,6 +946,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get payWithStripe => 'Pay with Stripe';
 
   @override
+  String get completePayment => 'Complete payment';
+
+  @override
+  String get pendingPaymentNotice =>
+      'A deposit is required to keep this appointment. Complete payment before the booking expires.';
+
+  @override
+  String pendingPaymentDeadline(String deadline) {
+    return 'Complete payment by $deadline. The appointment will be cancelled after this time.';
+  }
+
+  @override
+  String get paymentNoLongerAvailable =>
+      'The payment window has ended or this appointment no longer requires payment.';
+
+  @override
+  String get checkPaymentStatus => 'Check payment status';
+
+  @override
+  String get paymentFailed =>
+      'Stripe couldn\'t complete the payment. Please try again.';
+
+  @override
+  String get paymentVerificationPending =>
+      'Payment is still being verified. Tap the button to check again.';
+
+  @override
+  String get stripeNotConfigured =>
+      'Stripe test key is not configured in the app.';
+
+  @override
+  String get stripeGatewayUnavailable =>
+      'Stripe is not enabled for this center.';
+
+  @override
   String get estimatedTotal => 'Estimated Total';
 
   @override
@@ -984,6 +1028,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statusPending => 'Pending';
+
+  @override
+  String get statusPendingPayment => 'Payment required';
 
   @override
   String get statusConfirmed => 'Confirmed';
@@ -1218,7 +1265,225 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get searchType => 'Result type';
+
+  @override
+  String get sortBy => 'Sort by';
+
+  @override
+  String get sortRating => 'Highest rating';
+
+  @override
+  String get sortNearest => 'Nearest';
+
+  @override
+  String get sortName => 'Name';
+
+  @override
+  String get sortLatest => 'Latest';
+
+  @override
+  String get sortPriceAsc => 'Price: low to high';
+
+  @override
+  String get sortPriceDesc => 'Price: high to low';
+
+  @override
+  String get sortDuration => 'Duration';
+
+  @override
+  String get centerFilter => 'Center';
+
+  @override
+  String get anyOption => 'Any';
+
+  @override
+  String get yesOption => 'Yes';
+
+  @override
+  String get noOption => 'No';
+
+  @override
+  String get minRating => 'Minimum rating';
+
+  @override
+  String get radiusKm => 'Radius (km)';
+
+  @override
+  String get resultsLimit => 'Results limit';
+
+  @override
+  String get governorate => 'Governorate';
+
+  @override
+  String get featuredOnly => 'Featured only';
+
+  @override
+  String get requiresDeposit => 'Requires deposit';
+
+  @override
+  String get maxDuration => 'Maximum duration (minutes)';
+
+  @override
+  String get invalidPriceRange =>
+      'Maximum price cannot be lower than minimum price.';
+
+  @override
+  String get invalidFilterValue =>
+      'Enter a valid value within the allowed range.';
+
+  @override
+  String get locationPermissionRequired =>
+      'Location access is needed to sort by nearest. Choose another sort option or allow location access.';
+
+  @override
+  String get clearFilters => 'Clear filters';
+
+  @override
   String daysAgo(int count) {
     return '${count}d ago';
   }
+
+  @override
+  String get aiBeautyAssistant => 'AI BEAUTY ASSISTANT';
+
+  @override
+  String get personalRecommendation => 'Your care, made personal';
+
+  @override
+  String get personalRecommendationSubtitle =>
+      'Tell us what you want to improve or let Lumina analyze your face to suggest suitable treatments.';
+
+  @override
+  String get describeYourNeeds => 'Describe your needs';
+
+  @override
+  String get describeYourNeedsSubtitle =>
+      'Share your goals, concerns, and the result you have in mind.';
+
+  @override
+  String get scanYourFace => 'Scan your face';
+
+  @override
+  String get scanYourFaceSubtitle =>
+      'Use a guided face scan for a more visual recommendation.';
+
+  @override
+  String get startWithDescription => 'START WITH A DESCRIPTION';
+
+  @override
+  String get startFaceScan => 'START FACE SCAN';
+
+  @override
+  String get yourBeautyGoals => 'What would you like help with?';
+
+  @override
+  String get beautyGoalsHint =>
+      'For example: I want brighter skin and help with fine lines around my eyes...';
+
+  @override
+  String get continueToRecommendation => 'GET MY RECOMMENDATION';
+
+  @override
+  String get uiPreviewNotice =>
+      'Recommendation results will be connected when the AI service is ready.';
+
+  @override
+  String get biometricAlignment => 'BIOMETRIC ALIGNMENT';
+
+  @override
+  String get alignFaceWithinFrame => 'Align your face within the frame';
+
+  @override
+  String get wellLitScanHint =>
+      'Make sure your face is visible in a well-lit environment for the most accurate analysis.';
+
+  @override
+  String get luminaIntelligence => 'LUMINA INTELLIGENCE';
+
+  @override
+  String get scanAnalysisHint =>
+      'Ready to analyze skin texture and facial balance';
+
+  @override
+  String get scanFace => 'SCAN FACE';
+
+  @override
+  String get clinicalPrivacyNotice => 'YOUR IMAGE STAYS PRIVATE AND SECURE';
+
+  @override
+  String get cameraPreviewPlaceholder => 'Camera preview';
+
+  @override
+  String get cameraUnavailable => 'Camera is unavailable';
+
+  @override
+  String get cameraUnavailableHint =>
+      'Allow camera access in your device settings, then try again.';
+
+  @override
+  String get tryCameraAgain => 'TRY AGAIN';
+
+  @override
+  String get aiInputRequired =>
+      'Enter a description or take a face photo first.';
+
+  @override
+  String get aiTextTooLong =>
+      'The description must not exceed 1000 characters.';
+
+  @override
+  String get aiImageTooLarge => 'The image must not exceed 5 MB.';
+
+  @override
+  String get aiUnsupportedImage => 'Use a JPG, PNG, or WebP image.';
+
+  @override
+  String get aiImageMissing =>
+      'The captured image is no longer available. Please try again.';
+
+  @override
+  String get aiCaptureFailed =>
+      'We couldn\'t capture the photo. Please try again.';
+
+  @override
+  String get aiAnalyzingTitle => 'Creating your recommendations';
+
+  @override
+  String get aiAnalyzingSubtitle =>
+      'Lumina is analyzing your request and matching it with available services.';
+
+  @override
+  String get aiResultsTitle => 'Recommended for you';
+
+  @override
+  String get aiResultsSubtitle =>
+      'Suggestions are ranked by how closely they match your request.';
+
+  @override
+  String get aiSuggestedServices => 'Suggested services';
+
+  @override
+  String get aiSuggestedCenters => 'Suggested centers';
+
+  @override
+  String aiMatchPercent(int percent) {
+    return '$percent% MATCH';
+  }
+
+  @override
+  String get aiNoRecommendations => 'No matching recommendations found';
+
+  @override
+  String get aiNoRecommendationsSubtitle =>
+      'Try adding more detail or taking another photo in better lighting.';
+
+  @override
+  String get aiNewRecommendation => 'NEW RECOMMENDATION';
+
+  @override
+  String get aiBookService => 'BOOK SERVICE';
+
+  @override
+  String get aiViewCenter => 'VIEW CENTER';
 }

@@ -27,7 +27,6 @@ class _LoginViewState extends State<LoginView> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  bool _rememberMe = false;
   bool _obscurePassword = true;
   String? _emailError;
   String? _passwordError;
@@ -95,8 +94,10 @@ class _LoginViewState extends State<LoginView> {
       value: widget._cubit,
       child: BlocListener<AuthCubit, AuthState>(
         listenWhen: (AuthState previous, AuthState current) =>
-            previous.status != current.status ||
-            previous.isAuthenticated != current.isAuthenticated,
+            current.operation == AuthOperation.login &&
+            (previous.status != current.status ||
+                previous.operation != current.operation ||
+                previous.isAuthenticated != current.isAuthenticated),
         listener: (BuildContext context, AuthState state) {
           final AppLocalizations l10n = AppLocalizations.of(context);
           if (state.status == AuthStatus.success) {
@@ -190,23 +191,6 @@ class _LoginViewState extends State<LoginView> {
                                         // onSubmitted: (_) {
                                         //   _submit();
                                         // },
-                                        trailingLabel: TextButton(
-                                          onPressed: () {
-                                            _clearFields();
-                                            context.pushNamed(
-                                              RouteNames.forgotPassword,
-                                            );
-                                          },
-                                          style: TextButton.styleFrom(
-                                            padding: EdgeInsets.zero,
-                                            minimumSize: Size.zero,
-                                            tapTargetSize: MaterialTapTargetSize
-                                                .shrinkWrap,
-                                          ),
-                                          child: Text(
-                                            l10n.forgotPasswordQuestion,
-                                          ),
-                                        ),
                                         suffixIcon: IconButton(
                                           onPressed: () {
                                             setState(() {
@@ -223,28 +207,26 @@ class _LoginViewState extends State<LoginView> {
                                         ),
                                       ),
                                       const SizedBox(height: 18),
-                                      Row(
-                                        children: <Widget>[
-                                          SizedBox(
-                                            width: 28,
-                                            height: 28,
-                                            child: Checkbox(
-                                              value: _rememberMe,
-                                              onChanged: (bool? value) {
-                                                setState(() {
-                                                  _rememberMe = value ?? false;
-                                                });
-                                              },
-                                            ),
+                                      Align(
+                                        alignment:
+                                            AlignmentDirectional.centerEnd,
+                                        child: TextButton(
+                                          onPressed: () {
+                                            _clearFields();
+                                            context.pushNamed(
+                                              RouteNames.forgotPassword,
+                                            );
+                                          },
+                                          style: TextButton.styleFrom(
+                                            padding: EdgeInsets.zero,
+                                            minimumSize: Size.zero,
+                                            tapTargetSize: MaterialTapTargetSize
+                                                .shrinkWrap,
                                           ),
-                                          const SizedBox(width: 10),
-                                          Expanded(
-                                            child: Text(
-                                              l10n.rememberMe,
-                                              style: AppTextStyles.bodyMedium,
-                                            ),
+                                          child: Text(
+                                            l10n.forgotPasswordQuestion,
                                           ),
-                                        ],
+                                        ),
                                       ),
                                       const SizedBox(height: 26),
                                       AppButton(

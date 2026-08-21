@@ -1,7 +1,7 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = 'http://192.168.1.9:8000/api/';
+  static const String baseUrl = 'http://192.168.1.3:8000/api/';
 
   // Auth endpoints
   static const String login = 'customer/login';
@@ -15,11 +15,19 @@ class ApiEndpoints {
   // Home
   static const String home = 'customer/home';
   static const String search = 'customer/search';
+  static const String aiRecommendations = 'customer/ai/recommendations';
 
   // Explore
   static const String categories = 'customer/categories';
   static const String centers = 'customer/centers';
   static const String appointments = 'customer/appointments';
+  static const String payments = 'customer/payments';
+
+  static String centerPaymentMethods(int centerId) =>
+      'customer/centers/$centerId/payment-methods';
+
+  static String appointmentPayments(int appointmentId) =>
+      'customer/appointments/$appointmentId/payments';
 
   // Profile
   static const String profile = 'customer/profile';
@@ -37,12 +45,11 @@ class ApiEndpoints {
   static const String notificationCounts = 'customer/notifications/counts';
   static const String notificationsReadAll = 'customer/notifications/read-all';
 
-  static String notificationRead(int id) =>
-      'customer/notifications/$id/read';
+  static String notificationRead(int id) => 'customer/notifications/$id/read';
 
   static String notificationById(int id) => 'customer/notifications/$id';
 
-  static const String storageUrl = 'http://192.168.1.106:8000/storage/';
+  static const String storageUrl = 'http://192.168.1.3:8000/storage/';
 
   static String mediaUrl(String? path) {
     if (path == null || path.isEmpty) {

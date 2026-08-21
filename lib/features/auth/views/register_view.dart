@@ -131,7 +131,10 @@ class _RegisterViewState extends State<RegisterView> {
     return BlocProvider<AuthCubit>.value(
       value: widget._cubit,
       child: BlocListener<AuthCubit, AuthState>(
-        listenWhen: (previous, current) => previous.status != current.status,
+        listenWhen: (previous, current) =>
+            current.operation == AuthOperation.register &&
+            (previous.status != current.status ||
+                previous.operation != current.operation),
         listener: (context, state) {
           final AppLocalizations l10n = AppLocalizations.of(context);
           if (state.status == AuthStatus.success) {

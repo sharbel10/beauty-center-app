@@ -43,5 +43,10 @@ class NotificationsListResponse extends Equatable {
   }
 
   @override
-  List<Object?> get props => <Object?>[success, notifications, unreadCount, meta];
+  List<Object?> get props => <Object?>[
+    success,
+    notifications,
+    unreadCount,
+    meta,
+  ];
 }

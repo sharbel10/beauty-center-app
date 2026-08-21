@@ -132,6 +132,9 @@
   "noClinicsFound": "لم يتم العثور على عيادات.",
   "categories": "الفئات",
   "pricing": "الأسعار",
+  "priceRange": "نطاق السعر",
+  "minimumPrice": "أقل سعر",
+  "maximumPrice": "أعلى سعر",
   "clinicGalleryExperienceEyebrow": "التجربة",
   "clinicGalleryInteriorTitle": "داخل العيادة",
   "clinicGalleryNoInteriorPhotos": "لا توجد صور داخلية",
@@ -286,6 +289,22 @@
   "paymentSecureNotice": "تُدخل بيانات الدفع داخل واجهة Stripe الآمنة ولا يتم تخزينها في Lumina.",
   "amountDueNow": "المبلغ المطلوب الآن",
   "payWithStripe": "الدفع عبر Stripe",
+  "completePayment": "إكمال الدفع",
+  "pendingPaymentNotice": "يجب دفع العربون لتثبيت هذا الحجز. أكمل الدفع قبل انتهاء مهلة الحجز.",
+  "pendingPaymentDeadline": "أكمل الدفع قبل {deadline}، وإلا سيتم إلغاء الحجز تلقائياً.",
+  "@pendingPaymentDeadline": {
+    "placeholders": {
+      "deadline": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentNoLongerAvailable": "انتهت مهلة الدفع أو لم يعد هذا الحجز بحاجة إلى دفع.",
+  "checkPaymentStatus": "التحقق من حالة الدفع",
+  "paymentFailed": "تعذر إتمام الدفع عبر Stripe. يرجى المحاولة مجدداً.",
+  "paymentVerificationPending": "ما زال الدفع قيد التحقق. اضغط على الزر للتحقق مجدداً.",
+  "stripeNotConfigured": "مفتاح Stripe التجريبي غير مضاف إلى التطبيق.",
+  "stripeGatewayUnavailable": "الدفع عبر Stripe غير مفعّل لهذا المركز.",
   "estimatedTotal": "الإجمالي التقديري",
   "bookingTotal": "الإجمالي  {total}",
   "chooseATime": "اختر وقتاً",
@@ -301,6 +320,7 @@
   "notesLabel": "ملاحظات",
   "cancellationReasonLabel": "سبب الإلغاء",
   "statusPending": "قيد الانتظار",
+  "statusPendingPayment": "بانتظار الدفع",
   "statusConfirmed": "مؤكد",
   "statusCompleted": "مكتمل",
   "statusCancelled": "ملغى",
@@ -391,6 +411,33 @@
       }
     }
   },
+  "searchType": "نوع النتائج",
+  "centers": "المراكز",
+  "services": "الخدمات",
+  "offers": "العروض",
+  "sortBy": "الترتيب حسب",
+  "sortRating": "الأعلى تقييماً",
+  "sortNearest": "الأقرب",
+  "sortName": "الاسم",
+  "sortLatest": "الأحدث",
+  "sortPriceAsc": "السعر: من الأقل للأعلى",
+  "sortPriceDesc": "السعر: من الأعلى للأقل",
+  "sortDuration": "المدة",
+  "centerFilter": "المركز",
+  "anyOption": "أي قيمة",
+  "yesOption": "نعم",
+  "noOption": "لا",
+  "minRating": "الحد الأدنى للتقييم",
+  "radiusKm": "نطاق المسافة (كم)",
+  "resultsLimit": "عدد النتائج",
+  "governorate": "المحافظة",
+  "featuredOnly": "المميزة فقط",
+  "requiresDeposit": "يتطلب عربوناً",
+  "maxDuration": "المدة القصوى (دقائق)",
+  "invalidPriceRange": "لا يمكن أن يكون الحد الأقصى للسعر أقل من الحد الأدنى.",
+  "invalidFilterValue": "أدخل قيمة صحيحة ضمن المجال المسموح.",
+  "locationPermissionRequired": "يلزم السماح بالموقع للترتيب حسب الأقرب. اختر ترتيباً آخر أو اسمح بالوصول إلى الموقع.",
+  "clearFilters": "مسح الفلاتر",
   "daysAgo": "منذ {count} ي",
   "@daysAgo": {
     "placeholders": {
@@ -398,5 +445,48 @@
         "type": "int"
       }
     }
-  }
+  },
+  "aiBeautyAssistant": "مساعد الجمال الذكي",
+  "personalRecommendation": "عناية مصممة خصيصاً لك",
+  "personalRecommendationSubtitle": "اخبرينا ما الذي ترغبين بتحسينه أو دعي Lumina يحلل وجهك ليقترح العلاجات المناسبة.",
+  "describeYourNeeds": "صفي احتياجك",
+  "describeYourNeedsSubtitle": "شاركينا أهدافك والمشكلة التي تزعجك والنتيجة التي تتمنينها.",
+  "scanYourFace": "امسحي وجهك",
+  "scanYourFaceSubtitle": "استخدمي مسح الوجه الموجّه للحصول على توصية بصرية أدق.",
+  "startWithDescription": "ابدئي بوصف احتياجك",
+  "startFaceScan": "ابدئي مسح الوجه",
+  "yourBeautyGoals": "بماذا ترغبين أن نساعدك؟",
+  "beautyGoalsHint": "مثلاً: أرغب ببشرة أكثر إشراقاً ومعالجة الخطوط الرفيعة حول العينين...",
+  "continueToRecommendation": "احصلي على توصيتك",
+  "uiPreviewNotice": "سيتم ربط نتائج التوصية عند تجهيز خدمة الذكاء الاصطناعي.",
+  "biometricAlignment": "محاذاة الوجه الذكية",
+  "alignFaceWithinFrame": "ضعي وجهك داخل الإطار",
+  "wellLitScanHint": "تأكدي من وضوح وجهك ووجود إضاءة جيدة للحصول على أدق تحليل.",
+  "luminaIntelligence": "ذكاء LUMINA",
+  "scanAnalysisHint": "جاهز لتحليل ملمس البشرة وتوازن ملامح الوجه",
+  "scanFace": "امسحي الوجه",
+  "clinicalPrivacyNotice": "صورتك خاصة ومحمية بأمان",
+  "cameraPreviewPlaceholder": "معاينة الكاميرا",
+  "cameraUnavailable": "الكاميرا غير متاحة",
+  "cameraUnavailableHint": "اسمحي بالوصول إلى الكاميرا من إعدادات الجهاز ثم حاولي مجدداً.",
+  "tryCameraAgain": "إعادة المحاولة"
+  ,"aiInputRequired": "أدخلي وصفاً أو التقطي صورة للوجه أولاً."
+  ,"aiTextTooLong": "يجب ألا يتجاوز الوصف 1000 حرف."
+  ,"aiImageTooLarge": "يجب ألا يتجاوز حجم الصورة 5 ميغابايت."
+  ,"aiUnsupportedImage": "استخدمي صورة بصيغة JPG أو PNG أو WebP."
+  ,"aiImageMissing": "الصورة الملتقطة لم تعد متاحة. يرجى المحاولة مجدداً."
+  ,"aiCaptureFailed": "تعذر التقاط الصورة. يرجى المحاولة مجدداً."
+  ,"aiAnalyzingTitle": "نحضّر توصياتك"
+  ,"aiAnalyzingSubtitle": "يقوم Lumina بتحليل طلبك ومطابقته مع الخدمات المتاحة."
+  ,"aiResultsTitle": "توصيات مناسبة لك"
+  ,"aiResultsSubtitle": "تم ترتيب الاقتراحات حسب مدى تطابقها مع طلبك."
+  ,"aiSuggestedServices": "الخدمات المقترحة"
+  ,"aiSuggestedCenters": "المراكز المقترحة"
+  ,"aiMatchPercent": "تطابق {percent}%"
+  ,"@aiMatchPercent": {"placeholders": {"percent": {"type": "int"}}}
+  ,"aiNoRecommendations": "لم نجد توصيات مطابقة"
+  ,"aiNoRecommendationsSubtitle": "حاولي إضافة تفاصيل أكثر أو التقاط صورة أخرى بإضاءة أفضل."
+  ,"aiNewRecommendation": "توصية جديدة"
+  ,"aiBookService": "احجزي الخدمة"
+  ,"aiViewCenter": "عرض المركز"
 }
