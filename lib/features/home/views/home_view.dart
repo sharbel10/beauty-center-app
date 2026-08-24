@@ -8,6 +8,7 @@ import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/core/utils/extensions.dart';
 import 'package:beauty_center_app/core/widgets/app_bottom_navigation.dart';
+import 'package:beauty_center_app/core/widgets/center_card_skeleton.dart';
 import 'package:beauty_center_app/core/widgets/root_exit_guard.dart';
 import 'package:beauty_center_app/features/auth/cubit/auth_cubit.dart';
 import 'package:beauty_center_app/features/auth/cubit/auth_state.dart';
@@ -259,7 +260,7 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
     AppLocalizations l10n,
   ) {
     if (state.isLoading && !state.hasData) {
-      return const Center(child: CircularProgressIndicator());
+      return _HomeCentersSkeleton(title: l10n.nearbyClinics);
     }
 
     if (!state.hasData) {
@@ -349,6 +350,39 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _HomeCentersSkeleton extends StatelessWidget {
+  const _HomeCentersSkeleton({required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      slivers: <Widget>[
+        SliverPadding(
+          padding: EdgeInsets.fromLTRB(
+            24,
+            12,
+            24,
+            24 + AppBottomNavigation.contentOverlap(context),
+          ),
+          sliver: SliverList.list(
+            children: <Widget>[
+              _SectionHeader(title: title),
+              const SizedBox(height: 14),
+              for (int index = 0; index < 3; index++) ...<Widget>[
+                const CenterCardSkeleton.compact(),
+                if (index < 2) const SizedBox(height: 12),
+              ],
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

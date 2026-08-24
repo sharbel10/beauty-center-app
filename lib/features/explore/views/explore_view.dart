@@ -7,6 +7,7 @@ import 'package:beauty_center_app/core/utils/extensions.dart';
 import 'package:beauty_center_app/core/utils/map_launcher.dart';
 import 'package:beauty_center_app/core/widgets/app_bottom_navigation.dart';
 import 'package:beauty_center_app/core/widgets/app_button.dart';
+import 'package:beauty_center_app/core/widgets/center_card_skeleton.dart';
 import 'package:beauty_center_app/core/widgets/root_exit_guard.dart';
 import 'package:beauty_center_app/features/clinic/cubit/clinic_details_cubit.dart';
 import 'package:beauty_center_app/features/clinic/views/clinic_details_view.dart';
@@ -201,9 +202,23 @@ class _ExploreViewState extends State<ExploreView> {
                             ),
                           ),
                           if (state.isLoading && !state.hasCenters)
-                            const SliverFillRemaining(
-                              hasScrollBody: false,
-                              child: Center(child: CircularProgressIndicator()),
+                            SliverPadding(
+                              padding: EdgeInsets.fromLTRB(
+                                24,
+                                0,
+                                24,
+                                24 +
+                                    AppBottomNavigation.contentOverlap(context),
+                              ),
+                              sliver: SliverList.separated(
+                                itemCount: 3,
+                                separatorBuilder:
+                                    (BuildContext context, int index) =>
+                                        const SizedBox(height: 16),
+                                itemBuilder:
+                                    (BuildContext context, int index) =>
+                                        const CenterCardSkeleton.expanded(),
+                              ),
                             )
                           else if (!state.hasCenters)
                             SliverFillRemaining(

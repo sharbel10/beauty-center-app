@@ -1,7 +1,7 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = 'http://192.168.1.3:8000/api/';
+  static const String baseUrl = 'https://lumina.kefanox.com/api/';
 
   // Auth endpoints
   static const String login = 'customer/login';

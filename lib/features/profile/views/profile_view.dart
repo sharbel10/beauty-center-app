@@ -16,6 +16,7 @@ import 'package:beauty_center_app/features/auth/models/customer.dart';
 import 'package:beauty_center_app/features/profile/cubit/profile_cubit.dart';
 import 'package:beauty_center_app/features/profile/cubit/profile_state.dart';
 import 'package:beauty_center_app/features/profile/models/profile_stats.dart';
+import 'package:beauty_center_app/features/profile/widgets/profile_skeleton.dart';
 import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -606,7 +607,7 @@ class _ProfileViewState extends State<ProfileView> {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
     if (state.isLoading && !state.hasCustomer) {
-      return const Center(child: CircularProgressIndicator());
+      return const ProfileSkeleton();
     }
 
     if (!state.hasCustomer) {

@@ -6,6 +6,7 @@ import 'package:beauty_center_app/core/widgets/app_bottom_navigation.dart';
 import 'package:beauty_center_app/core/widgets/root_exit_guard.dart';
 import 'package:beauty_center_app/features/book_treatment/models/book_treatment_args.dart';
 import 'package:beauty_center_app/features/bookings/components/appointment_card.dart';
+import 'package:beauty_center_app/features/bookings/components/appointments_skeleton.dart';
 import 'package:beauty_center_app/features/bookings/components/booking_tabs.dart';
 import 'package:beauty_center_app/features/bookings/components/bookings_header.dart';
 import 'package:beauty_center_app/features/bookings/cubit/bookings_cubit.dart';
@@ -76,9 +77,8 @@ class _BookingsViewState extends State<BookingsView> {
           return RootExitGuard(
             child: Scaffold(
               backgroundColor: AppColors.background,
-              bottomNavigationBar: AppBottomNavigation(
+              bottomNavigationBar: const AppBottomNavigation(
                 currentItem: AppNavItem.bookings,
-                onItemSelected: (AppNavItem item) => _handleNav(context, item),
               ),
               body: SafeArea(
                 child: Column(
@@ -128,18 +128,6 @@ class _BookingsViewState extends State<BookingsView> {
         },
       ),
     );
-  }
-
-  void _handleNav(BuildContext context, AppNavItem item) {
-    if (item == AppNavItem.home) {
-      context.goNamed(RouteNames.home);
-    } else if (item == AppNavItem.explore) {
-      context.goNamed(RouteNames.explore);
-    } else if (item == AppNavItem.bookings) {
-      context.goNamed(RouteNames.bookings);
-    } else if (item == AppNavItem.profile) {
-      context.goNamed(RouteNames.profile);
-    }
   }
 
   void _showAppointmentDetails(AppointmentModel appointment) {
@@ -309,7 +297,7 @@ class _AppointmentsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return AppointmentsSkeleton(isPast: isPast);
     }
 
     return RefreshIndicator(

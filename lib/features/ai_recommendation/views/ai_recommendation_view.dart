@@ -31,12 +31,27 @@ class AiRecommendationView extends StatefulWidget {
 
 class _AiRecommendationViewState extends State<AiRecommendationView> {
   final TextEditingController _descriptionController = TextEditingController();
+  late final AiRecommendationCubit _cubit;
   _RecommendationStep _step = _RecommendationStep.choose;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = widget.cubit;
+  }
+
+  @override
+  void didUpdateWidget(AiRecommendationView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(widget.cubit, _cubit)) {
+      widget.cubit.close();
+    }
+  }
 
   @override
   void dispose() {
     _descriptionController.dispose();
-    widget.cubit.close();
+    _cubit.close();
     super.dispose();
   }
 
@@ -45,7 +60,7 @@ class _AiRecommendationViewState extends State<AiRecommendationView> {
       context.goNamed(RouteNames.home);
       return;
     }
-    widget.cubit.reset();
+    _cubit.reset();
     setState(() => _step = _RecommendationStep.choose);
   }
 
@@ -76,7 +91,7 @@ class _AiRecommendationViewState extends State<AiRecommendationView> {
 
   Future<void> _submitText() async {
     try {
-      await widget.cubit.request(text: _descriptionController.text);
+      await _cubit.request(text: _descriptionController.text);
     } on AiRecommendationInputException catch (error) {
       _showMessage(_inputErrorMessage(error.error));
     }
@@ -84,14 +99,14 @@ class _AiRecommendationViewState extends State<AiRecommendationView> {
 
   Future<void> _submitImage(String imagePath) async {
     try {
-      await widget.cubit.request(imagePath: imagePath);
+      await _cubit.request(imagePath: imagePath);
     } on AiRecommendationInputException catch (error) {
       _showMessage(_inputErrorMessage(error.error));
     }
   }
 
   void _startOver() {
-    widget.cubit.reset();
+    _cubit.reset();
     _descriptionController.clear();
     setState(() => _step = _RecommendationStep.choose);
   }
@@ -99,7 +114,7 @@ class _AiRecommendationViewState extends State<AiRecommendationView> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AiRecommendationCubit>.value(
-      value: widget.cubit,
+      value: _cubit,
       child: BlocConsumer<AiRecommendationCubit, AiRecommendationState>(
         listenWhen:
             (AiRecommendationState previous, AiRecommendationState current) =>
@@ -114,6 +129,7 @@ class _AiRecommendationViewState extends State<AiRecommendationView> {
           }
         },
         builder: (BuildContext context, AiRecommendationState state) {
+          final AiRecommendationsResponse? recommendation = state.result;
           return PopScope(
             canPop: _step == _RecommendationStep.choose,
             onPopInvokedWithResult: (bool didPop, Object? result) {
@@ -136,15 +152,30 @@ class _AiRecommendationViewState extends State<AiRecommendationView> {
                 onBack: _goBack,
                 onImageCaptured: _submitImage,
               ),
-              _RecommendationStep.results => _ResultsPage(
-                result: state.result!,
-                onBack: _goBack,
-                onStartOver: _startOver,
-              ),
+              _RecommendationStep.results =>
+                recommendation == null
+                    ? const _RecommendationResultSkeleton()
+                    : _ResultsPage(
+                        result: recommendation,
+                        onBack: _goBack,
+                        onStartOver: _startOver,
+                      ),
             },
           );
         },
       ),
+    );
+  }
+}
+
+class _RecommendationResultSkeleton extends StatelessWidget {
+  const _RecommendationResultSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(child: Center(child: CircularProgressIndicator())),
     );
   }
 }

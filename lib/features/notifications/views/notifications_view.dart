@@ -7,6 +7,7 @@ import 'package:beauty_center_app/features/notifications/cubit/notifications_sta
 import 'package:beauty_center_app/features/notifications/models/app_notification.dart';
 import 'package:beauty_center_app/features/notifications/widgets/notification_card.dart';
 import 'package:beauty_center_app/features/notifications/widgets/notifications_header.dart';
+import 'package:beauty_center_app/features/notifications/widgets/notifications_skeleton.dart';
 import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -86,7 +87,7 @@ class _NotificationsViewState extends State<NotificationsView> {
     AppLocalizations l10n,
   ) {
     if (state.isLoading && !state.hasData) {
-      return const Center(child: CircularProgressIndicator());
+      return const NotificationsSkeleton();
     }
 
     if (state.status == NotificationsStatus.failure && !state.hasData) {
