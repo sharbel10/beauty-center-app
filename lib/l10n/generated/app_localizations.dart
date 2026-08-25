@@ -2821,6 +2821,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'VIEW CENTER'**
   String get aiViewCenter;
+
+  /// No description provided for @rate.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate'**
+  String get rate;
+
+  /// No description provided for @report.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get report;
+
+  /// No description provided for @rateExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate your experience'**
+  String get rateExperience;
+
+  /// No description provided for @howWasAppointment.
+  ///
+  /// In en, this message translates to:
+  /// **'How was your appointment at {clinicName}?'**
+  String howWasAppointment(String clinicName);
+
+  /// No description provided for @addCommentOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a comment (optional)'**
+  String get addCommentOptional;
+
+  /// No description provided for @tellUsMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us more about your experience...'**
+  String get tellUsMore;
+
+  /// No description provided for @submitReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Review'**
+  String get submitReview;
+
+  /// No description provided for @submitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting...'**
+  String get submitting;
+
+  /// No description provided for @reviewSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Review submitted successfully'**
+  String get reviewSubmitted;
+
+  /// No description provided for @reviewSubmitFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit review'**
+  String get reviewSubmitFailed;
+
+  /// No description provided for @missingAppointmentDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing appointment details. Cannot submit review.'**
+  String get missingAppointmentDetails;
+
+  /// No description provided for @ratingPoor.
+  ///
+  /// In en, this message translates to:
+  /// **'Poor'**
+  String get ratingPoor;
+
+  /// No description provided for @ratingFair.
+  ///
+  /// In en, this message translates to:
+  /// **'Fair'**
+  String get ratingFair;
+
+  /// No description provided for @ratingAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Average'**
+  String get ratingAverage;
+
+  /// No description provided for @ratingGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get ratingGood;
+
+  /// No description provided for @ratingExcellent.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent'**
+  String get ratingExcellent;
+
+  /// No description provided for @reportIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Report an issue'**
+  String get reportIssue;
+
+  /// No description provided for @reportReasonQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What is the reason?'**
+  String get reportReasonQuestion;
+
+  /// No description provided for @reportAdditionalDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional details (optional)'**
+  String get reportAdditionalDetails;
+
+  /// No description provided for @reportProvideDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Provide more details to help us investigate...'**
+  String get reportProvideDetails;
+
+  /// No description provided for @submitReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Report'**
+  String get submitReport;
+
+  /// No description provided for @reportSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Report submitted successfully'**
+  String get reportSubmitted;
+
+  /// No description provided for @reportSubmitFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit report'**
+  String get reportSubmitFailed;
+
+  /// No description provided for @selectReasonError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a reason.'**
+  String get selectReasonError;
+
+  /// No description provided for @missingCenterDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing center details. Cannot submit report.'**
+  String get missingCenterDetails;
+
+  /// No description provided for @reportReasonWrongSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong schedule'**
+  String get reportReasonWrongSchedule;
+
+  /// No description provided for @reportReasonPoorService.
+  ///
+  /// In en, this message translates to:
+  /// **'Poor service quality'**
+  String get reportReasonPoorService;
+
+  /// No description provided for @reportReasonUnhygienic.
+  ///
+  /// In en, this message translates to:
+  /// **'Unhygienic environment'**
+  String get reportReasonUnhygienic;
+
+  /// No description provided for @reportReasonRudeStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Rude staff'**
+  String get reportReasonRudeStaff;
+
+  /// No description provided for @reportReasonOvercharging.
+  ///
+  /// In en, this message translates to:
+  /// **'Overcharging / Billing issue'**
+  String get reportReasonOvercharging;
+
+  /// No description provided for @reportReasonNoShow.
+  ///
+  /// In en, this message translates to:
+  /// **'No-show by center'**
+  String get reportReasonNoShow;
+
+  /// No description provided for @reportReasonOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get reportReasonOther;
 }
 
 class _AppLocalizationsDelegate

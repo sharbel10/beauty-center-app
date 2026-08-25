@@ -13,6 +13,8 @@ class AppointmentCard extends StatelessWidget {
     this.onMorePressed,
     this.onRebookPressed,
     this.onPayPressed,
+    this.onRatePressed,
+    this.onReportPressed,
     super.key,
   });
 
@@ -22,6 +24,8 @@ class AppointmentCard extends StatelessWidget {
   final VoidCallback? onMorePressed;
   final VoidCallback? onRebookPressed;
   final VoidCallback? onPayPressed;
+  final VoidCallback? onRatePressed;
+  final VoidCallback? onReportPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +55,8 @@ class AppointmentCard extends StatelessWidget {
               appointment: appointment,
               onViewDetails: onViewDetails,
               onRebookPressed: onRebookPressed,
+              onRatePressed: onRatePressed,
+              onReportPressed: onReportPressed,
             )
           : _UpcomingContent(
               appointment: appointment,
@@ -202,11 +208,17 @@ class _PastContent extends StatelessWidget {
     required this.appointment,
     this.onViewDetails,
     this.onRebookPressed,
+    this.onRatePressed,
+    this.onReportPressed,
   });
 
   final AppointmentModel appointment;
   final VoidCallback? onViewDetails;
   final VoidCallback? onRebookPressed;
+  final VoidCallback? onRatePressed;
+  final VoidCallback? onReportPressed;
+
+  bool get _isCompleted => appointment.status == AppointmentStatus.completed;
 
   @override
   Widget build(BuildContext context) {
@@ -295,6 +307,34 @@ class _PastContent extends StatelessWidget {
             ],
           ),
         ),
+        if (_isCompleted) ...<Widget>[
+          const SizedBox(height: 14),
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: _PastActionButton(
+                  icon: Icons.star_rounded,
+                  label: l10n.rate,
+                  color: const Color(0xFFFFB400),
+                  backgroundColor: const Color(
+                    0xFFFFB400,
+                  ).withValues(alpha: 0.10),
+                  onTap: onRatePressed,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _PastActionButton(
+                  icon: Icons.flag_rounded,
+                  label: l10n.report,
+                  color: AppColors.danger,
+                  backgroundColor: AppColors.danger.withValues(alpha: 0.10),
+                  onTap: onReportPressed,
+                ),
+              ),
+            ],
+          ),
+        ],
         const SizedBox(height: 14),
         Row(
           children: <Widget>[
@@ -346,6 +386,57 @@ class _PastContent extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+class _PastActionButton extends StatelessWidget {
+  const _PastActionButton({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.backgroundColor,
+    this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+  final Color backgroundColor;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final bool enabled = onTap != null;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        curve: Curves.easeOut,
+        height: 40,
+        decoration: BoxDecoration(
+          color: enabled ? backgroundColor : AppColors.surfaceMuted,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: enabled ? color.withValues(alpha: 0.22) : AppColors.divider,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(icon, size: 17, color: enabled ? color : AppColors.textMuted),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: AppTextStyles.bodyMedium.copyWith(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w700,
+                color: enabled ? color : AppColors.textMuted,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -13,16 +13,28 @@ import 'package:beauty_center_app/features/bookings/cubit/bookings_cubit.dart';
 import 'package:beauty_center_app/features/bookings/cubit/bookings_state.dart';
 import 'package:beauty_center_app/features/bookings/models/appointment_model.dart';
 import 'package:beauty_center_app/features/clinic/widgets/clinic_network_image.dart';
+import 'package:beauty_center_app/features/reviews/cubit/report_cubit.dart';
+import 'package:beauty_center_app/features/reviews/cubit/reviews_cubit.dart';
+import 'package:beauty_center_app/features/reviews/widgets/report_submit_sheet.dart';
+import 'package:beauty_center_app/features/reviews/widgets/review_submit_sheet.dart';
 import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class BookingsView extends StatefulWidget {
-  const BookingsView({required BookingsCubit cubit, super.key})
-    : _cubit = cubit;
+  const BookingsView({
+    required BookingsCubit cubit,
+    required ReviewsCubit reviewsCubit,
+    required ReportCubit reportCubit,
+    super.key,
+  }) : _cubit = cubit,
+       _reviewsCubit = reviewsCubit,
+       _reportCubit = reportCubit;
 
   final BookingsCubit _cubit;
+  final ReviewsCubit _reviewsCubit;
+  final ReportCubit _reportCubit;
 
   @override
   State<BookingsView> createState() => _BookingsViewState();
@@ -31,15 +43,16 @@ class BookingsView extends StatefulWidget {
 class _BookingsViewState extends State<BookingsView> {
   int _selectedTab = 0;
 
-  // Captured once: the router's builder re-runs on every push/pop and
-  // creates a fresh BookingsCubit from getIt, which would otherwise
-  // replace the loaded one with an empty instance.
   late final BookingsCubit _cubit;
+  late final ReviewsCubit _reviewsCubit;
+  late final ReportCubit _reportCubit;
 
   @override
   void initState() {
     super.initState();
     _cubit = widget._cubit;
+    _reviewsCubit = widget._reviewsCubit;
+    _reportCubit = widget._reportCubit;
     _cubit.loadAppointments();
   }
 
@@ -49,83 +62,107 @@ class _BookingsViewState extends State<BookingsView> {
     if (!identical(widget._cubit, _cubit)) {
       widget._cubit.close();
     }
+    if (!identical(widget._reviewsCubit, _reviewsCubit)) {
+      widget._reviewsCubit.close();
+    }
+    if (!identical(widget._reportCubit, _reportCubit)) {
+      widget._reportCubit.close();
+    }
   }
 
   @override
   void dispose() {
     _cubit.close();
+    _reviewsCubit.close();
+    _reportCubit.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<BookingsCubit>.value(
-      value: _cubit,
-      child: BlocConsumer<BookingsCubit, BookingsState>(
-        listenWhen: (BookingsState previous, BookingsState current) =>
-            previous.message != current.message && current.message != null,
-        listener: (BuildContext context, BookingsState state) {
-          if (state.status == BookingsStatus.failure) {
-            context.showSnackbar(state.message!, isError: true);
-          } else {
-            context.showSnackbar(state.message!);
-          }
-        },
-        builder: (BuildContext context, BookingsState state) {
-          final AppLocalizations l10n = AppLocalizations.of(context);
+    return MultiBlocProvider(
+      providers: <BlocProvider<dynamic>>[
+        BlocProvider<BookingsCubit>.value(value: _cubit),
+        BlocProvider<ReviewsCubit>.value(value: _reviewsCubit),
+        BlocProvider<ReportCubit>.value(value: _reportCubit),
+      ],
+      child: MultiBlocListener(
+        listeners: <BlocListener<dynamic, dynamic>>[
+          BlocListener<BookingsCubit, BookingsState>(
+            listenWhen: (BookingsState previous, BookingsState current) =>
+                previous.message != current.message && current.message != null,
+            listener: (BuildContext context, BookingsState state) {
+              if (state.status == BookingsStatus.failure) {
+                context.showSnackbar(state.message!, isError: true);
+              } else {
+                context.showSnackbar(state.message!);
+              }
+            },
+          ),
+        ],
+        child: BlocBuilder<BookingsCubit, BookingsState>(
+          builder: (BuildContext context, BookingsState state) {
+            final AppLocalizations l10n = AppLocalizations.of(context);
 
-          return RootExitGuard(
-            child: Scaffold(
-              backgroundColor: AppColors.background,
-              bottomNavigationBar: const AppBottomNavigation(
-                currentItem: AppNavItem.bookings,
-              ),
-              body: SafeArea(
-                child: Column(
-                  children: <Widget>[
-                    const BookingsHeader(),
-                    BookingTabs(
-                      selectedIndex: _selectedTab,
-                      onChanged: (int index) =>
-                          setState(() => _selectedTab = index),
-                    ),
-                    Expanded(
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 220),
-                        child: _selectedTab == 0
-                            ? _AppointmentsList(
-                                key: const ValueKey<String>('upcoming'),
-                                label: l10n.next30Days,
-                                appointments: state.upcoming,
-                                isLoading: state.isLoading && !state.hasData,
-                                emptyMessage: l10n.noUpcomingAppointments,
-                                onRefresh: _cubit.loadAppointments,
-                                onViewDetails: _showAppointmentDetails,
-                                onMorePressed: _showAppointmentActions,
-                                onRebookPressed: _openRebooking,
-                                onPayPressed: _openPendingPayment,
-                              )
-                            : _AppointmentsList(
-                                key: const ValueKey<String>('past'),
-                                label: l10n.history,
-                                appointments: state.history,
-                                isPast: true,
-                                isLoading: state.isLoading && !state.hasData,
-                                emptyMessage: l10n.noPastAppointments,
-                                onRefresh: _cubit.loadAppointments,
-                                onViewDetails: _showAppointmentDetails,
-                                onMorePressed: _showAppointmentActions,
-                                onRebookPressed: _openRebooking,
-                                onPayPressed: _openPendingPayment,
-                              ),
+            return RootExitGuard(
+              child: Scaffold(
+                backgroundColor: AppColors.background,
+                bottomNavigationBar: AppBottomNavigation(
+                  currentItem: AppNavItem.bookings,
+                  onItemSelected: (AppNavItem item) =>
+                      _handleNav(context, item),
+                ),
+                body: SafeArea(
+                  child: Column(
+                    children: <Widget>[
+                      const BookingsHeader(),
+                      BookingTabs(
+                        selectedIndex: _selectedTab,
+                        onChanged: (int index) =>
+                            setState(() => _selectedTab = index),
                       ),
-                    ),
-                  ],
+                      Expanded(
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 220),
+                          child: _selectedTab == 0
+                              ? _AppointmentsList(
+                                  key: const ValueKey<String>('upcoming'),
+                                  label: l10n.next30Days,
+                                  appointments: state.upcoming,
+                                  isLoading: state.isLoading && !state.hasData,
+                                  emptyMessage: l10n.noUpcomingAppointments,
+                                  onRefresh: _cubit.loadAppointments,
+                                  onViewDetails: _showAppointmentDetails,
+                                  onMorePressed: _showAppointmentActions,
+                                  onRebookPressed: _openRebooking,
+                                  onPayPressed: _openPendingPayment,
+                                  onRatePressed: _openReviewSheet,
+                                  onReportPressed: _openReportSheet,
+                                )
+                              : _AppointmentsList(
+                                  key: const ValueKey<String>('past'),
+                                  label: l10n.history,
+                                  appointments: state.history,
+                                  isPast: true,
+                                  isLoading: state.isLoading && !state.hasData,
+                                  emptyMessage: l10n.noPastAppointments,
+                                  onRefresh: _cubit.loadAppointments,
+                                  onViewDetails: _showAppointmentDetails,
+                                  onMorePressed: _showAppointmentActions,
+                                  onRebookPressed: _openRebooking,
+                                  onPayPressed: _openPendingPayment,
+                                  onRatePressed: _openReviewSheet,
+                                  onReportPressed: _openReportSheet,
+                                ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -136,6 +173,8 @@ class _BookingsViewState extends State<BookingsView> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
+        final bool isCompleted =
+            appointment.status == AppointmentStatus.completed;
         return _AppointmentDetailsSheet(
           appointment: appointment,
           onPay: appointment.canRetryPayment
@@ -148,6 +187,18 @@ class _BookingsViewState extends State<BookingsView> {
               ? () {
                   Navigator.of(context).pop();
                   _openRebooking(appointment);
+                }
+              : null,
+          onRate: isCompleted
+              ? () {
+                  Navigator.of(context).pop();
+                  _openReviewSheet(appointment);
+                }
+              : null,
+          onReport: isCompleted
+              ? () {
+                  Navigator.of(context).pop();
+                  _openReportSheet(appointment);
                 }
               : null,
         );
@@ -225,6 +276,40 @@ class _BookingsViewState extends State<BookingsView> {
     _openBooking(appointment, isRescheduling: true);
   }
 
+  void _openReviewSheet(AppointmentModel appointment) {
+    if (appointment.status != AppointmentStatus.completed) {
+      return;
+    }
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext sheetContext) {
+        return BlocProvider<ReviewsCubit>.value(
+          value: _reviewsCubit,
+          child: ReviewSubmitSheet(appointment: appointment),
+        );
+      },
+    );
+  }
+
+  void _openReportSheet(AppointmentModel appointment) {
+    if (appointment.status != AppointmentStatus.completed) {
+      return;
+    }
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext sheetContext) {
+        return BlocProvider<ReportCubit>.value(
+          value: _reportCubit,
+          child: ReportSubmitSheet(appointment: appointment),
+        );
+      },
+    );
+  }
+
   void _openPendingPayment(AppointmentModel appointment) {
     final int? centerId = appointment.centerId;
     if (centerId == null || !appointment.canRetryPayment) {
@@ -266,6 +351,26 @@ class _BookingsViewState extends State<BookingsView> {
       ),
     );
   }
+
+  void _handleNav(BuildContext context, AppNavItem item) {
+    switch (item) {
+      case AppNavItem.home:
+        context.goNamed(RouteNames.home);
+        break;
+      case AppNavItem.bookings:
+        // Already on bookings page
+        break;
+      case AppNavItem.explore:
+        context.goNamed(RouteNames.explore);
+        break;
+      case AppNavItem.profile:
+        context.goNamed(RouteNames.profile);
+        break;
+      case AppNavItem.aiScan:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+    }
+  }
 }
 
 class _AppointmentsList extends StatelessWidget {
@@ -279,6 +384,8 @@ class _AppointmentsList extends StatelessWidget {
     required this.onMorePressed,
     required this.onRebookPressed,
     required this.onPayPressed,
+    required this.onRatePressed,
+    required this.onReportPressed,
     this.isPast = false,
     super.key,
   });
@@ -293,6 +400,8 @@ class _AppointmentsList extends StatelessWidget {
   final ValueChanged<AppointmentModel> onMorePressed;
   final ValueChanged<AppointmentModel> onRebookPressed;
   final ValueChanged<AppointmentModel> onPayPressed;
+  final ValueChanged<AppointmentModel> onRatePressed;
+  final ValueChanged<AppointmentModel> onReportPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -327,6 +436,14 @@ class _AppointmentsList extends StatelessWidget {
                       onMorePressed: () => onMorePressed(appointment),
                       onRebookPressed: () => onRebookPressed(appointment),
                       onPayPressed: () => onPayPressed(appointment),
+                      onRatePressed:
+                          appointment.status == AppointmentStatus.completed
+                          ? () => onRatePressed(appointment)
+                          : null,
+                      onReportPressed:
+                          appointment.status == AppointmentStatus.completed
+                          ? () => onReportPressed(appointment)
+                          : null,
                     ),
                     const SizedBox(height: 12),
                   ],
@@ -403,11 +520,17 @@ class _AppointmentDetailsSheet extends StatelessWidget {
     required this.appointment,
     this.onRebook,
     this.onPay,
+    this.onRate,
+    this.onReport,
   });
 
   final AppointmentModel appointment;
   final VoidCallback? onRebook;
   final VoidCallback? onPay;
+  final VoidCallback? onRate;
+  final VoidCallback? onReport;
+
+  bool get _isCompleted => appointment.status == AppointmentStatus.completed;
 
   @override
   Widget build(BuildContext context) {
@@ -555,8 +678,86 @@ class _AppointmentDetailsSheet extends StatelessWidget {
                       tone: AppColors.danger,
                     ),
                   ],
-                  if (onRebook != null) ...<Widget>[
+                  if (_isCompleted &&
+                      (onRate != null || onReport != null)) ...<Widget>[
                     const SizedBox(height: 20),
+                    Row(
+                      children: <Widget>[
+                        if (onRate != null) ...<Widget>[
+                          Expanded(
+                            child: SizedBox(
+                              height: 48,
+                              child: OutlinedButton.icon(
+                                onPressed: onRate,
+                                icon: const Icon(
+                                  Icons.star_rounded,
+                                  size: 17,
+                                  color: Color(0xFFFFB400),
+                                ),
+                                label: Text(
+                                  l10n.rate,
+                                  style: AppTextStyles.button.copyWith(
+                                    fontSize: 13,
+                                    color: const Color(0xFFFFB400),
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(
+                                    color: Color(0x26FFB400),
+                                  ),
+                                  backgroundColor: const Color(
+                                    0xFFFFB400,
+                                  ).withValues(alpha: 0.06),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                        ],
+                        if (onReport != null)
+                          Expanded(
+                            child: SizedBox(
+                              height: 48,
+                              child: OutlinedButton.icon(
+                                onPressed: onReport,
+                                icon: const Icon(
+                                  Icons.flag_rounded,
+                                  size: 17,
+                                  color: AppColors.danger,
+                                ),
+                                label: Text(
+                                  l10n.report,
+                                  style: AppTextStyles.button.copyWith(
+                                    fontSize: 13,
+                                    color: AppColors.danger,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(
+                                    color: AppColors.danger.withValues(
+                                      alpha: 0.22,
+                                    ),
+                                  ),
+                                  backgroundColor: AppColors.danger.withValues(
+                                    alpha: 0.06,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                  if (onRebook != null) ...<Widget>[
+                    const SizedBox(height: 14),
                     SizedBox(
                       width: double.infinity,
                       height: 52,

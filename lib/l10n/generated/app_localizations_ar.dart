@@ -1477,4 +1477,104 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get aiViewCenter => 'عرض المركز';
+
+  @override
+  String get rate => 'قيّم';
+
+  @override
+  String get report => 'أبلغ';
+
+  @override
+  String get rateExperience => 'قيّم تجربتك';
+
+  @override
+  String howWasAppointment(String clinicName) {
+    return 'كيف كان موعدك في $clinicName؟';
+  }
+
+  @override
+  String get addCommentOptional => 'أضف تعليقاً (اختياري)';
+
+  @override
+  String get tellUsMore => 'أخبرنا المزيد عن تجربتك...';
+
+  @override
+  String get submitReview => 'إرسال التقييم';
+
+  @override
+  String get submitting => 'جارٍ الإرسال...';
+
+  @override
+  String get reviewSubmitted => 'تم إرسال التقييم بنجاح';
+
+  @override
+  String get reviewSubmitFailed => 'فشل إرسال التقييم';
+
+  @override
+  String get missingAppointmentDetails =>
+      'تفاصيل الموعد غير متوفرة. لا يمكن إرسال التقييم.';
+
+  @override
+  String get ratingPoor => 'سيء';
+
+  @override
+  String get ratingFair => 'مقبول';
+
+  @override
+  String get ratingAverage => 'متوسط';
+
+  @override
+  String get ratingGood => 'جيد';
+
+  @override
+  String get ratingExcellent => 'ممتاز';
+
+  @override
+  String get reportIssue => 'الإبلاغ عن مشكلة';
+
+  @override
+  String get reportReasonQuestion => 'ما هو السبب؟';
+
+  @override
+  String get reportAdditionalDetails => 'تفاصيل إضافية (اختياري)';
+
+  @override
+  String get reportProvideDetails => 'قدم تفاصيل أكثر لمساعدتنا في التحقيق...';
+
+  @override
+  String get submitReport => 'إرسال البلاغ';
+
+  @override
+  String get reportSubmitted => 'تم إرسال البلاغ بنجاح';
+
+  @override
+  String get reportSubmitFailed => 'فشل إرسال البلاغ';
+
+  @override
+  String get selectReasonError => 'يرجى اختيار سبب.';
+
+  @override
+  String get missingCenterDetails =>
+      'تفاصيل المركز غير متوفرة. لا يمكن إرسال البلاغ.';
+
+  @override
+  String get reportReasonWrongSchedule => 'موعد خاطئ';
+
+  @override
+  String get reportReasonPoorService => 'جودة خدمة سيئة';
+
+  @override
+  String get reportReasonUnhygienic => 'بيئة غير صحية';
+
+  @override
+  String get reportReasonRudeStaff => 'موظفون غير مهذبين';
+
+  @override
+  String get reportReasonOvercharging => 'مبالغة في الأسعار / مشكلة في الفوترة';
+
+  @override
+  String get reportReasonNoShow => 'عدم حضور المركز';
+
+  @override
+  String get reportReasonOther => 'أخرى';
 }

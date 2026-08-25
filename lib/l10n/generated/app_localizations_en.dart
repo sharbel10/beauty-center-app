@@ -1486,4 +1486,105 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aiViewCenter => 'VIEW CENTER';
+
+  @override
+  String get rate => 'Rate';
+
+  @override
+  String get report => 'Report';
+
+  @override
+  String get rateExperience => 'Rate your experience';
+
+  @override
+  String howWasAppointment(String clinicName) {
+    return 'How was your appointment at $clinicName?';
+  }
+
+  @override
+  String get addCommentOptional => 'Add a comment (optional)';
+
+  @override
+  String get tellUsMore => 'Tell us more about your experience...';
+
+  @override
+  String get submitReview => 'Submit Review';
+
+  @override
+  String get submitting => 'Submitting...';
+
+  @override
+  String get reviewSubmitted => 'Review submitted successfully';
+
+  @override
+  String get reviewSubmitFailed => 'Failed to submit review';
+
+  @override
+  String get missingAppointmentDetails =>
+      'Missing appointment details. Cannot submit review.';
+
+  @override
+  String get ratingPoor => 'Poor';
+
+  @override
+  String get ratingFair => 'Fair';
+
+  @override
+  String get ratingAverage => 'Average';
+
+  @override
+  String get ratingGood => 'Good';
+
+  @override
+  String get ratingExcellent => 'Excellent';
+
+  @override
+  String get reportIssue => 'Report an issue';
+
+  @override
+  String get reportReasonQuestion => 'What is the reason?';
+
+  @override
+  String get reportAdditionalDetails => 'Additional details (optional)';
+
+  @override
+  String get reportProvideDetails =>
+      'Provide more details to help us investigate...';
+
+  @override
+  String get submitReport => 'Submit Report';
+
+  @override
+  String get reportSubmitted => 'Report submitted successfully';
+
+  @override
+  String get reportSubmitFailed => 'Failed to submit report';
+
+  @override
+  String get selectReasonError => 'Please select a reason.';
+
+  @override
+  String get missingCenterDetails =>
+      'Missing center details. Cannot submit report.';
+
+  @override
+  String get reportReasonWrongSchedule => 'Wrong schedule';
+
+  @override
+  String get reportReasonPoorService => 'Poor service quality';
+
+  @override
+  String get reportReasonUnhygienic => 'Unhygienic environment';
+
+  @override
+  String get reportReasonRudeStaff => 'Rude staff';
+
+  @override
+  String get reportReasonOvercharging => 'Overcharging / Billing issue';
+
+  @override
+  String get reportReasonNoShow => 'No-show by center';
+
+  @override
+  String get reportReasonOther => 'Other';
 }

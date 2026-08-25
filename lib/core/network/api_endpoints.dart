@@ -49,7 +49,11 @@ class ApiEndpoints {
 
   static String notificationById(int id) => 'customer/notifications/$id';
 
-  static const String storageUrl = 'http://192.168.1.3:8000/storage/';
+  // Reviews & Reports
+  static const String reviews = 'customer/reviews';
+  static const String reports = 'customer/reports';
+
+  static const String storageUrl = 'https://lumina.kefanox.com/storage/';
 
   static String mediaUrl(String? path) {
     if (path == null || path.isEmpty) {

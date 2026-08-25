@@ -104,8 +104,8 @@ class _HeaderCircleButton extends StatelessWidget {
               Icon(icon, color: AppColors.primary, size: 24),
               if (badgeCount > 0)
                 Positioned(
-                  top: 10,
-                  right: 10,
+                  top: 9,
+                  right: -4,
                   child: _CountBadge(
                     count: badgeCount,
                     color: badgeColor ?? AppColors.primary,
@@ -128,7 +128,7 @@ class _CountBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String display = count > 99 ? '99+' : count.toString();
-    final double width = display.length > 2 ? 24 : 20;
+    final double width = display.length > 2 ? 30 : 20;
 
     return Container(
       width: width,
@@ -138,7 +138,7 @@ class _CountBadge extends StatelessWidget {
         shape: BoxShape.circle,
         border: Border.all(color: AppColors.surface, width: 1.5),
       ),
-      constraints: const BoxConstraints(minWidth: 20),
+      constraints: const BoxConstraints(minWidth: 35),
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Center(
         child: Text(
@@ -147,8 +147,6 @@ class _CountBadge extends StatelessWidget {
             color: AppColors.surface,
             fontSize: 9,
             fontWeight: FontWeight.w800,
-            letterSpacing: 0.2,
-            height: 1.2,
           ),
         ),
       ),

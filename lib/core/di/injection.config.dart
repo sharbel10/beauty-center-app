@@ -72,6 +72,12 @@ import 'package:beauty_center_app/features/profile/cubit/profile_cubit.dart'
     as _i607;
 import 'package:beauty_center_app/features/profile/repository/profile_repository.dart'
     as _i449;
+import 'package:beauty_center_app/features/reviews/cubit/report_cubit.dart'
+    as _i14;
+import 'package:beauty_center_app/features/reviews/cubit/reviews_cubit.dart'
+    as _i463;
+import 'package:beauty_center_app/features/reviews/repository/reviews_repository.dart'
+    as _i742;
 import 'package:beauty_center_app/features/splash/cubit/splash_cubit.dart'
     as _i420;
 import 'package:get_it/get_it.dart' as _i174;
@@ -143,6 +149,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i449.ProfileRepository>(
       () => _i449.ProfileRepository(gh<_i1058.DioClient>()),
     );
+    gh.factory<_i742.ReviewsRepository>(
+      () => _i742.ReviewsRepository(gh<_i1058.DioClient>()),
+    );
     gh.lazySingleton<_i865.NotificationsCubit>(
       () => _i865.NotificationsCubit(gh<_i280.NotificationsRepository>()),
     );
@@ -165,6 +174,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i173.AiRecommendationCubit>(
       () => _i173.AiRecommendationCubit(gh<_i822.AiRecommendationRepository>()),
+    );
+    gh.factory<_i14.ReportCubit>(
+      () => _i14.ReportCubit(gh<_i742.ReviewsRepository>()),
+    );
+    gh.factory<_i463.ReviewsCubit>(
+      () => _i463.ReviewsCubit(gh<_i742.ReviewsRepository>()),
     );
     gh.factory<_i98.ClinicDetailsCubit>(
       () => _i98.ClinicDetailsCubit(gh<_i990.ClinicsRepository>()),
