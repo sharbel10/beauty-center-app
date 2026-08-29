@@ -42,7 +42,10 @@ class _ReportSubmitSheetState extends State<ReportSubmitSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final double bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final MediaQueryData mediaQuery = MediaQuery.of(context);
+    final double bottomInset = mediaQuery.viewInsets.bottom > 0
+        ? mediaQuery.viewInsets.bottom
+        : mediaQuery.viewPadding.bottom;
     final AppLocalizations l10n = AppLocalizations.of(context);
     final ReportCubit cubit = context.read<ReportCubit>();
 
