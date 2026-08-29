@@ -15,13 +15,21 @@ import 'package:beauty_center_app/features/auth/cubit/auth_state.dart';
 import 'package:beauty_center_app/features/auth/models/customer.dart';
 import 'package:beauty_center_app/features/profile/cubit/profile_cubit.dart';
 import 'package:beauty_center_app/features/profile/cubit/profile_state.dart';
-import 'package:beauty_center_app/features/profile/models/profile_stats.dart';
 import 'package:beauty_center_app/features/profile/widgets/profile_skeleton.dart';
 import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+
+String? _profileAvatarUrl(Customer customer) {
+  final String? source = customer.avatarUrl?.trim().isNotEmpty == true
+      ? customer.avatarUrl!.trim()
+      : customer.avatarPath?.trim().isNotEmpty == true
+      ? customer.avatarPath!.trim()
+      : null;
+  return source == null ? null : ApiEndpoints.mediaUrl(source);
+}
 
 class ProfileView extends StatefulWidget {
   const ProfileView({
@@ -64,6 +72,7 @@ class _ProfileViewState extends State<ProfileView> {
   Future<void> _pickAndUploadAvatar(
     BuildContext context,
     bool isUpdating,
+    bool hasAvatar,
   ) async {
     if (isUpdating) return;
 
@@ -104,11 +113,150 @@ class _ProfileViewState extends State<ProfileView> {
                   }
                 },
               ),
+              if (hasAvatar)
+                ListTile(
+                  leading: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: AppColors.danger,
+                  ),
+                  title: Text(
+                    l10n.removeAvatar,
+                    style: const TextStyle(color: AppColors.danger),
+                  ),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await _showDeleteAvatarDialog(this.context);
+                  },
+                ),
             ],
           ),
         );
       },
     );
+  }
+
+  Future<void> _showAvatarPreview(
+    BuildContext context,
+    Customer customer,
+  ) async {
+    final String? imageUrl = _profileAvatarUrl(customer);
+    if (imageUrl == null) {
+      return;
+    }
+
+    await showDialog<void>(
+      context: context,
+      barrierColor: Colors.black,
+      builder: (BuildContext dialogContext) {
+        return Dialog.fullscreen(
+          backgroundColor: Colors.black,
+          child: Stack(
+            children: <Widget>[
+              Positioned.fill(
+                child: InteractiveViewer(
+                  minScale: 0.8,
+                  maxScale: 4,
+                  child: Center(
+                    child: Image.network(
+                      imageUrl,
+                      fit: BoxFit.contain,
+                      loadingBuilder:
+                          (
+                            BuildContext context,
+                            Widget child,
+                            ImageChunkEvent? loadingProgress,
+                          ) {
+                            if (loadingProgress == null) {
+                              return child;
+                            }
+                            return const CircularProgressIndicator(
+                              color: AppColors.surface,
+                            );
+                          },
+                      errorBuilder:
+                          (
+                            BuildContext context,
+                            Object error,
+                            StackTrace? stackTrace,
+                          ) => const Icon(
+                            Icons.broken_image_outlined,
+                            color: AppColors.surface,
+                            size: 52,
+                          ),
+                    ),
+                  ),
+                ),
+              ),
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: IconButton.filled(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.black.withValues(alpha: 0.55),
+                      foregroundColor: AppColors.surface,
+                    ),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showDeleteAvatarDialog(BuildContext context) async {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text(l10n.removeAvatar),
+        content: Text(l10n.removeAvatarConfirm),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.danger),
+            child: Text(l10n.removeAvatar),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await _profileCubit.deleteAvatar();
+    }
+  }
+
+  Future<void> _showLogoutDialog(BuildContext context) async {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text(l10n.logout),
+        content: Text(l10n.logoutConfirm),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.danger),
+            child: Text(l10n.logout),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await widget._authCubit.logout();
+    }
   }
 
   Future<void> _showDeleteAccountDialog(BuildContext context) async {
@@ -533,6 +681,7 @@ class _ProfileViewState extends State<ProfileView> {
     final Map<String, String> messageMap = <String, String>{
       'profileUpdatedSuccessfully': l10n.profileUpdatedSuccessfully,
       'avatarUpdatedSuccessfully': l10n.avatarUpdatedSuccessfully,
+      'avatarRemovedSuccessfully': l10n.avatarRemovedSuccessfully,
       'accountDeletedSuccessfully': l10n.accountDeletedSuccessfully,
       'passwordChangedSuccessfully': l10n.passwordChangedSuccessfully,
       'passwordChangedReLogin': l10n.passwordChangedReLogin,
@@ -634,7 +783,12 @@ class _ProfileViewState extends State<ProfileView> {
           const SizedBox(height: 24),
           _ProfileHeroCard(
             customer: state.customer!,
-            onAvatarTap: () => _pickAndUploadAvatar(context, state.isUpdating),
+            onAvatarTap: () => _showAvatarPreview(context, state.customer!),
+            onEditAvatarTap: () => _pickAndUploadAvatar(
+              context,
+              state.isUpdating,
+              _profileAvatarUrl(state.customer!) != null,
+            ),
             appointmentsTotal: state.stats != null
                 ? state.stats!.appointmentsTotal.toString()
                 : '0',
@@ -683,7 +837,7 @@ class _ProfileViewState extends State<ProfileView> {
             locationLabel: state.locationLabel(l10n),
             isLocationLoading: state.isLocationLoading,
             onLocationTap: _profileCubit.refreshLocation,
-            onLogout: () => widget._authCubit.logout(),
+            onLogout: () => _showLogoutDialog(context),
             onEditProfile: () => _showEditProfileDialog(
               context,
               state.customer!,
@@ -703,12 +857,14 @@ class _ProfileHeroCard extends StatelessWidget {
   const _ProfileHeroCard({
     required this.customer,
     required this.onAvatarTap,
+    required this.onEditAvatarTap,
     required this.appointmentsTotal,
     required this.appointmentsUpcoming,
   });
 
   final Customer customer;
   final VoidCallback onAvatarTap;
+  final VoidCallback onEditAvatarTap;
   final String appointmentsTotal;
   final String appointmentsUpcoming;
 
@@ -730,112 +886,119 @@ class _ProfileHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppLocalizations l10n = AppLocalizations.of(context);
-    final String? avatarUrl = customer.avatarUrl;
+    final String? avatarUrl = _profileAvatarUrl(customer);
 
     return Column(
       children: <Widget>[
-        GestureDetector(
-          onTap: onAvatarTap,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: <Widget>[
-              Container(
-                width: 154,
-                height: 154,
-                padding: const EdgeInsets.all(7),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppColors.secondary.withValues(alpha: 0.3),
-                    width: 6,
+        Stack(
+          clipBehavior: Clip.none,
+          children: <Widget>[
+            GestureDetector(
+              onTap: avatarUrl == null ? null : onAvatarTap,
+              child: Semantics(
+                button: avatarUrl != null,
+                child: Container(
+                  width: 154,
+                  height: 154,
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: AppColors.secondary.withValues(alpha: 0.3),
+                      width: 6,
+                    ),
                   ),
-                ),
-                child: ClipOval(
-                  child: avatarUrl != null && avatarUrl.isNotEmpty
-                      ? Image.network(
-                          ApiEndpoints.mediaUrl(avatarUrl),
-                          fit: BoxFit.cover,
-                          loadingBuilder:
-                              (
-                                BuildContext context,
-                                Widget child,
-                                ImageChunkEvent? loadingProgress,
-                              ) {
-                                if (loadingProgress == null) {
-                                  return child;
-                                }
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value:
-                                        loadingProgress.expectedTotalBytes !=
-                                            null
-                                        ? loadingProgress
-                                                  .cumulativeBytesLoaded /
-                                              loadingProgress
-                                                  .expectedTotalBytes!
-                                        : null,
-                                    strokeWidth: 2,
-                                    color: AppColors.primary,
-                                  ),
-                                );
-                              },
-                          errorBuilder:
-                              (
-                                BuildContext context,
-                                Object error,
-                                StackTrace? stackTrace,
-                              ) {
-                                return Container(
-                                  color: AppColors.surfaceMuted,
-                                  child: Center(
-                                    child: Text(
-                                      _initials,
-                                      style: AppTextStyles.headline.copyWith(
-                                        fontSize: 48,
-                                        color: AppColors.textMuted,
+                  child: ClipOval(
+                    child: avatarUrl != null
+                        ? Image.network(
+                            avatarUrl,
+                            fit: BoxFit.cover,
+                            loadingBuilder:
+                                (
+                                  BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress,
+                                ) {
+                                  if (loadingProgress == null) {
+                                    return child;
+                                  }
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
+                                              null
+                                          ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                loadingProgress
+                                                    .expectedTotalBytes!
+                                          : null,
+                                      strokeWidth: 2,
+                                      color: AppColors.primary,
+                                    ),
+                                  );
+                                },
+                            errorBuilder:
+                                (
+                                  BuildContext context,
+                                  Object error,
+                                  StackTrace? stackTrace,
+                                ) {
+                                  return Container(
+                                    color: AppColors.surfaceMuted,
+                                    child: Center(
+                                      child: Text(
+                                        _initials,
+                                        style: AppTextStyles.headline.copyWith(
+                                          fontSize: 48,
+                                          color: AppColors.textMuted,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              },
-                        )
-                      : Container(
-                          color: AppColors.surfaceMuted,
-                          child: Center(
-                            child: Text(
-                              _initials,
-                              style: AppTextStyles.headline.copyWith(
-                                fontSize: 48,
-                                color: AppColors.textMuted,
+                                  );
+                                },
+                          )
+                        : Container(
+                            color: AppColors.surfaceMuted,
+                            child: Center(
+                              child: Text(
+                                _initials,
+                                style: AppTextStyles.headline.copyWith(
+                                  fontSize: 48,
+                                  color: AppColors.textMuted,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                ),
-              ),
-              Positioned(
-                right: -2,
-                bottom: 5,
-                child: Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: AppColors.secondary,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.surface, width: 6),
-                  ),
-                  child: Icon(
-                    avatarUrl != null && avatarUrl.isNotEmpty
-                        ? Icons.edit_rounded
-                        : Icons.camera_alt_rounded,
-                    color: AppColors.surface,
-                    size: 22,
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+            Positioned(
+              right: -2,
+              bottom: 5,
+              child: Material(
+                color: AppColors.secondary,
+                shape: CircleBorder(
+                  side: BorderSide(color: AppColors.surface, width: 6),
+                ),
+                child: InkWell(
+                  onTap: onEditAvatarTap,
+                  customBorder: const CircleBorder(),
+                  child: SizedBox(
+                    width: 56,
+                    height: 56,
+                    child: Icon(
+                      avatarUrl != null
+                          ? Icons.edit_rounded
+                          : Icons.camera_alt_rounded,
+                      color: AppColors.surface,
+                      size: 22,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 20),
         Text(

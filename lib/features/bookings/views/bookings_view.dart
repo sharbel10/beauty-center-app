@@ -268,12 +268,12 @@ class _BookingsViewState extends State<BookingsView> {
         false;
   }
 
-  void _openRebooking(AppointmentModel appointment) {
-    _openBooking(appointment, isRescheduling: false);
+  Future<void> _openRebooking(AppointmentModel appointment) async {
+    await _openBooking(appointment, isRescheduling: false);
   }
 
-  void _openRescheduling(AppointmentModel appointment) {
-    _openBooking(appointment, isRescheduling: true);
+  Future<void> _openRescheduling(AppointmentModel appointment) async {
+    await _openBooking(appointment, isRescheduling: true);
   }
 
   void _openReviewSheet(AppointmentModel appointment) {
@@ -329,10 +329,10 @@ class _BookingsViewState extends State<BookingsView> {
     );
   }
 
-  void _openBooking(
+  Future<void> _openBooking(
     AppointmentModel appointment, {
     required bool isRescheduling,
-  }) {
+  }) async {
     final int? centerId = appointment.centerId;
     if (centerId == null) {
       context.showSnackbar(
@@ -342,7 +342,7 @@ class _BookingsViewState extends State<BookingsView> {
       return;
     }
 
-    context.pushNamed(
+    final bool? shouldRefresh = await context.pushNamed<bool>(
       RouteNames.bookTreatment,
       extra: BookTreatmentArgs(
         centerId: centerId,
@@ -350,6 +350,10 @@ class _BookingsViewState extends State<BookingsView> {
         appointmentId: isRescheduling ? appointment.id : null,
       ),
     );
+
+    if (shouldRefresh == true && mounted) {
+      await _cubit.loadAppointments();
+    }
   }
 
   void _handleNav(BuildContext context, AppNavItem item) {
@@ -656,7 +660,7 @@ class _AppointmentDetailsSheet extends StatelessWidget {
                           icon: Icons.account_balance_wallet_outlined,
                           label: l10n.depositLabel,
                           value:
-                              '${_formatPrice(appointment.depositRequired)} SP',
+                              '\$${_formatPrice(appointment.depositRequired)}',
                         ),
                     ],
                   ),

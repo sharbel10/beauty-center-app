@@ -13,6 +13,7 @@ class ClinicOfferCard extends StatelessWidget {
     required this.discountType,
     required this.endsAt,
     required this.isDark,
+    required this.onTap,
     super.key,
   });
 
@@ -22,6 +23,7 @@ class ClinicOfferCard extends StatelessWidget {
   final String discountType;
   final String endsAt;
   final bool isDark;
+  final VoidCallback onTap;
 
   String _formatExpiryDate(BuildContext context, String dateStr) {
     final AppLocalizations l10n = AppLocalizations.of(context);
@@ -54,7 +56,6 @@ class ClinicOfferCard extends StatelessWidget {
 
     return Container(
       width: 290,
-      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(24),
@@ -71,118 +72,128 @@ class ClinicOfferCard extends StatelessWidget {
                 ),
               ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
+      clipBehavior: Clip.antiAlias,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isDark ? AppColors.gold : AppColors.primary,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        discountBadgeText,
+                        style: AppTextStyles.smallCaps.copyWith(
+                          color: isDark ? AppColors.primary : AppColors.surface,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      isDark ? l10n.exclusive : l10n.hotDeal,
+                      style: AppTextStyles.smallCaps.copyWith(
+                        color: isDark
+                            ? AppColors.gold.withOpacity(0.8)
+                            : AppColors.gold,
+                        fontSize: 10,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
+                  ],
                 ),
-                decoration: BoxDecoration(
-                  color: isDark ? AppColors.gold : AppColors.primary,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  discountBadgeText,
-                  style: AppTextStyles.smallCaps.copyWith(
-                    color: isDark ? AppColors.primary : AppColors.surface,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w900,
+                const SizedBox(height: 14),
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.title.copyWith(
+                    color: foreground,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
-              ),
-              Text(
-                isDark ? l10n.exclusive : l10n.hotDeal,
-                style: AppTextStyles.smallCaps.copyWith(
-                  color: isDark
-                      ? AppColors.gold.withOpacity(0.8)
-                      : AppColors.gold,
-                  fontSize: 10,
-                  letterSpacing: 0.8,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.title.copyWith(
-              color: foreground,
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Expanded(
-            child: Text(
-              description,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.subtitle.copyWith(
-                color: subText,
-                fontSize: 12,
-                height: 1.3,
-              ),
-            ),
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.history_toggle_off_rounded,
-                      size: 14,
-                      color: isDark
-                          ? AppColors.gold.withOpacity(0.7)
-                          : AppColors.gold,
+                const SizedBox(height: 4),
+                Expanded(
+                  child: Text(
+                    description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.subtitle.copyWith(
+                      color: subText,
+                      fontSize: 12,
+                      height: 1.3,
                     ),
-                    const SizedBox(width: 6),
+                  ),
+                ),
+                Row(
+                  children: [
                     Expanded(
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.history_toggle_off_rounded,
+                            size: 14,
+                            color: isDark
+                                ? AppColors.gold.withOpacity(0.7)
+                                : AppColors.gold,
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              _formatExpiryDate(context, endsAt),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyles.subtitle.copyWith(
+                                color: isDark
+                                    ? AppColors.surface.withOpacity(0.8)
+                                    : AppColors.primary,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isDark ? AppColors.surface : AppColors.primary,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       child: Text(
-                        _formatExpiryDate(context, endsAt),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.subtitle.copyWith(
-                          color: isDark
-                              ? AppColors.surface.withOpacity(0.8)
-                              : AppColors.primary,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
+                        l10n.clinicOfferClaim,
+                        style: AppTextStyles.link.copyWith(
+                          color: isDark ? AppColors.primary : AppColors.surface,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: isDark ? AppColors.surface : AppColors.primary,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  l10n.clinicOfferClaim,
-                  style: AppTextStyles.link.copyWith(
-                    color: isDark ? AppColors.primary : AppColors.surface,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ],
+        ),
       ),
     );
   }

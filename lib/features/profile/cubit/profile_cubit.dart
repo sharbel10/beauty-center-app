@@ -235,6 +235,43 @@ class ProfileCubit extends Cubit<ProfileState> {
     );
   }
 
+  Future<void> deleteAvatar() async {
+    emit(state.copyWith(status: ProfileStatus.updating, clearMessage: true));
+
+    final Either<Failure, ProfileResponse> result = await _profileRepository
+        .deleteAvatar();
+
+    if (isClosed) {
+      return;
+    }
+
+    await result.fold(
+      (Failure failure) async {
+        emit(
+          state.copyWith(
+            status: ProfileStatus.failure,
+            message: failure.message,
+          ),
+        );
+      },
+      (ProfileResponse response) async {
+        final Customer? customer =
+            response.customer ?? state.customer?.copyWith(clearAvatar: true);
+        if (customer != null) {
+          await _authCubit.syncCustomer(customer);
+        }
+        emit(
+          state.copyWith(
+            status: ProfileStatus.success,
+            customer: customer,
+            stats: response.stats ?? state.stats,
+            message: response.message ?? 'avatarRemovedSuccessfully',
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> deleteAccount() async {
     emit(state.copyWith(status: ProfileStatus.updating, clearMessage: true));
 

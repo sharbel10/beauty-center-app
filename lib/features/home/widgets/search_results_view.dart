@@ -203,6 +203,7 @@ class _SearchServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final String imageUrl =
         service.imageUrl ?? ApiEndpoints.mediaUrl(service.imagePath);
 
@@ -261,7 +262,7 @@ class _SearchServiceCard extends StatelessWidget {
                       children: <Widget>[
                         if (service.hasDiscount) ...<Widget>[
                           Text(
-                            service.finalPrice.toStringAsFixed(0),
+                            l10n.priceSp(service.finalPrice.toStringAsFixed(0)),
                             style: AppTextStyles.link.copyWith(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
@@ -269,7 +270,7 @@ class _SearchServiceCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            service.price.toStringAsFixed(0),
+                            l10n.priceSp(service.price.toStringAsFixed(0)),
                             style: AppTextStyles.subtitle.copyWith(
                               fontSize: 12,
                               color: AppColors.textMuted,
@@ -278,7 +279,7 @@ class _SearchServiceCard extends StatelessWidget {
                           ),
                         ] else
                           Text(
-                            service.finalPrice.toStringAsFixed(0),
+                            l10n.priceSp(service.finalPrice.toStringAsFixed(0)),
                             style: AppTextStyles.link.copyWith(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,

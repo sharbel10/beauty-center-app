@@ -42,6 +42,13 @@ class ProfileRepository extends BaseRepository {
     );
   }
 
+  Future<Either<Failure, ProfileResponse>> deleteAvatar() {
+    return callApiWithErrorParser(
+      dio.delete(ApiEndpoints.profileAvatar),
+      ProfileResponse.fromJson,
+    );
+  }
+
   Future<Either<Failure, void>> deleteAccount() {
     return callApiWithErrorParser(dio.delete(ApiEndpoints.profile), (_) {});
   }

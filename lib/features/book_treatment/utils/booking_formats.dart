@@ -11,10 +11,8 @@ class BookingFormats {
 
   static String date(DateTime date) => _date.format(date);
 
-  static String price(num value) => '${_price.format(value)} SP';
+  static String price(num value) => '\$${_price.format(value)}';
 
-  static String money(num value, String currency) {
-    final String code = currency.trim().toUpperCase();
-    return '${_price.format(value)} ${code.isEmpty ? 'USD' : code}';
-  }
+  static String money(num value, String currency) =>
+      '\$${_price.format(value)}';
 }

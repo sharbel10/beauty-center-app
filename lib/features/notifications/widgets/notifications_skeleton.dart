@@ -9,9 +9,9 @@ class NotificationsSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.separated(
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-      itemCount: 6,
-      separatorBuilder: (_, _) => const SizedBox(height: 12),
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 28),
+      itemCount: 5,
+      separatorBuilder: (_, _) => const SizedBox(height: 10),
       itemBuilder: (_, _) => const _NotificationCardSkeleton(),
     );
   }
@@ -27,14 +27,14 @@ class _NotificationCardSkeleton extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.divider),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.divider.withValues(alpha: 0.85)),
       ),
       child: AppSkeletonShimmer(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const AppSkeletonBox(width: 42, height: 42, borderRadius: 21),
+            const AppSkeletonBox(width: 44, height: 44, borderRadius: 13),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -50,6 +50,11 @@ class _NotificationCardSkeleton extends StatelessWidget {
                   FractionallySizedBox(
                     widthFactor: 0.78,
                     child: AppSkeletonBox(height: 11, borderRadius: 6),
+                  ),
+                  SizedBox(height: 10),
+                  FractionallySizedBox(
+                    widthFactor: 0.28,
+                    child: AppSkeletonBox(height: 10, borderRadius: 6),
                   ),
                 ],
               ),

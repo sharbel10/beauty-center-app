@@ -815,7 +815,7 @@ abstract class AppLocalizations {
   /// No description provided for @priceRangeFilter.
   ///
   /// In en, this message translates to:
-  /// **'SP {min} - SP {max}'**
+  /// **'\${min} - \${max}'**
   String priceRangeFilter(int min, int max);
 
   /// No description provided for @couldNotOpenMaps.
@@ -1139,7 +1139,7 @@ abstract class AppLocalizations {
   /// No description provided for @clinicDepositAmount.
   ///
   /// In en, this message translates to:
-  /// **'Deposit: SP {value}'**
+  /// **'Deposit: \${value}'**
   String clinicDepositAmount(int value);
 
   /// No description provided for @clinicHours.
@@ -1313,7 +1313,7 @@ abstract class AppLocalizations {
   /// No description provided for @offerDiscountAmount.
   ///
   /// In en, this message translates to:
-  /// **'SP{value} OFF'**
+  /// **'\${value} OFF'**
   String offerDiscountAmount(int value);
 
   /// No description provided for @clinicOfferClaim.
@@ -1337,7 +1337,7 @@ abstract class AppLocalizations {
   /// No description provided for @priceSp.
   ///
   /// In en, this message translates to:
-  /// **'{price} SP'**
+  /// **'\${price}'**
   String priceSp(String price);
 
   /// No description provided for @clearAll.
@@ -1781,26 +1781,8 @@ abstract class AppLocalizations {
   /// No description provided for @paymentSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Review your appointment before opening Stripe\'s secure payment form.'**
+  /// **'Review your appointment details and complete your payment securely.'**
   String get paymentSubtitle;
-
-  /// No description provided for @stripeTestMode.
-  ///
-  /// In en, this message translates to:
-  /// **'Stripe test mode · No real charge'**
-  String get stripeTestMode;
-
-  /// No description provided for @stripePaymentMethodTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Pay securely with Stripe'**
-  String get stripePaymentMethodTitle;
-
-  /// No description provided for @stripePaymentMethodSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Test cards and supported digital wallets'**
-  String get stripePaymentMethodSubtitle;
 
   /// No description provided for @paymentBackendPendingTitle.
   ///
@@ -1877,7 +1859,7 @@ abstract class AppLocalizations {
   /// No description provided for @stripeNotConfigured.
   ///
   /// In en, this message translates to:
-  /// **'Stripe test key is not configured in the app.'**
+  /// **'The payment service is currently unavailable. Please try again later.'**
   String get stripeNotConfigured;
 
   /// No description provided for @stripeGatewayUnavailable.
@@ -2156,6 +2138,30 @@ abstract class AppLocalizations {
   /// **'Avatar updated successfully.'**
   String get avatarUpdatedSuccessfully;
 
+  /// No description provided for @removeAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get removeAvatar;
+
+  /// No description provided for @removeAvatarConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove your profile photo?'**
+  String get removeAvatarConfirm;
+
+  /// No description provided for @avatarRemovedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo removed successfully.'**
+  String get avatarRemovedSuccessfully;
+
+  /// No description provided for @logoutConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out?'**
+  String get logoutConfirm;
+
   /// No description provided for @deleteAccount.
   ///
   /// In en, this message translates to:
@@ -2321,7 +2327,7 @@ abstract class AppLocalizations {
   /// No description provided for @currency.
   ///
   /// In en, this message translates to:
-  /// **'SYP'**
+  /// **'\$'**
   String get currency;
 
   /// No description provided for @pressBackAgainToExit.
@@ -2714,6 +2720,12 @@ abstract class AppLocalizations {
   /// **'TRY AGAIN'**
   String get tryCameraAgain;
 
+  /// No description provided for @switchCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch camera'**
+  String get switchCamera;
+
   /// No description provided for @aiInputRequired.
   ///
   /// In en, this message translates to:
@@ -3013,6 +3025,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Other'**
   String get reportReasonOther;
+
+  /// No description provided for @readMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Read more'**
+  String get readMore;
+
+  /// No description provided for @readLess.
+  ///
+  /// In en, this message translates to:
+  /// **'Read less'**
+  String get readLess;
 }
 
 class _AppLocalizationsDelegate

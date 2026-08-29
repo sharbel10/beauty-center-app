@@ -3,6 +3,8 @@ import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 
 class PromotionUiModel {
   const PromotionUiModel({
+    required this.centerId,
+    this.serviceId,
     required this.badge,
     required this.title,
     required this.subtitle,
@@ -21,6 +23,8 @@ class PromotionUiModel {
     required String price,
   }) {
     return PromotionUiModel(
+      centerId: offer.centerId,
+      serviceId: offer.serviceId,
       badge: badge,
       title: offer.title,
       subtitle: offer.center?.name ?? '',
@@ -32,6 +36,8 @@ class PromotionUiModel {
     );
   }
 
+  final int centerId;
+  final int? serviceId;
   final String badge;
   final String title;
   final String subtitle;

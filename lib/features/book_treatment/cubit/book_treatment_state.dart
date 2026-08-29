@@ -31,9 +31,9 @@ enum BookingPaymentStatus {
   failure,
 }
 
-/// Wizard steps: service + specialist, date, time, then payment.
-/// Rescheduling intentionally stops at the time step because it does not open a
-/// new payment until the backend defines how price differences are handled.
+/// Wizard steps: service + specialist, date, time, then payment when a
+/// deposit is due. Rescheduling uses that same payment step if the clinic
+/// requires a deposit or the saved appointment still has an amount due.
 class BookingSteps {
   BookingSteps._();
 
@@ -98,11 +98,10 @@ class BookTreatmentState extends Equatable {
   bool get isPaymentContinuation => args?.isPaymentContinuation ?? false;
 
   bool get requiresDeposit =>
-      !isRescheduling &&
-      (isPaymentContinuation ||
-          (appointment?.depositDue ?? 0) > 0 ||
-          (appointment == null &&
-              (paymentMethods?.deposit.isRequired ?? false)));
+      isPaymentContinuation ||
+      (appointment?.depositDue ?? 0) > 0 ||
+      (appointment == null &&
+          (paymentMethods?.deposit.isRequired ?? false));
 
   int get lastStep =>
       requiresDeposit ? BookingSteps.payment : BookingSteps.time;

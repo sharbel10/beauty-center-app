@@ -1,5 +1,6 @@
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
+import 'package:beauty_center_app/core/widgets/app_skeleton.dart';
 import 'package:beauty_center_app/features/book_treatment/components/booking_step_title.dart';
 import 'package:beauty_center_app/features/book_treatment/cubit/book_treatment_state.dart';
 import 'package:beauty_center_app/features/book_treatment/models/available_slots_response.dart';
@@ -72,12 +73,7 @@ class TimeStep extends StatelessWidget {
 
   List<Widget> _buildSlotsArea(AppLocalizations l10n) {
     if (slotsStatus == SlotsStatus.loading) {
-      return const <Widget>[
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 32),
-          child: Center(child: CircularProgressIndicator()),
-        ),
-      ];
+      return const <Widget>[_SlotsSkeleton()];
     }
 
     if (slotsStatus == SlotsStatus.failure) {
@@ -145,6 +141,42 @@ class TimeStep extends StatelessWidget {
         ),
       ],
     ];
+  }
+}
+
+class _SlotsSkeleton extends StatelessWidget {
+  const _SlotsSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return const AppSkeletonShimmer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          AppSkeletonBox(width: 72, height: 12, borderRadius: 6),
+          SizedBox(height: 10),
+          Row(
+            children: <Widget>[
+              Expanded(child: AppSkeletonBox(height: 44, borderRadius: 12)),
+              SizedBox(width: 10),
+              Expanded(child: AppSkeletonBox(height: 44, borderRadius: 12)),
+              SizedBox(width: 10),
+              Expanded(child: AppSkeletonBox(height: 44, borderRadius: 12)),
+            ],
+          ),
+          SizedBox(height: 10),
+          Row(
+            children: <Widget>[
+              Expanded(child: AppSkeletonBox(height: 44, borderRadius: 12)),
+              SizedBox(width: 10),
+              Expanded(child: AppSkeletonBox(height: 44, borderRadius: 12)),
+              SizedBox(width: 10),
+              Expanded(child: AppSkeletonBox(height: 44, borderRadius: 12)),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -348,18 +380,25 @@ class _SummaryRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Expanded(
+            flex: 2,
             child: Text(
               label,
               style: AppTextStyles.subtitle.copyWith(fontSize: 13),
             ),
           ),
-          Text(
-            value,
-            style: AppTextStyles.bodyMedium.copyWith(
-              fontWeight: bold ? FontWeight.w700 : FontWeight.w600,
-              color: bold ? AppColors.primary : AppColors.textPrimary,
+          const SizedBox(width: 12),
+          Expanded(
+            flex: 3,
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: AppTextStyles.bodyMedium.copyWith(
+                fontWeight: bold ? FontWeight.w700 : FontWeight.w600,
+                color: bold ? AppColors.primary : AppColors.textPrimary,
+              ),
             ),
           ),
         ],

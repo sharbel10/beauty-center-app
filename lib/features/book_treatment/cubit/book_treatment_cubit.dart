@@ -361,8 +361,7 @@ class BookTreatmentCubit extends Cubit<BookTreatmentState> {
         );
       },
       (response) {
-        final bool needsDeposit =
-            !args.isRescheduling && response.appointment.depositDue > 0;
+        final bool needsDeposit = response.appointment.depositDue > 0;
         if (needsDeposit) {
           emit(
             state.copyWith(
@@ -426,7 +425,7 @@ class BookTreatmentCubit extends Cubit<BookTreatmentState> {
     }
 
     if (state.paymentSheetCompleted && state.payment != null) {
-      await _verifyPayment(state.payment!);
+      await _confirmPaymentAfterStripeSuccess(state.payment!);
       return;
     }
 
@@ -491,7 +490,7 @@ class BookTreatmentCubit extends Cubit<BookTreatmentState> {
       }
 
       emit(state.copyWith(paymentSheetCompleted: true));
-      await _verifyPayment(payment!);
+      await _confirmPaymentAfterStripeSuccess(payment!);
     } catch (_) {
       if (!isClosed) {
         emit(
@@ -504,7 +503,10 @@ class BookTreatmentCubit extends Cubit<BookTreatmentState> {
     }
   }
 
-  Future<void> _verifyPayment(PaymentAttempt payment) async {
+  /// POST /api/customer/payments/{paymentId}/confirm — only after Stripe
+  /// Payment Sheet reports success. If the webhook already marked it paid,
+  /// confirm rejects "not pending"; we then read GET and treat paid as success.
+  Future<void> _confirmPaymentAfterStripeSuccess(PaymentAttempt payment) async {
     emit(
       state.copyWith(
         paymentStatus: BookingPaymentStatus.verifying,
@@ -512,64 +514,72 @@ class BookTreatmentCubit extends Cubit<BookTreatmentState> {
       ),
     );
 
-    for (int attempt = 0; attempt < 8; attempt++) {
-      final result = await _repository.getPayment(paymentId: payment.id);
-      if (isClosed) {
+    final confirmResult = await _repository.confirmPayment(
+      paymentId: payment.id,
+    );
+    if (isClosed) {
+      return;
+    }
+
+    PaymentAttempt? confirmed;
+    String? failureMessage;
+    confirmResult.fold(
+      (failure) => failureMessage = failure.message,
+      (response) => confirmed = response.payment,
+    );
+
+    if (confirmed != null && confirmed!.isPaid) {
+      _emitPaymentSuccess(confirmed!);
+      return;
+    }
+
+    final statusResult = await _repository.getPayment(paymentId: payment.id);
+    if (isClosed) {
+      return;
+    }
+
+    PaymentAttempt? current;
+    statusResult.fold(
+      (failure) => failureMessage ??= failure.message,
+      (response) => current = response.payment,
+    );
+
+    if (current != null) {
+      emit(state.copyWith(payment: current));
+      if (current!.isPaid) {
+        _emitPaymentSuccess(current!);
         return;
       }
-
-      PaymentAttempt? refreshed;
-      String? failureMessage;
-      result.fold(
-        (failure) => failureMessage = failure.message,
-        (response) => refreshed = response.payment,
-      );
-      if (failureMessage != null) {
+      if (current!.isFailed) {
         emit(
           state.copyWith(
             paymentStatus: BookingPaymentStatus.failure,
-            paymentMessage: failureMessage,
+            paymentSheetCompleted: false,
+            paymentMessage:
+                current!.failureReason ?? BookTreatmentMessageKeys.paymentFailed,
           ),
         );
         return;
-      }
-
-      if (refreshed != null) {
-        payment = refreshed!;
-        emit(state.copyWith(payment: payment));
-        if (payment.isPaid) {
-          emit(
-            state.copyWith(
-              status: BookTreatmentStatus.success,
-              paymentStatus: BookingPaymentStatus.ready,
-              message: BookTreatmentMessageKeys.appointmentBookedSuccessfully,
-            ),
-          );
-          return;
-        }
-        if (payment.isFailed) {
-          emit(
-            state.copyWith(
-              paymentStatus: BookingPaymentStatus.failure,
-              paymentSheetCompleted: false,
-              paymentMessage:
-                  payment.failureReason ??
-                  BookTreatmentMessageKeys.paymentFailed,
-            ),
-          );
-          return;
-        }
-      }
-
-      if (attempt < 7) {
-        await Future<void>.delayed(const Duration(seconds: 1));
       }
     }
 
     emit(
       state.copyWith(
         paymentStatus: BookingPaymentStatus.ready,
-        paymentMessage: BookTreatmentMessageKeys.paymentVerificationPending,
+        paymentMessage:
+            failureMessage ??
+            BookTreatmentMessageKeys.paymentVerificationPending,
+      ),
+    );
+  }
+
+  void _emitPaymentSuccess(PaymentAttempt payment) {
+    emit(
+      state.copyWith(
+        status: BookTreatmentStatus.success,
+        paymentStatus: BookingPaymentStatus.ready,
+        payment: payment,
+        message: BookTreatmentMessageKeys.appointmentBookedSuccessfully,
       ),
     );
   }

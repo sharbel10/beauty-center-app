@@ -25,8 +25,15 @@ class HomeCubit extends Cubit<HomeState> {
     double? longitude,
     double? radiusKm,
     int? categoryId,
+    bool clearData = false,
   }) async {
-    emit(state.copyWith(status: HomeStatus.loading, clearMessage: true));
+    emit(
+      state.copyWith(
+        status: HomeStatus.loading,
+        clearData: clearData,
+        clearMessage: true,
+      ),
+    );
 
     final Either<Failure, HomeResponse> homeResult = await _homeRepository
         .getHome(

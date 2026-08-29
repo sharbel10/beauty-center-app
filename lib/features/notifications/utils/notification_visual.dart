@@ -18,77 +18,34 @@ NotificationVisual resolveNotificationVisual(
   AppNotification notification, {
   required bool isRead,
 }) {
-  if (notification.isAppointment) {
-    return _appointmentVisual(
-      event: notification.payload.event,
-      status: notification.payload.status,
-      isRead: isRead,
-    );
-  }
-
-  return _genericVisual(notification.type, isRead);
-}
-
-NotificationVisual _appointmentVisual({
-  required String? event,
-  required String? status,
-  required bool isRead,
-}) {
-  final _AppointmentStatusStyle style = _resolveAppointmentStyle(
-    event: event,
-    status: status,
-  );
-
-  if (isRead) {
-    return NotificationVisual(
-      icon: style.icon,
-      backgroundColor: AppColors.surfaceMuted,
-      iconColor: style.foreground.withValues(alpha: 0.72),
-    );
-  }
-
-  return NotificationVisual(
-    icon: style.icon,
-    backgroundColor: style.background,
-    iconColor: style.foreground,
-  );
-}
-
-NotificationVisual _genericVisual(String type, bool isRead) {
-  final IconData icon = switch (type) {
-    'offer' || 'promotion' => Icons.local_offer_rounded,
-    'center' || 'explore' => Icons.storefront_rounded,
-    _ => Icons.notifications_rounded,
-  };
-
-  if (isRead) {
-    return NotificationVisual(
-      icon: icon,
-      backgroundColor: AppColors.surfaceMuted,
-      iconColor: AppColors.primary.withValues(alpha: 0.72),
-    );
-  }
+  final IconData icon = notification.isAppointment
+      ? _resolveAppointmentIcon(
+          event: notification.payload.event,
+          status: notification.payload.status,
+        )
+      : _resolveGenericIcon(notification.type);
 
   return NotificationVisual(
     icon: icon,
-    backgroundColor: AppColors.primary,
-    iconColor: AppColors.surface,
+    backgroundColor: Color.alphaBlend(
+      AppColors.primary.withValues(alpha: isRead ? 0.035 : 0.07),
+      AppColors.surface,
+    ),
+    iconColor: AppColors.primary.withValues(alpha: isRead ? 0.68 : 0.92),
   );
 }
 
-class _AppointmentStatusStyle {
-  const _AppointmentStatusStyle({
-    required this.icon,
-    required this.background,
-    required this.foreground,
-  });
-
-  final IconData icon;
-  final Color background;
-  final Color foreground;
+IconData _resolveGenericIcon(String type) {
+  return switch (_normalize(type)) {
+    'offer' || 'promotion' => Icons.local_offer_rounded,
+    'center' || 'explore' => Icons.storefront_rounded,
+    'payment' => Icons.payments_rounded,
+    'reminder' => Icons.alarm_rounded,
+    _ => Icons.notifications_rounded,
+  };
 }
 
-_AppointmentStatusStyle _resolveAppointmentStyle({
+IconData _resolveAppointmentIcon({
   required String? event,
   required String? status,
 }) {
@@ -97,71 +54,39 @@ _AppointmentStatusStyle _resolveAppointmentStyle({
 
   if (normalizedEvent.contains('cancelled') ||
       normalizedStatus == 'cancelled') {
-    return const _AppointmentStatusStyle(
-      icon: Icons.event_busy_rounded,
-      background: Color(0xFFFDECEC),
-      foreground: Color(0xFFB42318),
-    );
+    return Icons.event_busy_rounded;
   }
 
   if (normalizedEvent.contains('rejected') || normalizedStatus == 'rejected') {
-    return const _AppointmentStatusStyle(
-      icon: Icons.block_rounded,
-      background: Color(0xFFFFF0E6),
-      foreground: Color(0xFFB54708),
-    );
+    return Icons.block_rounded;
   }
 
   if (normalizedEvent.contains('completed') ||
       normalizedStatus == 'completed') {
-    return const _AppointmentStatusStyle(
-      icon: Icons.task_alt_rounded,
-      background: Color(0xFFE8EDF3),
-      foreground: Color(0xFF3A4A5F),
-    );
+    return Icons.task_alt_rounded;
   }
 
   if (normalizedEvent.contains('confirmed') ||
       normalizedStatus == 'confirmed') {
-    return const _AppointmentStatusStyle(
-      icon: Icons.check_circle_rounded,
-      background: Color(0xFFC8F6DE),
-      foreground: Color(0xFF05694A),
-    );
+    return Icons.check_circle_rounded;
   }
 
   if (normalizedEvent.contains('rescheduled') ||
       normalizedEvent.contains('reschedule')) {
-    return const _AppointmentStatusStyle(
-      icon: Icons.event_repeat_rounded,
-      background: Color(0xFFEAF2FF),
-      foreground: AppColors.primary,
-    );
+    return Icons.event_repeat_rounded;
   }
 
   if (normalizedEvent.contains('pending') || normalizedStatus == 'pending') {
-    return const _AppointmentStatusStyle(
-      icon: Icons.hourglass_top_rounded,
-      background: Color(0xFFFFF4D6),
-      foreground: Color(0xFF8A5A00),
-    );
+    return Icons.hourglass_top_rounded;
   }
 
   if (normalizedEvent.contains('created') ||
       normalizedEvent.contains('booked') ||
       normalizedEvent.contains('new')) {
-    return const _AppointmentStatusStyle(
-      icon: Icons.event_available_rounded,
-      background: Color(0xFFEAF2FF),
-      foreground: AppColors.primary,
-    );
+    return Icons.event_available_rounded;
   }
 
-  return const _AppointmentStatusStyle(
-    icon: Icons.calendar_month_rounded,
-    background: Color(0xFFEAF2FF),
-    foreground: AppColors.primary,
-  );
+  return Icons.calendar_month_rounded;
 }
 
 String _normalize(String? value) =>

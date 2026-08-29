@@ -3,6 +3,7 @@ import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/core/utils/extensions.dart';
 import 'package:beauty_center_app/features/book_treatment/components/book_treatment_header.dart';
+import 'package:beauty_center_app/features/book_treatment/components/book_treatment_skeleton.dart';
 import 'package:beauty_center_app/features/book_treatment/components/booking_progress_indicator.dart';
 import 'package:beauty_center_app/features/book_treatment/components/booking_summary_bar.dart';
 import 'package:beauty_center_app/features/book_treatment/components/date_step.dart';
@@ -127,7 +128,15 @@ class _BookTreatmentViewState extends State<BookTreatmentView> {
           }
           if (state.status == BookTreatmentStatus.success) {
             context.showSnackbar(_localizeMessage(l10n, state.message));
-            context.goNamed(RouteNames.bookings);
+            final bool isRescheduling = context
+                .read<BookTreatmentCubit>()
+                .state
+                .isRescheduling;
+            if (isRescheduling && context.canPop()) {
+              context.pop(true);
+            } else {
+              context.goNamed(RouteNames.bookings);
+            }
           }
         },
         child: Builder(
@@ -175,7 +184,7 @@ class _Body extends StatelessWidget {
             if (!hasData &&
                 (status == BookTreatmentStatus.initial ||
                     status == BookTreatmentStatus.loading)) {
-              return const Center(child: CircularProgressIndicator());
+              return const BookTreatmentSkeleton();
             }
 
             if (!hasData) {
@@ -385,7 +394,7 @@ class _BottomBar extends StatelessWidget {
     return BlocSelector<
       BookTreatmentCubit,
       BookTreatmentState,
-      (int, bool, bool, bool, String, String, bool)
+      (int, bool, bool, bool, String, String, bool, BookTreatmentStatus)
     >(
       selector: (BookTreatmentState state) => (
         state.currentStep,
@@ -397,6 +406,7 @@ class _BottomBar extends StatelessWidget {
             : state.totalLabel,
         state.selectedTimeLabel,
         state.paymentSheetCompleted,
+        state.status,
       ),
       builder: (BuildContext context, data) {
         final (
@@ -407,9 +417,14 @@ class _BottomBar extends StatelessWidget {
           String total,
           String time,
           bool paymentSheetCompleted,
+          BookTreatmentStatus status,
         ) = data;
 
         if (!hasData) {
+          if (status == BookTreatmentStatus.initial ||
+              status == BookTreatmentStatus.loading) {
+            return const BookTreatmentBottomBarSkeleton();
+          }
           return const SizedBox.shrink();
         }
 

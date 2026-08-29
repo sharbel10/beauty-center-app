@@ -10,6 +10,8 @@ import 'package:injectable/injectable.dart';
 class AiRecommendationRepository extends BaseRepository {
   AiRecommendationRepository(super.dioClient);
 
+  static const Duration _requestTimeout = Duration(minutes: 2);
+
   Future<Either<Failure, AiRecommendationsResponse>> getRecommendations({
     String? text,
     String? imagePath,
@@ -28,7 +30,11 @@ class AiRecommendationRepository extends BaseRepository {
       dio.post(
         ApiEndpoints.aiRecommendations,
         data: formData,
-        options: Options(contentType: Headers.multipartFormDataContentType),
+        options: Options(
+          contentType: Headers.multipartFormDataContentType,
+          sendTimeout: _requestTimeout,
+          receiveTimeout: _requestTimeout,
+        ),
       ),
       AiRecommendationsResponse.fromJson,
     );

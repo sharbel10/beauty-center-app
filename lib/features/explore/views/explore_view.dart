@@ -74,6 +74,7 @@ class _ExploreViewState extends State<ExploreView> {
   }
 
   Future<void> _submitSearch() async {
+    FocusScope.of(context).unfocus();
     await _cubit.submitSearch(_searchController.text);
   }
 
@@ -150,7 +151,6 @@ class _ExploreViewState extends State<ExploreView> {
                                     controller: _searchController,
                                     isLoading: state.isLoading,
                                     onSearch: _submitSearch,
-                                    onChanged: _cubit.onSearchChanged,
                                     onFilter: () => _showFilters(context),
                                   ),
                                   const SizedBox(height: 14),
@@ -233,7 +233,7 @@ class _ExploreViewState extends State<ExploreView> {
                                 24,
                                 0,
                                 24,
-                                24 +
+                                96 +
                                     AppBottomNavigation.contentOverlap(context),
                               ),
                               sliver: SliverList.separated(
@@ -283,14 +283,12 @@ class _SearchAndFilter extends StatelessWidget {
     required this.controller,
     required this.isLoading,
     required this.onSearch,
-    required this.onChanged,
     required this.onFilter,
   });
 
   final TextEditingController controller;
   final bool isLoading;
   final VoidCallback onSearch;
-  final ValueChanged<String> onChanged;
   final VoidCallback onFilter;
 
   @override
@@ -316,11 +314,9 @@ class _SearchAndFilter extends StatelessWidget {
             ),
             child: TextField(
               controller: controller,
-              enabled: !isLoading,
               textInputAction: TextInputAction.search,
               maxLength: 255,
-              onChanged: onChanged,
-              onSubmitted: (_) => onSearch(),
+              onSubmitted: isLoading ? null : (_) => onSearch(),
               style: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
               decoration: InputDecoration(
                 border: InputBorder.none,

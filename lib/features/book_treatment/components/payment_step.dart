@@ -35,19 +35,12 @@ class PaymentStep extends StatelessWidget {
             subtitle: l10n.paymentSubtitle,
           ),
           const SizedBox(height: 20),
-          _TestModeBanner(label: l10n.stripeTestMode),
-          const SizedBox(height: 16),
           _SummaryCard(
             serviceName: serviceName,
             specialistName: specialistName,
             dateLabel: dateLabel,
             timeLabel: timeLabel,
             totalLabel: amountDueLabel,
-          ),
-          const SizedBox(height: 16),
-          _PaymentMethodCard(
-            title: l10n.stripePaymentMethodTitle,
-            subtitle: l10n.stripePaymentMethodSubtitle,
           ),
           const SizedBox(height: 18),
           Row(
@@ -69,42 +62,6 @@ class PaymentStep extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TestModeBanner extends StatelessWidget {
-  const _TestModeBanner({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-      decoration: BoxDecoration(
-        color: AppColors.secondary.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.secondary.withValues(alpha: 0.5)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          const Icon(
-            Icons.science_outlined,
-            size: 17,
-            color: AppColors.primary,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.primary,
-              fontWeight: FontWeight.w700,
-            ),
           ),
         ],
       ),
@@ -208,64 +165,6 @@ class _SummaryRow extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _PaymentMethodCard extends StatelessWidget {
-  const _PaymentMethodCard({required this.title, required this.subtitle});
-
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.inputBorder),
-      ),
-      child: Row(
-        children: <Widget>[
-          Container(
-            width: 48,
-            height: 40,
-            decoration: BoxDecoration(
-              color: const Color(0xFF635BFF).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            alignment: Alignment.center,
-            child: const Icon(
-              Icons.credit_card_rounded,
-              color: Color(0xFF635BFF),
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  title,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  subtitle,
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textMuted,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Icon(Icons.chevron_right_rounded, color: AppColors.textFaint),
-        ],
-      ),
     );
   }
 }

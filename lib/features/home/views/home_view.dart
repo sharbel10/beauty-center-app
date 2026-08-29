@@ -130,7 +130,7 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
     await _loadHomeForCurrentFilters();
   }
 
-  Future<void> _loadHomeForCurrentFilters() async {
+  Future<void> _loadHomeForCurrentFilters({bool showSkeleton = false}) async {
     if (!mounted || _homeCubit.isClosed) {
       return;
     }
@@ -140,6 +140,7 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
       longitude: _userLocation?.longitude,
       radiusKm: _userLocation == null ? null : _nearbyRadiusKm,
       categoryId: _selectedCategoryId,
+      clearData: showSkeleton,
     );
   }
 
@@ -305,7 +306,7 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
                   selectedCategoryId: _selectedCategoryId,
                   onCategorySelected: (int? categoryId) {
                     setState(() => _selectedCategoryId = categoryId);
-                    _loadHomeForCurrentFilters();
+                    _loadHomeForCurrentFilters(showSkeleton: true);
                   },
                 ),
                 const SizedBox(height: 16),
@@ -341,7 +342,18 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
                 const SizedBox(height: 32),
                 _SectionHeader(title: l10n.specialPromotions),
                 const SizedBox(height: 14),
-                _PromotionsCarousel(promotions: promotions),
+                _PromotionsCarousel(
+                  promotions: promotions,
+                  onPromotionTap: (PromotionUiModel promotion) {
+                    context.pushNamed(
+                      RouteNames.bookTreatment,
+                      extra: BookTreatmentArgs(
+                        centerId: promotion.centerId,
+                        initialServiceId: promotion.serviceId,
+                      ),
+                    );
+                  },
+                ),
                 SizedBox(
                   height: 96 + AppBottomNavigation.contentOverlap(context),
                 ),
@@ -525,9 +537,13 @@ class _DiscoverMoreButton extends StatelessWidget {
 }
 
 class _PromotionsCarousel extends StatefulWidget {
-  const _PromotionsCarousel({required this.promotions});
+  const _PromotionsCarousel({
+    required this.promotions,
+    required this.onPromotionTap,
+  });
 
   final List<PromotionUiModel> promotions;
+  final ValueChanged<PromotionUiModel> onPromotionTap;
 
   @override
   State<_PromotionsCarousel> createState() => _PromotionsCarouselState();
@@ -565,6 +581,8 @@ class _PromotionsCarouselState extends State<_PromotionsCarousel> {
                 padding: const EdgeInsets.only(right: 12),
                 child: PromotionCard(
                   promotion: widget.promotions[index],
+                  onPressed: () =>
+                      widget.onPromotionTap(widget.promotions[index]),
                   height: _cardHeight,
                 ),
               );

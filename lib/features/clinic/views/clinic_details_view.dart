@@ -6,6 +6,7 @@ import 'package:beauty_center_app/core/widgets/app_button.dart';
 import 'package:beauty_center_app/features/book_treatment/models/book_treatment_args.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_details_response.dart';
 import 'package:beauty_center_app/features/clinic/widgets/clinic_details_header.dart';
+import 'package:beauty_center_app/features/clinic/widgets/clinic_details_skeleton.dart';
 import 'package:beauty_center_app/features/clinic/widgets/clinic_details_tabs.dart';
 import 'package:beauty_center_app/features/clinic/widgets/details/clinic_gallery_view.dart';
 import 'package:beauty_center_app/features/clinic/widgets/details/clinic_info_view.dart';
@@ -84,15 +85,22 @@ class _ClinicDetailsViewState extends State<ClinicDetailsView> {
             bottomNavigationBar: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
+                if (state.isLoading && !state.hasData)
+                  const ClinicDetailsBookBarSkeleton(),
                 if (showBookButton && centerId != null)
                   _StickyBookAppointmentBar(centerId: centerId),
-                const AppBottomNavigation(currentItem: AppNavItem.explore),
+                AppBottomNavigation(
+                  currentItem: AppNavItem.explore,
+                  onItemSelected: (AppNavItem item) {
+                    _navigateFromDetails(context, item);
+                  },
+                ),
               ],
             ),
             body: SafeArea(
               child: () {
                 if (state.isLoading && !state.hasData) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const ClinicDetailsSkeleton();
                 }
 
                 if (state.status == ClinicDetailsStatus.failure &&
@@ -160,6 +168,24 @@ class _ClinicDetailsViewState extends State<ClinicDetailsView> {
         },
       ),
     );
+  }
+
+  void _navigateFromDetails(BuildContext context, AppNavItem item) {
+    final GoRouter router = GoRouter.of(context);
+    final NavigatorState navigator = Navigator.of(context);
+    final String routeName = switch (item) {
+      AppNavItem.home => RouteNames.home,
+      AppNavItem.explore => RouteNames.explore,
+      AppNavItem.aiScan => RouteNames.aiRecommendation,
+      AppNavItem.bookings => RouteNames.bookings,
+      AppNavItem.profile => RouteNames.profile,
+    };
+
+    // Details are opened with Navigator.push, outside GoRouter's page stack.
+    // Remove that imperative route first so the selected destination is not
+    // left hidden behind the details page.
+    navigator.pop();
+    router.goNamed(routeName);
   }
 }
 

@@ -147,6 +147,20 @@ class BookingRepository extends BaseRepository {
     );
   }
 
+  /// Marks a card payment as paid after Stripe Payment Sheet returns success.
+  /// Never used for cash, cancelled sheets, or before the sheet completes.
+  Future<Either<Failure, PaymentResponse>> confirmPayment({
+    required int paymentId,
+  }) {
+    return callApiWithErrorParser(
+      dio.post(
+        ApiEndpoints.confirmPayment(paymentId),
+        data: const <String, dynamic>{},
+      ),
+      PaymentResponse.fromJson,
+    );
+  }
+
   Future<Either<Failure, AppointmentResponse>> rescheduleAppointment({
     required int appointmentId,
     required String startsAt,

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:beauty_center_app/features/clinic/cubit/clinic_services_state.dart';
 import 'package:beauty_center_app/features/clinic/models/clinic_service_filters.dart';
 import 'package:beauty_center_app/features/clinic/repository/clinic_repository.dart';
@@ -11,7 +9,6 @@ class ClinicServicesCubit extends Cubit<ClinicServicesState> {
   ClinicServicesCubit(this._repository) : super(const ClinicServicesState());
 
   final ClinicsRepository _repository;
-  Timer? _debounceTimer;
   int? _centerId;
   int _requestId = 0;
 
@@ -20,8 +17,7 @@ class ClinicServicesCubit extends Cubit<ClinicServicesState> {
     await _fetch();
   }
 
-  void onSearchChanged(String query) {
-    _debounceTimer?.cancel();
+  Future<void> submitSearch(String query) async {
     final ClinicServiceFilters current = state.filters;
     emit(
       state.copyWith(
@@ -36,17 +32,15 @@ class ClinicServicesCubit extends Cubit<ClinicServicesState> {
         ),
       ),
     );
-    _debounceTimer = Timer(const Duration(milliseconds: 500), _fetch);
+    await _fetch();
   }
 
   Future<void> applyFilters(ClinicServiceFilters filters) async {
-    _debounceTimer?.cancel();
     emit(state.copyWith(filters: filters));
     await _fetch();
   }
 
   Future<void> resetFilters() async {
-    _debounceTimer?.cancel();
     emit(state.copyWith(filters: const ClinicServiceFilters()));
     await _fetch();
   }
@@ -82,12 +76,6 @@ class ClinicServicesCubit extends Cubit<ClinicServicesState> {
         ),
       ),
     );
-  }
-
-  @override
-  Future<void> close() {
-    _debounceTimer?.cancel();
-    return super.close();
   }
 
   static String _normalizeQuery(String query) {

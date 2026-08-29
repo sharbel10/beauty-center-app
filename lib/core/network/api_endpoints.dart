@@ -29,6 +29,9 @@ class ApiEndpoints {
   static String appointmentPayments(int appointmentId) =>
       'customer/appointments/$appointmentId/payments';
 
+  static String confirmPayment(int paymentId) =>
+      'customer/payments/$paymentId/confirm';
+
   // Profile
   static const String profile = 'customer/profile';
   static const String profileAvatar = 'customer/profile/avatar';
@@ -61,7 +64,7 @@ class ApiEndpoints {
     }
     if (path.startsWith('http')) {
       final String serverUrl = storageUrl.replaceAll('/storage/', '');
-      return path.replaceAll('http://localhost', serverUrl);
+      return path.replaceAll('https://lumina.kefanox.com', serverUrl);
     }
     return '$storageUrl$path';
   }

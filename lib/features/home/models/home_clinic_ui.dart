@@ -73,7 +73,8 @@ class HomeClinicUiModel {
       longitude: center.longitude,
       priceLabel: center.priceRange == null
           ? null
-          : '${center.priceRange!.min.toStringAsFixed(0)} - ${center.priceRange!.max.toStringAsFixed(0)}',
+          : '\$${center.priceRange!.min.toStringAsFixed(0)} - '
+                '\$${center.priceRange!.max.toStringAsFixed(0)}',
     );
   }
 

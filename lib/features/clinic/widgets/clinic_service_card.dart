@@ -87,8 +87,6 @@ class ClinicServiceCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.link.copyWith(
                     color: AppColors.primary,
                     fontSize: 16,
@@ -117,16 +115,7 @@ class ClinicServiceCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
-          Text(
-            description,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.subtitle.copyWith(
-              fontSize: 13,
-              height: 1.45,
-              color: const Color(0xFF4D5560),
-            ),
-          ),
+          _ExpandableDescription(description),
           const SizedBox(height: 22),
           const Divider(color: AppColors.divider),
           const SizedBox(height: 12),
@@ -172,18 +161,17 @@ class ClinicServiceCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Flexible(
-                child: Row(
+                child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    if (hasDiscount) ...[
-                      Flexible(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[
+                    if (hasDiscount) ...<Widget>[
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: AlignmentDirectional.centerEnd,
                         child: Text(
                           l10n.priceSp(_formatPriceWithCommas(originalPrice)),
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: Color(0xFF9EA6B0),
                             fontSize: 12,
@@ -192,13 +180,14 @@ class ClinicServiceCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(height: 2),
                     ],
-                    Flexible(
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: AlignmentDirectional.centerEnd,
                       child: Text(
                         l10n.priceSp(_formatPriceWithCommas(finalPrice)),
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                         style: AppTextStyles.title.copyWith(
                           fontSize: 18,
                           color: hasDiscount
@@ -230,6 +219,88 @@ class ClinicServiceCard extends StatelessWidget {
     String val = price.toStringAsFixed(0);
     RegExp reg = RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
     return val.replaceAllMapped(reg, (Match match) => '${match[1]},');
+  }
+}
+
+class _ExpandableDescription extends StatefulWidget {
+  const _ExpandableDescription(this.text);
+
+  static const int collapsedMaxLines = 3;
+
+  final String text;
+
+  @override
+  State<_ExpandableDescription> createState() => _ExpandableDescriptionState();
+}
+
+class _ExpandableDescriptionState extends State<_ExpandableDescription> {
+  bool _isExpanded = false;
+
+  @override
+  void didUpdateWidget(_ExpandableDescription oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.text != widget.text) {
+      _isExpanded = false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    final TextStyle style = AppTextStyles.subtitle.copyWith(
+      fontSize: 13,
+      height: 1.45,
+      color: const Color(0xFF4D5560),
+    );
+
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final TextPainter painter = TextPainter(
+          text: TextSpan(text: widget.text, style: style),
+          maxLines: _ExpandableDescription.collapsedMaxLines,
+          textDirection: Directionality.of(context),
+        )..layout(maxWidth: constraints.maxWidth);
+        final bool canExpand = painter.didExceedMaxLines;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            AnimatedSize(
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOut,
+              alignment: Alignment.topCenter,
+              child: Text(
+                widget.text,
+                maxLines: _isExpanded
+                    ? null
+                    : _ExpandableDescription.collapsedMaxLines,
+                overflow: _isExpanded
+                    ? TextOverflow.visible
+                    : TextOverflow.ellipsis,
+                style: style,
+              ),
+            ),
+            if (canExpand) ...<Widget>[
+              const SizedBox(height: 4),
+              InkWell(
+                onTap: () => setState(() => _isExpanded = !_isExpanded),
+                borderRadius: BorderRadius.circular(6),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 3),
+                  child: Text(
+                    _isExpanded ? l10n.readLess : l10n.readMore,
+                    style: AppTextStyles.link.copyWith(
+                      color: AppColors.primary,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        );
+      },
+    );
   }
 }
 

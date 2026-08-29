@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:beauty_center_app/core/di/injection.dart';
@@ -18,7 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-enum _RecommendationStep { choose, describe, scan, results }
+enum _RecommendationStep { choose, describe, scan, analyzing, results }
 
 class AiRecommendationView extends StatefulWidget {
   const AiRecommendationView({required this.cubit, super.key});
@@ -98,9 +99,15 @@ class _AiRecommendationViewState extends State<AiRecommendationView> {
   }
 
   Future<void> _submitImage(String imagePath) async {
+    if (mounted) {
+      setState(() => _step = _RecommendationStep.analyzing);
+    }
     try {
       await _cubit.request(imagePath: imagePath);
     } on AiRecommendationInputException catch (error) {
+      if (mounted) {
+        setState(() => _step = _RecommendationStep.scan);
+      }
       _showMessage(_inputErrorMessage(error.error));
     }
   }
@@ -122,6 +129,9 @@ class _AiRecommendationViewState extends State<AiRecommendationView> {
         listener: (BuildContext context, AiRecommendationState state) {
           if (state.status == AiRecommendationStatus.failure &&
               state.message != null) {
+            if (_step == _RecommendationStep.analyzing) {
+              setState(() => _step = _RecommendationStep.scan);
+            }
             _showMessage(state.message!);
           } else if (state.status == AiRecommendationStatus.success &&
               state.result != null) {
@@ -152,6 +162,7 @@ class _AiRecommendationViewState extends State<AiRecommendationView> {
                 onBack: _goBack,
                 onImageCaptured: _submitImage,
               ),
+              _RecommendationStep.analyzing => const _AnalyzingPage(),
               _RecommendationStep.results =>
                 recommendation == null
                     ? const _RecommendationResultSkeleton()
@@ -176,6 +187,61 @@ class _RecommendationResultSkeleton extends StatelessWidget {
     return const Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(child: Center(child: CircularProgressIndicator())),
+    );
+  }
+}
+
+class _AnalyzingPage extends StatelessWidget {
+  const _AnalyzingPage();
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 36),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  width: 92,
+                  height: 92,
+                  decoration: BoxDecoration(
+                    color: AppColors.secondary.withValues(alpha: 0.14),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(22),
+                    child: CircularProgressIndicator(
+                      color: AppColors.secondary,
+                      strokeWidth: 3,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 28),
+                Text(
+                  l10n.aiAnalyzingTitle,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.headlineMedium,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  l10n.aiAnalyzingSubtitle,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.55,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -1014,6 +1080,11 @@ class _FaceScanPageState extends State<_FaceScanPage> {
       GlobalKey<_CameraPreviewLayerState>();
   bool _isCapturing = false;
 
+  Future<void> _switchCamera() async {
+    if (_isCapturing || widget.isLoading) return;
+    await _cameraKey.currentState?.switchCamera();
+  }
+
   Future<void> _captureAndSubmit() async {
     if (_isCapturing || widget.isLoading) return;
     setState(() => _isCapturing = true);
@@ -1066,7 +1137,10 @@ class _FaceScanPageState extends State<_FaceScanPage> {
           SafeArea(
             child: Column(
               children: <Widget>[
-                _ScanHeader(onBack: widget.onBack),
+                _ScanHeader(
+                  onBack: widget.onBack,
+                  onSwitchCamera: _switchCamera,
+                ),
                 Expanded(
                   child: LayoutBuilder(
                     builder:
@@ -1166,8 +1240,43 @@ class _CameraPreviewLayer extends StatefulWidget {
 class _CameraPreviewLayerState extends State<_CameraPreviewLayer>
     with WidgetsBindingObserver {
   CameraController? _controller;
+  CameraDescription? _selectedCamera;
+  List<CameraDescription> _cameras = const <CameraDescription>[];
   bool _isLoading = true;
   bool _hasError = false;
+
+  Future<void> _disposeController(CameraController? controller) async {
+    if (controller == null) return;
+    try {
+      await controller.dispose();
+    } on Object {
+      // CameraX can race while releasing a preview surface. The controller is
+      // already detached from the widget tree, so there is nothing else to do.
+    }
+  }
+
+  Future<void> switchCamera() async {
+    final CameraController? controller = _controller;
+    if (_isLoading ||
+        controller == null ||
+        !controller.value.isInitialized ||
+        _cameras.length < 2) {
+      return;
+    }
+
+    final CameraLensDirection targetDirection =
+        controller.description.lensDirection == CameraLensDirection.front
+        ? CameraLensDirection.back
+        : CameraLensDirection.front;
+    final CameraDescription targetCamera = _cameras.firstWhere(
+      (CameraDescription camera) => camera.lensDirection == targetDirection,
+      orElse: () => _cameras.firstWhere(
+        (CameraDescription camera) =>
+            camera.name != controller.description.name,
+      ),
+    );
+    await _initializeCamera(camera: targetCamera);
+  }
 
   Future<XFile?> captureImage() async {
     final CameraController? controller = _controller;
@@ -1186,26 +1295,42 @@ class _CameraPreviewLayerState extends State<_CameraPreviewLayer>
     _initializeCamera();
   }
 
-  Future<void> _initializeCamera() async {
+  Future<void> _initializeCamera({CameraDescription? camera}) async {
+    final CameraController? previousController = _controller;
     if (mounted) {
       setState(() {
+        _controller = null;
         _isLoading = true;
         _hasError = false;
       });
     }
 
+    if (previousController != null) {
+      // Let CameraPreview release its surface before disposing the CameraX
+      // controller. Opening the next lens before this finishes can deadlock on
+      // devices that only allow one camera to be open at a time.
+      await WidgetsBinding.instance.endOfFrame;
+      await _disposeController(previousController);
+    }
+
     CameraController? nextController;
     try {
-      final List<CameraDescription> cameras = await availableCameras();
+      final List<CameraDescription> cameras = _cameras.isEmpty
+          ? await availableCameras()
+          : _cameras;
       if (cameras.isEmpty) throw StateError('No camera is available');
+      _cameras = cameras;
 
-      final CameraDescription camera = cameras.firstWhere(
-        (CameraDescription item) =>
-            item.lensDirection == CameraLensDirection.front,
-        orElse: () => cameras.first,
-      );
+      final CameraDescription selectedCamera =
+          camera ??
+          _selectedCamera ??
+          cameras.firstWhere(
+            (CameraDescription item) =>
+                item.lensDirection == CameraLensDirection.front,
+            orElse: () => cameras.first,
+          );
       nextController = CameraController(
-        camera,
+        selectedCamera,
         ResolutionPreset.high,
         enableAudio: false,
         imageFormatGroup: ImageFormatGroup.jpeg,
@@ -1213,17 +1338,16 @@ class _CameraPreviewLayerState extends State<_CameraPreviewLayer>
       await nextController.initialize();
 
       if (!mounted) {
-        await nextController.dispose();
+        await _disposeController(nextController);
         return;
       }
-      final CameraController? previousController = _controller;
       setState(() {
         _controller = nextController;
+        _selectedCamera = selectedCamera;
         _isLoading = false;
       });
-      await previousController?.dispose();
     } on Object {
-      await nextController?.dispose();
+      await _disposeController(nextController);
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -1236,20 +1360,21 @@ class _CameraPreviewLayerState extends State<_CameraPreviewLayer>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final CameraController? controller = _controller;
-    if (controller == null || !controller.value.isInitialized) return;
-
     if (state == AppLifecycleState.inactive) {
       _controller = null;
-      controller.dispose();
-    } else if (state == AppLifecycleState.resumed) {
-      _initializeCamera();
+      if (controller != null) {
+        _selectedCamera = controller.description;
+        unawaited(_disposeController(controller));
+      }
+    } else if (state == AppLifecycleState.resumed && controller == null) {
+      unawaited(_initializeCamera(camera: _selectedCamera));
     }
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _controller?.dispose();
+    unawaited(_disposeController(_controller));
     super.dispose();
   }
 
@@ -1361,9 +1486,10 @@ class _CameraPreviewPlaceholder extends StatelessWidget {
 }
 
 class _ScanHeader extends StatelessWidget {
-  const _ScanHeader({required this.onBack});
+  const _ScanHeader({required this.onBack, required this.onSwitchCamera});
 
   final VoidCallback onBack;
+  final VoidCallback onSwitchCamera;
 
   @override
   Widget build(BuildContext context) {
@@ -1387,21 +1513,17 @@ class _ScanHeader extends StatelessWidget {
               ),
             ),
           ),
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
-              border: Border.all(
+          IconButton(
+            onPressed: onSwitchCamera,
+            tooltip: AppLocalizations.of(context).switchCamera,
+            color: AppColors.secondary,
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.white.withValues(alpha: 0.12),
+              side: BorderSide(
                 color: AppColors.secondary.withValues(alpha: 0.8),
               ),
             ),
-            child: const Icon(
-              Icons.auto_awesome_rounded,
-              color: AppColors.secondary,
-              size: 20,
-            ),
+            icon: const Icon(Icons.cameraswitch_rounded, size: 22),
           ),
         ],
       ),

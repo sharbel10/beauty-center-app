@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:beauty_center_app/features/explore/cubit/explore_state.dart';
 import 'package:beauty_center_app/features/explore/models/center_filters.dart';
 import 'package:beauty_center_app/features/explore/repository/explore_repository.dart';
@@ -11,10 +9,7 @@ import 'package:injectable/injectable.dart';
 class ExploreCubit extends Cubit<ExploreState> {
   ExploreCubit(this._exploreRepository) : super(const ExploreState());
 
-  static const Duration _debounceDuration = Duration(milliseconds: 500);
-
   final ExploreRepository _exploreRepository;
-  Timer? _debounceTimer;
   int _requestId = 0;
 
   Future<void> loadInitial() => _loadInitial(categoryId: null);
@@ -123,21 +118,12 @@ class ExploreCubit extends Cubit<ExploreState> {
     );
   }
 
-  void onSearchChanged(String value) {
-    _debounceTimer?.cancel();
-    final String query = _normalizeQuery(value);
-    emit(state.copyWith(search: query));
-    _debounceTimer = Timer(_debounceDuration, refreshCenters);
-  }
-
   Future<void> submitSearch(String value) async {
-    _debounceTimer?.cancel();
     emit(state.copyWith(search: _normalizeQuery(value)));
     await refreshCenters();
   }
 
   Future<void> applyFilters(CenterFilters filters) async {
-    _debounceTimer?.cancel();
     emit(state.copyWith(filters: filters));
     await refreshCenters();
   }
@@ -148,12 +134,6 @@ class ExploreCubit extends Cubit<ExploreState> {
 
   Future<void> resetFilters() =>
       applyFilters(CenterFilters(categoryId: state.filters.categoryId));
-
-  @override
-  Future<void> close() {
-    _debounceTimer?.cancel();
-    return super.close();
-  }
 
   static String _normalizeQuery(String query) {
     final String value = query.trim();

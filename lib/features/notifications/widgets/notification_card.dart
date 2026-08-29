@@ -22,18 +22,37 @@ class NotificationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final bool isRead = notification.isRead;
+    final NotificationVisual visual = resolveNotificationVisual(
+      notification,
+      isRead: isRead,
+    );
+    final String timeLabel = notificationTimeLabel(
+      notification.displayAt,
+      l10n,
+    );
 
     return Dismissible(
       key: ValueKey<int>(notification.id),
       direction: DismissDirection.endToStart,
       background: Container(
         alignment: AlignmentDirectional.centerEnd,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsetsDirectional.only(end: 22),
         decoration: BoxDecoration(
           color: AppColors.danger,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(16),
         ),
-        child: const Icon(Icons.delete_outline_rounded, color: AppColors.white),
+        child: Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: AppColors.white.withValues(alpha: 0.18),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.delete_outline_rounded,
+            color: AppColors.white,
+          ),
+        ),
       ),
       confirmDismiss: (_) async {
         onDelete();
@@ -43,68 +62,113 @@ class NotificationCard extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(16),
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: isRead
-                  ? AppColors.surface
-                  : AppColors.primary.withValues(alpha: 0.05),
-              borderRadius: BorderRadius.circular(18),
+              color: visual.backgroundColor,
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: isRead
-                    ? AppColors.divider
-                    : AppColors.primary.withValues(alpha: 0.16),
+                color: visual.iconColor.withValues(alpha: isRead ? 0.12 : 0.2),
               ),
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Stack(
               children: <Widget>[
-                _NotificationIcon(notification: notification, isRead: isRead),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
+                PositionedDirectional(
+                  start: 0,
+                  top: 14,
+                  bottom: 14,
+                  child: Container(
+                    width: 3,
+                    decoration: BoxDecoration(
+                      color: visual.iconColor.withValues(
+                        alpha: isRead ? 0.48 : 0.9,
+                      ),
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 14, 14),
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: Text(
-                              notification.title,
-                              maxLines: 1,
+                      _NotificationIcon(visual: visual, isRead: isRead),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text(
+                                    notification.title,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: AppTextStyles.bodyLarge.copyWith(
+                                      fontSize: 15,
+                                      fontWeight: isRead
+                                          ? FontWeight.w600
+                                          : FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                                if (!isRead)
+                                  Container(
+                                    width: 8,
+                                    height: 8,
+                                    margin: const EdgeInsetsDirectional.only(
+                                      start: 8,
+                                      top: 5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: visual.iconColor,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              notification.body,
+                              maxLines: 3,
                               overflow: TextOverflow.ellipsis,
-                              style: AppTextStyles.bodyLarge.copyWith(
-                                fontSize: 15,
-                                fontWeight: isRead
-                                    ? FontWeight.w600
-                                    : FontWeight.w800,
+                              style: AppTextStyles.subtitle.copyWith(
+                                fontSize: 13,
+                                height: 1.4,
+                                color: AppColors.textSecondary,
                               ),
                             ),
-                          ),
-                          if (!isRead)
-                            Container(
-                              width: 8,
-                              height: 8,
-                              margin: const EdgeInsetsDirectional.only(
-                                start: 8,
+                            if (timeLabel.isNotEmpty) ...<Widget>[
+                              const SizedBox(height: 9),
+                              Row(
+                                children: <Widget>[
+                                  Icon(
+                                    Icons.schedule_rounded,
+                                    size: 14,
+                                    color: visual.iconColor.withValues(
+                                      alpha: isRead ? 0.6 : 0.78,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Expanded(
+                                    child: Text(
+                                      timeLabel,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppTextStyles.bodySmall.copyWith(
+                                        color: visual.iconColor.withValues(
+                                          alpha: isRead ? 0.65 : 0.82,
+                                        ),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              decoration: const BoxDecoration(
-                                color: AppColors.danger,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        notification.body,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.subtitle.copyWith(
-                          fontSize: 13,
-                          height: 1.4,
-                          color: AppColors.textSecondary,
+                            ],
+                          ],
                         ),
                       ),
                     ],
@@ -120,26 +184,24 @@ class NotificationCard extends StatelessWidget {
 }
 
 class _NotificationIcon extends StatelessWidget {
-  const _NotificationIcon({required this.notification, required this.isRead});
+  const _NotificationIcon({required this.visual, required this.isRead});
 
-  final AppNotification notification;
+  final NotificationVisual visual;
   final bool isRead;
 
   @override
   Widget build(BuildContext context) {
-    final NotificationVisual visual = resolveNotificationVisual(
-      notification,
-      isRead: isRead,
-    );
-
     return Container(
-      width: 42,
-      height: 42,
+      width: 44,
+      height: 44,
       decoration: BoxDecoration(
-        color: visual.backgroundColor,
-        shape: BoxShape.circle,
+        color: AppColors.surface.withValues(alpha: isRead ? 0.66 : 0.9),
+        borderRadius: BorderRadius.circular(13),
+        border: Border.all(
+          color: visual.iconColor.withValues(alpha: isRead ? 0.1 : 0.16),
+        ),
       ),
-      child: Icon(visual.icon, size: 20, color: visual.iconColor),
+      child: Icon(visual.icon, size: 21, color: visual.iconColor),
     );
   }
 }

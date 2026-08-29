@@ -89,12 +89,7 @@ class ClinicServicesView extends StatelessWidget {
                 if (grouped.isEmpty) {
                   return Column(
                     children: <Widget>[
-                      _ClinicServiceFiltersBar(
-                        state: state,
-                        onSearchChanged: context
-                            .read<ClinicServicesCubit>()
-                            .onSearchChanged,
-                      ),
+                      _ClinicServiceFiltersBar(state: state),
                       Padding(
                         padding: const EdgeInsets.all(32.0),
                         child: Text(l10n.clinicNoServices),
@@ -106,12 +101,7 @@ class ClinicServicesView extends StatelessWidget {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    _ClinicServiceFiltersBar(
-                      state: state,
-                      onSearchChanged: context
-                          .read<ClinicServicesCubit>()
-                          .onSearchChanged,
-                    ),
+                    _ClinicServiceFiltersBar(state: state),
                     const SizedBox(height: 20),
                     ...grouped.entries.map((
                       MapEntry<ServiceCategory, List<ClinicServiceItem>> entry,
@@ -135,7 +125,7 @@ class ClinicServicesView extends StatelessWidget {
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: servicesList.length,
-                              separatorBuilder: (_, __) =>
+                              separatorBuilder: (_, _) =>
                                   const SizedBox(height: 14),
                               itemBuilder: (BuildContext context, int index) {
                                 final ClinicServiceItem service =
@@ -195,19 +185,55 @@ class ClinicServicesView extends StatelessWidget {
   }
 }
 
-class _ClinicServiceFiltersBar extends StatelessWidget {
-  const _ClinicServiceFiltersBar({
-    required this.state,
-    required this.onSearchChanged,
-  });
+class _ClinicServiceFiltersBar extends StatefulWidget {
+  const _ClinicServiceFiltersBar({required this.state});
+
   final ClinicServicesState state;
-  final ValueChanged<String> onSearchChanged;
+
+  @override
+  State<_ClinicServiceFiltersBar> createState() =>
+      _ClinicServiceFiltersBarState();
+}
+
+class _ClinicServiceFiltersBarState extends State<_ClinicServiceFiltersBar> {
+  late final TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController(text: widget.state.filters.query);
+  }
+
+  @override
+  void didUpdateWidget(_ClinicServiceFiltersBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.state.filters.query != widget.state.filters.query &&
+        _searchController.text != widget.state.filters.query) {
+      _searchController.value = TextEditingValue(
+        text: widget.state.filters.query,
+        selection: TextSelection.collapsed(
+          offset: widget.state.filters.query.length,
+        ),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _submitSearch() {
+    FocusScope.of(context).unfocus();
+    context.read<ClinicServicesCubit>().submitSearch(_searchController.text);
+  }
 
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final Map<int, ServiceCategory> categories = <int, ServiceCategory>{
-      for (final ClinicServiceItem service in state.services)
+      for (final ClinicServiceItem service in widget.state.services)
         service.category.id: service.category,
     };
     return Column(
@@ -216,49 +242,92 @@ class _ClinicServiceFiltersBar extends StatelessWidget {
         Row(
           children: <Widget>[
             Expanded(
-              child: TextFormField(
-                key: ValueKey<String>(state.filters.query),
-                initialValue: state.filters.query,
-                maxLength: 255,
-                onChanged: onSearchChanged,
-                decoration: InputDecoration(
-                  hintText: l10n.searchClinicsOrTreatments,
-                  counterText: '',
-                  prefixIcon: const Icon(Icons.search_rounded),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
+              child: SizedBox(
+                height: 44,
+                child: TextField(
+                  controller: _searchController,
+                  textInputAction: TextInputAction.search,
+                  maxLength: 255,
+                  onSubmitted: (_) => _submitSearch(),
+                  style: AppTextStyles.bodyMedium.copyWith(fontSize: 13),
+                  decoration: InputDecoration(
+                    isDense: true,
+                    filled: true,
+                    fillColor: AppColors.surface,
+                    hintText: l10n.searchClinicsOrTreatments,
+                    counterText: '',
+                    contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                    prefixIcon: const Icon(Icons.search_rounded, size: 19),
+                    prefixIconConstraints: const BoxConstraints(minWidth: 40),
+                    suffixIcon: IconButton(
+                      onPressed: _submitSearch,
+                      visualDensity: VisualDensity.compact,
+                      icon: const Icon(Icons.arrow_forward_rounded, size: 18),
+                    ),
+                    suffixIconConstraints: const BoxConstraints(minWidth: 40),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(13),
+                      borderSide: const BorderSide(color: AppColors.divider),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(13),
+                      borderSide: const BorderSide(
+                        color: AppColors.primary,
+                        width: 1.4,
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: 10),
-            IconButton.filledTonal(
-              onPressed: () {
-                final ClinicServicesCubit cubit = context
-                    .read<ClinicServicesCubit>();
-                showModalBottomSheet<void>(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (_) => BlocProvider<ClinicServicesCubit>.value(
-                    value: cubit,
-                    child: _ClinicServiceFilterSheet(
-                      initial: state.filters,
-                      categories: categories.values.toList(),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 44,
+              height: 44,
+              child: IconButton(
+                onPressed: () {
+                  final ClinicServicesCubit cubit = context
+                      .read<ClinicServicesCubit>();
+                  showModalBottomSheet<void>(
+                    context: context,
+                    isScrollControlled: true,
+                    useSafeArea: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (_) => BlocProvider<ClinicServicesCubit>.value(
+                      value: cubit,
+                      child: _ClinicServiceFilterSheet(
+                        initial: widget.state.filters,
+                        categories: categories.values.toList(),
+                      ),
                     ),
+                  );
+                },
+                style: IconButton.styleFrom(
+                  backgroundColor: AppColors.primarySoft,
+                  foregroundColor: AppColors.surface,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(13),
                   ),
-                );
-              },
-              icon: const Icon(Icons.tune_rounded),
+                ),
+                icon: const Icon(Icons.tune_rounded, size: 19),
+              ),
             ),
           ],
         ),
-        if (state.filters.isActive) ...<Widget>[
+        if (widget.state.filters.isActive) ...<Widget>[
           const SizedBox(height: 8),
           ActionChip(
-            avatar: const Icon(Icons.close_rounded, size: 16),
+            avatar: const Icon(Icons.close_rounded, size: 14),
             label: Text(l10n.clearFilters),
             onPressed: context.read<ClinicServicesCubit>().resetFilters,
+            visualDensity: VisualDensity.compact,
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            labelStyle: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.primary,
+              fontWeight: FontWeight.w600,
+            ),
+            backgroundColor: AppColors.surfaceMuted,
+            side: const BorderSide(color: AppColors.divider),
           ),
         ],
       ],
@@ -315,160 +384,200 @@ class _ClinicServiceFilterSheetState extends State<_ClinicServiceFilterSheet> {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
-    return Container(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * .85,
-      ),
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(
-            22,
-            16,
-            22,
-            22 + MediaQuery.viewInsetsOf(context).bottom,
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOut,
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: SafeArea(
+        top: false,
+        child: Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(context).height * .82,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      l10n.filters,
-                      style: AppTextStyles.title.copyWith(fontSize: 22),
+          decoration: const BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Text(
+                                l10n.filters,
+                                style: AppTextStyles.title.copyWith(
+                                  fontSize: 22,
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () => Navigator.pop(context),
+                              icon: const Icon(Icons.close_rounded),
+                            ),
+                          ],
+                        ),
+                        DropdownButtonFormField<int?>(
+                          initialValue: _categoryId,
+                          isExpanded: true,
+                          decoration: InputDecoration(
+                            labelText: l10n.categories,
+                            border: const OutlineInputBorder(),
+                          ),
+                          items: <DropdownMenuItem<int?>>[
+                            DropdownMenuItem<int?>(
+                              value: null,
+                              child: Text(l10n.all),
+                            ),
+                            if (_categoryId != null &&
+                                !widget.categories.any(
+                                  (ServiceCategory category) =>
+                                      category.id == _categoryId,
+                                ))
+                              DropdownMenuItem<int?>(
+                                value: _categoryId,
+                                child: Text('#$_categoryId'),
+                              ),
+                            ...widget.categories.map(
+                              (category) => DropdownMenuItem<int?>(
+                                value: category.id,
+                                child: Text(category.name),
+                              ),
+                            ),
+                          ],
+                          onChanged: (value) =>
+                              setState(() => _categoryId = value),
+                        ),
+                        const SizedBox(height: 12),
+                        DropdownButtonFormField<bool?>(
+                          initialValue: _isFeatured,
+                          decoration: InputDecoration(
+                            labelText: l10n.featuredOnly,
+                            border: const OutlineInputBorder(),
+                          ),
+                          items: <DropdownMenuItem<bool?>>[
+                            DropdownMenuItem<bool?>(
+                              value: null,
+                              child: Text(l10n.anyOption),
+                            ),
+                            DropdownMenuItem<bool?>(
+                              value: true,
+                              child: Text(l10n.yesOption),
+                            ),
+                            DropdownMenuItem<bool?>(
+                              value: false,
+                              child: Text(l10n.noOption),
+                            ),
+                          ],
+                          onChanged: (value) =>
+                              setState(() => _isFeatured = value),
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: _ServiceNumberField(
+                                label: l10n.min,
+                                controller: _minPrice,
+                                min: 0,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: _ServiceNumberField(
+                                label: l10n.max,
+                                controller: _maxPrice,
+                                min: 0,
+                                validator: (_) => _priceError(l10n),
+                              ),
+                            ),
+                          ],
+                        ),
+                        _ServiceNumberField(
+                          label: l10n.maxDuration,
+                          controller: _maxDuration,
+                          min: 0,
+                          integerOnly: true,
+                        ),
+                        DropdownButtonFormField<String?>(
+                          initialValue: _sortBy,
+                          decoration: InputDecoration(
+                            labelText: l10n.sortBy,
+                            border: const OutlineInputBorder(),
+                          ),
+                          items: <DropdownMenuItem<String?>>[
+                            DropdownMenuItem<String?>(
+                              value: null,
+                              child: Text(l10n.anyOption),
+                            ),
+                            ...clinicServiceSortOptions.map(
+                              (value) => DropdownMenuItem<String?>(
+                                value: value,
+                                child: Text(_serviceSortLabel(l10n, value)),
+                              ),
+                            ),
+                          ],
+                          onChanged: (value) => setState(() => _sortBy = value),
+                        ),
+                        const SizedBox(height: 4),
+                      ],
                     ),
                   ),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close_rounded),
-                  ),
-                ],
-              ),
-              DropdownButtonFormField<int?>(
-                initialValue: _categoryId,
-                isExpanded: true,
-                decoration: InputDecoration(
-                  labelText: l10n.categories,
-                  border: const OutlineInputBorder(),
                 ),
-                items: <DropdownMenuItem<int?>>[
-                  DropdownMenuItem<int?>(value: null, child: Text(l10n.all)),
-                  if (_categoryId != null &&
-                      !widget.categories.any(
-                        (ServiceCategory category) =>
-                            category.id == _categoryId,
-                      ))
-                    DropdownMenuItem<int?>(
-                      value: _categoryId,
-                      child: Text('#$_categoryId'),
-                    ),
-                  ...widget.categories.map(
-                    (category) => DropdownMenuItem<int?>(
-                      value: category.id,
-                      child: Text(category.name),
-                    ),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+                  decoration: const BoxDecoration(
+                    color: AppColors.surface,
+                    border: Border(top: BorderSide(color: AppColors.divider)),
                   ),
-                ],
-                onChanged: (value) => setState(() => _categoryId = value),
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<bool?>(
-                initialValue: _isFeatured,
-                decoration: InputDecoration(
-                  labelText: l10n.featuredOnly,
-                  border: const OutlineInputBorder(),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            final cubit = context.read<ClinicServicesCubit>();
+                            Navigator.pop(context);
+                            cubit.resetFilters();
+                          },
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(48),
+                            foregroundColor: AppColors.primary,
+                            side: const BorderSide(color: AppColors.primary),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          child: Text(l10n.reset),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: _apply,
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(48),
+                            elevation: 0,
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: AppColors.surface,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          child: Text(l10n.apply),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                items: <DropdownMenuItem<bool?>>[
-                  DropdownMenuItem<bool?>(
-                    value: null,
-                    child: Text(l10n.anyOption),
-                  ),
-                  DropdownMenuItem<bool?>(
-                    value: true,
-                    child: Text(l10n.yesOption),
-                  ),
-                  DropdownMenuItem<bool?>(
-                    value: false,
-                    child: Text(l10n.noOption),
-                  ),
-                ],
-                onChanged: (value) => setState(() => _isFeatured = value),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: _ServiceNumberField(
-                      label: l10n.min,
-                      controller: _minPrice,
-                      min: 0,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _ServiceNumberField(
-                      label: l10n.max,
-                      controller: _maxPrice,
-                      min: 0,
-                      validator: (_) => _priceError(l10n),
-                    ),
-                  ),
-                ],
-              ),
-              _ServiceNumberField(
-                label: l10n.maxDuration,
-                controller: _maxDuration,
-                min: 0,
-                integerOnly: true,
-              ),
-              DropdownButtonFormField<String?>(
-                initialValue: _sortBy,
-                decoration: InputDecoration(
-                  labelText: l10n.sortBy,
-                  border: const OutlineInputBorder(),
-                ),
-                items: <DropdownMenuItem<String?>>[
-                  DropdownMenuItem<String?>(
-                    value: null,
-                    child: Text(l10n.anyOption),
-                  ),
-                  ...clinicServiceSortOptions.map(
-                    (value) => DropdownMenuItem<String?>(
-                      value: value,
-                      child: Text(_serviceSortLabel(l10n, value)),
-                    ),
-                  ),
-                ],
-                onChanged: (value) => setState(() => _sortBy = value),
-              ),
-              const SizedBox(height: 18),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        final cubit = context.read<ClinicServicesCubit>();
-                        Navigator.pop(context);
-                        cubit.resetFilters();
-                      },
-                      child: Text(l10n.reset),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _apply,
-                      child: Text(l10n.apply),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

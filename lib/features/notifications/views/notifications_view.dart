@@ -68,7 +68,7 @@ class _NotificationsViewState extends State<NotificationsView> {
             child: Column(
               children: <Widget>[
                 NotificationsHeader(
-                  hasUnread: state.hasUnread,
+                  unreadCount: state.unreadCount,
                   onMarkAllRead: cubit.markAllAsRead,
                 ),
                 Expanded(child: _buildList(context, state, cubit, l10n)),
@@ -101,6 +101,8 @@ class _NotificationsViewState extends State<NotificationsView> {
     }
 
     return RefreshIndicator(
+      color: AppColors.primary,
+      backgroundColor: AppColors.surface,
       onRefresh: cubit.loadNotifications,
       child: CustomScrollView(
         controller: _scrollController,
@@ -110,7 +112,7 @@ class _NotificationsViewState extends State<NotificationsView> {
             SliverFillRemaining(
               hasScrollBody: false,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
                 child: _EmptyNotifications(
                   title: l10n.noNotifications,
                   subtitle: l10n.noNotificationsSubtitle,
@@ -120,16 +122,24 @@ class _NotificationsViewState extends State<NotificationsView> {
             )
           else
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 32),
               sliver: SliverList.separated(
                 itemCount:
                     state.notifications.length + (state.isLoadingMore ? 1 : 0),
-                separatorBuilder: (_, _) => const SizedBox(height: 12),
+                separatorBuilder: (_, _) => const SizedBox(height: 10),
                 itemBuilder: (BuildContext context, int index) {
                   if (index >= state.notifications.length) {
                     return const Padding(
                       padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Center(child: CircularProgressIndicator()),
+                      child: Center(
+                        child: SizedBox.square(
+                          dimension: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
                     );
                   }
 
@@ -180,15 +190,47 @@ class _NotificationsViewState extends State<NotificationsView> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text(l10n.deleteNotification),
-              content: Text(l10n.deleteNotificationConfirm),
+              backgroundColor: AppColors.surface,
+              surfaceTintColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              icon: Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  color: AppColors.danger.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.delete_outline_rounded,
+                  color: AppColors.danger,
+                ),
+              ),
+              title: Text(
+                l10n.deleteNotification,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.titleMedium,
+              ),
+              content: Text(
+                l10n.deleteNotificationConfirm,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.45,
+                ),
+              ),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
                   child: Text(l10n.cancel),
                 ),
-                TextButton(
+                FilledButton(
                   onPressed: () => Navigator.of(context).pop(true),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.danger,
+                    foregroundColor: AppColors.white,
+                  ),
                   child: Text(l10n.deleteNotification),
                 ),
               ],
@@ -223,39 +265,63 @@ class _EmptyNotifications extends StatelessWidget {
     return Center(
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 36),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.divider),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.divider.withValues(alpha: 0.75)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Container(
-              width: 56,
-              height: 56,
-              decoration: const BoxDecoration(
-                color: AppColors.surfaceMuted,
-                shape: BoxShape.circle,
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(24),
               ),
-              child: Icon(icon, color: AppColors.primary, size: 26),
+              child: Stack(
+                alignment: Alignment.center,
+                children: <Widget>[
+                  Icon(icon, color: AppColors.primary, size: 32),
+                  PositionedDirectional(
+                    top: 11,
+                    end: 11,
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: const BoxDecoration(
+                        color: AppColors.secondary,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 20),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: AppTextStyles.title.copyWith(fontSize: 16),
+              style: AppTextStyles.titleMedium.copyWith(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w700,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               subtitle,
               textAlign: TextAlign.center,
-              style: AppTextStyles.subtitle.copyWith(fontSize: 13, height: 1.4),
+              style: AppTextStyles.subtitle.copyWith(fontSize: 13, height: 1.5),
             ),
             if (onAction != null && actionLabel != null) ...<Widget>[
               const SizedBox(height: 16),
-              ElevatedButton(onPressed: onAction, child: Text(actionLabel!)),
+              FilledButton.icon(
+                onPressed: onAction,
+                icon: const Icon(Icons.refresh_rounded, size: 19),
+                label: Text(actionLabel!),
+              ),
             ],
           ],
         ),

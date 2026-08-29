@@ -133,7 +133,7 @@
   "loadMore": "Load More",
   "searchClinics": "Search clinics...",
   "filters": "Filters",
-  "priceRangeFilter": "SP {min} - SP {max}",
+  "priceRangeFilter": "${min} - ${max}",
   "@priceRangeFilter": {
     "placeholders": {
       "min": {
@@ -213,7 +213,7 @@
       "value": {"type": "int"}
     }
   },
-  "clinicDepositAmount": "Deposit: SP {value}",
+  "clinicDepositAmount": "Deposit: ${value}",
   "@clinicDepositAmount": {
     "placeholders": {
       "value": {"type": "int"}
@@ -278,7 +278,7 @@
       "value": {"type": "int"}
     }
   },
-  "offerDiscountAmount": "SP{value} OFF",
+  "offerDiscountAmount": "${value} OFF",
   "@offerDiscountAmount": {
     "placeholders": {
       "value": {"type": "int"}
@@ -297,7 +297,7 @@
       "minutes": {"type": "int"}
     }
   },
-  "priceSp": "{price} SP",
+  "priceSp": "${price}",
   "@priceSp": {
     "placeholders": {
       "price": {"type": "String"}
@@ -388,10 +388,7 @@
   "timeLabel": "Time",
   "paymentLabel": "Payment",
   "paymentTitle": "Review & pay",
-  "paymentSubtitle": "Review your appointment before opening Stripe's secure payment form.",
-  "stripeTestMode": "Stripe test mode · No real charge",
-  "stripePaymentMethodTitle": "Pay securely with Stripe",
-  "stripePaymentMethodSubtitle": "Test cards and supported digital wallets",
+  "paymentSubtitle": "Review your appointment details and complete your payment securely.",
   "paymentBackendPendingTitle": "Backend connection pending",
   "paymentBackendPendingBody": "The payment button will be enabled when the API returns a Stripe PaymentIntent client secret.",
   "paymentSecureNotice": "Payment details are entered in Stripe's secure PaymentSheet and are never stored by Lumina.",
@@ -411,7 +408,7 @@
   "checkPaymentStatus": "Check payment status",
   "paymentFailed": "Stripe couldn't complete the payment. Please try again.",
   "paymentVerificationPending": "Payment is still being verified. Tap the button to check again.",
-  "stripeNotConfigured": "Stripe test key is not configured in the app.",
+  "stripeNotConfigured": "The payment service is currently unavailable. Please try again later.",
   "stripeGatewayUnavailable": "Stripe is not enabled for this center.",
   "estimatedTotal": "Estimated Total",
   "bookingTotal": "Total  {total}",
@@ -466,6 +463,10 @@
   "changeAvatar": "Change Avatar",
   "uploadAvatar": "Upload Avatar",
   "avatarUpdatedSuccessfully": "Avatar updated successfully.",
+  "removeAvatar": "Remove photo",
+  "removeAvatarConfirm": "Are you sure you want to remove your profile photo?",
+  "avatarRemovedSuccessfully": "Profile photo removed successfully.",
+  "logoutConfirm": "Are you sure you want to log out?",
   "deleteAccount": "Delete Account",
   "deleteAccountConfirm": "Are you sure you want to delete your account? This action cannot be undone.",
   "accountDeletedSuccessfully": "Account deleted successfully.",
@@ -495,7 +496,7 @@
   "exploreAndAddFavorites": "Explore and add to favorites",
   "noResultsFound": "No results found",
   "noResultsFor": "No results for",
-  "currency": "SYP",
+  "currency": "$",
   "pressBackAgainToExit": "Press back again to exit the app",
   "notifications": "Notifications",
   "notificationsAll": "All",
@@ -585,6 +586,7 @@
   "cameraUnavailable": "Camera is unavailable",
   "cameraUnavailableHint": "Allow camera access in your device settings, then try again.",
   "tryCameraAgain": "TRY AGAIN"
+  ,"switchCamera": "Switch camera"
   ,"aiInputRequired": "Enter a description or take a face photo first."
   ,"aiTextTooLong": "The description must not exceed 1000 characters."
   ,"aiImageTooLarge": "The image must not exceed 5 MB."
@@ -637,4 +639,6 @@
   ,"reportReasonOvercharging": "Overcharging / Billing issue"
   ,"reportReasonNoShow": "No-show by center"
   ,"reportReasonOther": "Other"
+  ,"readMore": "Read more"
+  ,"readLess": "Read less"
 }

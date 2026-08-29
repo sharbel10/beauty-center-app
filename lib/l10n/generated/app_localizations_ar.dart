@@ -389,7 +389,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String priceRangeFilter(int min, int max) {
-    return '$min ل.س- $max ل.س';
+    return '\$$min - \$$max';
   }
 
   @override
@@ -566,7 +566,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String clinicDepositAmount(int value) {
-    return 'عربون: $value ل.س';
+    return 'عربون: \$$value';
   }
 
   @override
@@ -667,7 +667,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String offerDiscountAmount(int value) {
-    return 'خصم $value ل.س';
+    return 'خصم \$$value';
   }
 
   @override
@@ -685,7 +685,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String priceSp(String price) {
-    return '$price ل.س';
+    return '\$$price';
   }
 
   @override
@@ -914,18 +914,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get paymentTitle => 'مراجعة ودفع';
 
   @override
-  String get paymentSubtitle =>
-      'راجع تفاصيل موعدك قبل فتح نموذج الدفع الآمن من Stripe.';
-
-  @override
-  String get stripeTestMode => 'وضع Stripe التجريبي · لا يوجد خصم حقيقي';
-
-  @override
-  String get stripePaymentMethodTitle => 'ادفع بأمان عبر Stripe';
-
-  @override
-  String get stripePaymentMethodSubtitle =>
-      'بطاقات تجريبية والمحافظ الرقمية المدعومة';
+  String get paymentSubtitle => 'راجع تفاصيل موعدك وأكمل عملية الدفع بأمان.';
 
   @override
   String get paymentBackendPendingTitle => 'بانتظار ربط الباك إند';
@@ -973,7 +962,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get stripeNotConfigured =>
-      'مفتاح Stripe التجريبي غير مضاف إلى التطبيق.';
+      'خدمة الدفع غير متاحة حالياً. يرجى المحاولة لاحقاً.';
 
   @override
   String get stripeGatewayUnavailable =>
@@ -1119,6 +1108,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get avatarUpdatedSuccessfully => 'تم تحديث الصورة الشخصية بنجاح.';
 
   @override
+  String get removeAvatar => 'حذف الصورة';
+
+  @override
+  String get removeAvatarConfirm => 'هل أنت متأكد من حذف صورتك الشخصية؟';
+
+  @override
+  String get avatarRemovedSuccessfully => 'تم حذف الصورة الشخصية بنجاح.';
+
+  @override
+  String get logoutConfirm => 'هل أنت متأكد من تسجيل الخروج؟';
+
+  @override
   String get deleteAccount => 'حذف الحساب';
 
   @override
@@ -1205,7 +1206,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noResultsFor => 'لا توجد نتائج لـ';
 
   @override
-  String get currency => 'ل.س';
+  String get currency => '\$';
 
   @override
   String get pressBackAgainToExit => 'اضغط مرة أخرى للخروج من التطبيق';
@@ -1347,37 +1348,37 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get personalRecommendationSubtitle =>
-      'اخبرينا ما الذي ترغبين بتحسينه أو دعي Lumina يحلل وجهك ليقترح العلاجات المناسبة.';
+      'أخبرنا بما ترغب في تحسينه، أو دع Lumina يحلل وجهك ليقترح العلاجات المناسبة.';
 
   @override
-  String get describeYourNeeds => 'صفي احتياجك';
+  String get describeYourNeeds => 'صف احتياجك';
 
   @override
   String get describeYourNeedsSubtitle =>
-      'شاركينا أهدافك والمشكلة التي تزعجك والنتيجة التي تتمنينها.';
+      'شاركنا أهدافك والمشكلة التي تزعجك والنتيجة التي تتمناها.';
 
   @override
-  String get scanYourFace => 'امسحي وجهك';
+  String get scanYourFace => 'امسح وجهك';
 
   @override
   String get scanYourFaceSubtitle =>
-      'استخدمي مسح الوجه الموجّه للحصول على توصية بصرية أدق.';
+      'استخدم مسح الوجه الموجّه للحصول على توصية بصرية أدق.';
 
   @override
-  String get startWithDescription => 'ابدئي بوصف احتياجك';
+  String get startWithDescription => 'ابدأ بوصف احتياجك';
 
   @override
-  String get startFaceScan => 'ابدئي مسح الوجه';
+  String get startFaceScan => 'ابدأ مسح الوجه';
 
   @override
-  String get yourBeautyGoals => 'بماذا ترغبين أن نساعدك؟';
+  String get yourBeautyGoals => 'بماذا ترغب أن نساعدك؟';
 
   @override
   String get beautyGoalsHint =>
       'مثلاً: أرغب ببشرة أكثر إشراقاً ومعالجة الخطوط الرفيعة حول العينين...';
 
   @override
-  String get continueToRecommendation => 'احصلي على توصيتك';
+  String get continueToRecommendation => 'احصل على توصيتك';
 
   @override
   String get uiPreviewNotice =>
@@ -1387,11 +1388,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get biometricAlignment => 'محاذاة الوجه الذكية';
 
   @override
-  String get alignFaceWithinFrame => 'ضعي وجهك داخل الإطار';
+  String get alignFaceWithinFrame => 'ضع وجهك داخل الإطار';
 
   @override
   String get wellLitScanHint =>
-      'تأكدي من وضوح وجهك ووجود إضاءة جيدة للحصول على أدق تحليل.';
+      'تأكد من وضوح وجهك ووجود إضاءة جيدة للحصول على أدق تحليل.';
 
   @override
   String get luminaIntelligence => 'ذكاء LUMINA';
@@ -1400,7 +1401,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get scanAnalysisHint => 'جاهز لتحليل ملمس البشرة وتوازن ملامح الوجه';
 
   @override
-  String get scanFace => 'امسحي الوجه';
+  String get scanFace => 'امسح الوجه';
 
   @override
   String get clinicalPrivacyNotice => 'صورتك خاصة ومحمية بأمان';
@@ -1413,13 +1414,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get cameraUnavailableHint =>
-      'اسمحي بالوصول إلى الكاميرا من إعدادات الجهاز ثم حاولي مجدداً.';
+      'اسمح بالوصول إلى الكاميرا من إعدادات الجهاز ثم حاول مجدداً.';
 
   @override
   String get tryCameraAgain => 'إعادة المحاولة';
 
   @override
-  String get aiInputRequired => 'أدخلي وصفاً أو التقطي صورة للوجه أولاً.';
+  String get switchCamera => 'تبديل الكاميرا';
+
+  @override
+  String get aiInputRequired => 'أدخل وصفاً أو التقط صورة للوجه أولاً.';
 
   @override
   String get aiTextTooLong => 'يجب ألا يتجاوز الوصف 1000 حرف.';
@@ -1428,7 +1432,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get aiImageTooLarge => 'يجب ألا يتجاوز حجم الصورة 5 ميغابايت.';
 
   @override
-  String get aiUnsupportedImage => 'استخدمي صورة بصيغة JPG أو PNG أو WebP.';
+  String get aiUnsupportedImage => 'استخدم صورة بصيغة JPG أو PNG أو WebP.';
 
   @override
   String get aiImageMissing =>
@@ -1467,13 +1471,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get aiNoRecommendationsSubtitle =>
-      'حاولي إضافة تفاصيل أكثر أو التقاط صورة أخرى بإضاءة أفضل.';
+      'حاول إضافة تفاصيل أكثر أو التقاط صورة أخرى بإضاءة أفضل.';
 
   @override
   String get aiNewRecommendation => 'توصية جديدة';
 
   @override
-  String get aiBookService => 'احجزي الخدمة';
+  String get aiBookService => 'احجز الخدمة';
 
   @override
   String get aiViewCenter => 'عرض المركز';
@@ -1577,4 +1581,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get reportReasonOther => 'أخرى';
+
+  @override
+  String get readMore => 'قراءة المزيد';
+
+  @override
+  String get readLess => 'قراءة أقل';
 }

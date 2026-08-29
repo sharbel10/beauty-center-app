@@ -6,45 +6,88 @@ import 'package:go_router/go_router.dart';
 
 class NotificationsHeader extends StatelessWidget {
   const NotificationsHeader({
-    required this.hasUnread,
+    required this.unreadCount,
     required this.onMarkAllRead,
     super.key,
   });
 
-  final bool hasUnread;
+  final int unreadCount;
   final VoidCallback onMarkAllRead;
 
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 6),
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.divider.withValues(alpha: 0.8)),
+      ),
       child: Row(
         children: <Widget>[
-          IconButton(
-            onPressed: () => context.pop(),
-            icon: const Icon(Icons.arrow_back_rounded),
-            color: AppColors.primary,
-          ),
-          Expanded(
-            child: Text(
-              l10n.notifications,
-              style: AppTextStyles.headline.copyWith(fontSize: 24),
+          Material(
+            color: AppColors.surfaceMuted,
+            shape: const CircleBorder(),
+            child: IconButton(
+              onPressed: () => context.pop(),
+              icon: const Icon(Icons.arrow_back_rounded, size: 21),
+              color: AppColors.primary,
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             ),
           ),
-          if (hasUnread)
-            TextButton(
-              onPressed: onMarkAllRead,
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.primary,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: Text(
-                l10n.markAllAsRead,
-                style: AppTextStyles.link.copyWith(fontSize: 12),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Row(
+              children: <Widget>[
+                Flexible(
+                  child: Text(
+                    l10n.notifications,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.headlineSmall.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                if (unreadCount > 0) ...<Widget>[
+                  const SizedBox(width: 9),
+                  Container(
+                    constraints: const BoxConstraints(minWidth: 24),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 7,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.secondary,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      unreadCount > 99 ? '99+' : '$unreadCount',
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.labelSmall.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (unreadCount > 0)
+            Tooltip(
+              message: l10n.markAllAsRead,
+              child: IconButton(
+                onPressed: onMarkAllRead,
+                style: IconButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  backgroundColor: AppColors.secondary.withValues(alpha: 0.18),
+                ),
+                icon: const Icon(Icons.done_all_rounded, size: 21),
               ),
             ),
         ],

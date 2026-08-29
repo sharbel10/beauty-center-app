@@ -64,6 +64,33 @@ class Customer extends Equatable {
   final String? preferredLocale;
   final bool? notificationsEnabled;
 
+  Customer copyWith({
+    String? avatarPath,
+    String? avatarUrl,
+    bool clearAvatar = false,
+  }) {
+    return Customer(
+      id: id,
+      name: name,
+      phone: phone,
+      email: email,
+      emailVerified: emailVerified,
+      isActive: isActive,
+      lastLoginAt: lastLoginAt,
+      avatarPath: clearAvatar ? null : avatarPath ?? this.avatarPath,
+      avatarUrl: clearAvatar ? null : avatarUrl ?? this.avatarUrl,
+      gender: gender,
+      birthDate: birthDate,
+      city: city,
+      address: address,
+      latitude: latitude,
+      longitude: longitude,
+      locationUpdatedAt: locationUpdatedAt,
+      preferredLocale: preferredLocale,
+      notificationsEnabled: notificationsEnabled,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

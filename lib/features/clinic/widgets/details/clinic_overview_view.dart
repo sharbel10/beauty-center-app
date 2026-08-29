@@ -1,4 +1,6 @@
 import 'package:beauty_center_app/core/di/injection.dart';
+import 'package:beauty_center_app/core/router/route_names.dart';
+import 'package:beauty_center_app/features/book_treatment/models/book_treatment_args.dart';
 import 'package:beauty_center_app/features/clinic/cubit/clinic_employees_cubit.dart';
 import 'package:beauty_center_app/features/clinic/cubit/clinic_employees_state.dart';
 import 'package:beauty_center_app/features/clinic/cubit/clinic_offers_cubit.dart';
@@ -11,6 +13,7 @@ import 'package:beauty_center_app/features/clinic/widgets/clinic_section_title.d
 import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -66,7 +69,7 @@ class ClinicOverviewView extends StatelessWidget {
           ),
           const SizedBox(height: 18),
 
-          const _OffersList(),
+          _OffersList(centerId: clinic.id),
           const SizedBox(height: 44),
           ClinicSectionTitle(l10n.clinicOurSpecialists),
           const SizedBox(height: 18),
@@ -79,7 +82,9 @@ class ClinicOverviewView extends StatelessWidget {
 }
 
 class _OffersList extends StatelessWidget {
-  const _OffersList();
+  const _OffersList({required this.centerId});
+
+  final int centerId;
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +123,17 @@ class _OffersList extends StatelessWidget {
                     discountType: offer.discountType,
                     endsAt: offer.endsAt,
                     isDark: isDark,
+                    onTap: () {
+                      context.pushNamed(
+                        RouteNames.bookTreatment,
+                        extra: BookTreatmentArgs(
+                          centerId: offer.centerId == 0
+                              ? centerId
+                              : offer.centerId,
+                          initialServiceId: offer.serviceId,
+                        ),
+                      );
+                    },
                   ),
                 );
               },

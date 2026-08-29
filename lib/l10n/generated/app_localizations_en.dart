@@ -386,7 +386,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String priceRangeFilter(int min, int max) {
-    return 'SP $min - SP $max';
+    return '\$$min - \$$max';
   }
 
   @override
@@ -565,7 +565,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String clinicDepositAmount(int value) {
-    return 'Deposit: SP $value';
+    return 'Deposit: \$$value';
   }
 
   @override
@@ -666,7 +666,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String offerDiscountAmount(int value) {
-    return 'SP$value OFF';
+    return '\$$value OFF';
   }
 
   @override
@@ -684,7 +684,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String priceSp(String price) {
-    return '$price SP';
+    return '\$$price';
   }
 
   @override
@@ -916,17 +916,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentSubtitle =>
-      'Review your appointment before opening Stripe\'s secure payment form.';
-
-  @override
-  String get stripeTestMode => 'Stripe test mode · No real charge';
-
-  @override
-  String get stripePaymentMethodTitle => 'Pay securely with Stripe';
-
-  @override
-  String get stripePaymentMethodSubtitle =>
-      'Test cards and supported digital wallets';
+      'Review your appointment details and complete your payment securely.';
 
   @override
   String get paymentBackendPendingTitle => 'Backend connection pending';
@@ -974,7 +964,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stripeNotConfigured =>
-      'Stripe test key is not configured in the app.';
+      'The payment service is currently unavailable. Please try again later.';
 
   @override
   String get stripeGatewayUnavailable =>
@@ -1122,6 +1112,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get avatarUpdatedSuccessfully => 'Avatar updated successfully.';
 
   @override
+  String get removeAvatar => 'Remove photo';
+
+  @override
+  String get removeAvatarConfirm =>
+      'Are you sure you want to remove your profile photo?';
+
+  @override
+  String get avatarRemovedSuccessfully => 'Profile photo removed successfully.';
+
+  @override
+  String get logoutConfirm => 'Are you sure you want to log out?';
+
+  @override
   String get deleteAccount => 'Delete Account';
 
   @override
@@ -1207,7 +1210,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noResultsFor => 'No results for';
 
   @override
-  String get currency => 'SYP';
+  String get currency => '\$';
 
   @override
   String get pressBackAgainToExit => 'Press back again to exit the app';
@@ -1425,6 +1428,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tryCameraAgain => 'TRY AGAIN';
 
   @override
+  String get switchCamera => 'Switch camera';
+
+  @override
   String get aiInputRequired =>
       'Enter a description or take a face photo first.';
 
@@ -1587,4 +1593,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reportReasonOther => 'Other';
+
+  @override
+  String get readMore => 'Read more';
+
+  @override
+  String get readLess => 'Read less';
 }

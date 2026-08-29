@@ -127,7 +127,7 @@ class AppointmentModel extends Equatable {
   bool get canReschedule =>
       canCancel && !startsAtIsPast && centerId != null && serviceId != null;
 
-  String get totalLabel => '${_formatPrice(total)} SP';
+  String get totalLabel => '\$${_formatPrice(total)}';
 
   @override
   List<Object?> get props => <Object?>[

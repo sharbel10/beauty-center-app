@@ -55,13 +55,19 @@ class BookingSummaryBar extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Text(
-                    time.isEmpty ? l10n.chooseATime : time,
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: time.isEmpty
-                          ? AppColors.textMuted
-                          : AppColors.textPrimary,
+                  const SizedBox(width: 12),
+                  Flexible(
+                    child: Text(
+                      time.isEmpty ? l10n.chooseATime : time,
+                      maxLines: 2,
+                      textAlign: TextAlign.end,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: time.isEmpty
+                            ? AppColors.textMuted
+                            : AppColors.textPrimary,
+                      ),
                     ),
                   ),
                 ],
