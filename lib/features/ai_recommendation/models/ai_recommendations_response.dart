@@ -49,7 +49,7 @@ class AiRecommendedService extends Equatable {
       name: _asString(json['name']),
       description: _asString(json['description']),
       finalPrice: _asDouble(json['final_price']),
-      imageUrl: _firstString(<dynamic>[json['image_url'], json['image_path']]),
+      imageUrl: _asString(json['image_url']),
       matchScore: _asDouble(json['match_score']),
       categoryName: _asString(category['name']),
       centerId: _asNullableInt(center['id'] ?? json['center_id']),
@@ -108,8 +108,6 @@ class AiRecommendedCenter extends Equatable {
         json['cover_url'],
         json['logo_url'],
         json['image_url'],
-        json['cover_path'],
-        json['logo_path'],
       ]),
       matchScore: _asDouble(json['match_score']),
     );

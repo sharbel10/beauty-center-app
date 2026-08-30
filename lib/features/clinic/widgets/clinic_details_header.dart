@@ -1,8 +1,8 @@
-import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/core/utils/extensions.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_details_response.dart';
+import 'package:beauty_center_app/features/clinic/widgets/clinic_image_preview.dart';
 import 'package:beauty_center_app/features/favorites/cubit/favorites_cubit.dart';
 import 'package:beauty_center_app/features/favorites/cubit/favorites_state.dart';
 import 'package:beauty_center_app/features/favorites/widgets/favorite_heart_button.dart';
@@ -37,11 +37,7 @@ class ClinicDetailsTopBar extends StatelessWidget {
                 style: AppTextStyles.link.copyWith(fontSize: 18),
               ),
             ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.share_rounded),
-              color: AppColors.primary,
-            ),
+            const SizedBox(width: 48),
           ],
         ),
       ),
@@ -70,100 +66,95 @@ class ClinicDetailsHero extends StatelessWidget {
       },
       child: SizedBox(
         height: 260,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            ClinicNetworkImage(
-              imageUrl: _mediaUrl(clinic.coverPath),
-              placeholderIcon: Icons.storefront_outlined,
-            ),
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0x11000000),
-                    Color(0x22000000),
-                    Color(0xCC000000),
+        child: ClinicPreviewableImage(
+          imageUrl: clinic.coverUrl,
+          builder: (VoidCallback onLoaded, VoidCallback onError) => Stack(
+            fit: StackFit.expand,
+            children: [
+              ClinicNetworkImage(
+                imageUrl: clinic.coverUrl,
+                placeholderIcon: Icons.storefront_outlined,
+                onLoaded: onLoaded,
+                onError: onError,
+              ),
+              const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0x11000000),
+                      Color(0x22000000),
+                      Color(0xCC000000),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 22,
+                right: 22,
+                child: FavoriteHeartButton(
+                  isFavorite: clinic.isFavorite,
+                  size: 22,
+                  padding: const EdgeInsets.all(14),
+                  backgroundColor: const Color(0xCCFFFFFF),
+                  onToggle: (bool isCurrentlyFavorite) async {
+                    await context.read<FavoritesCubit>().toggleCenterFavorite(
+                      centerId: clinic.id,
+                      isCurrentlyFavorite: isCurrentlyFavorite,
+                    );
+                  },
+                ),
+              ),
+              Positioned(
+                left: 24,
+                right: 24,
+                bottom: 22,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      clinic.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.headline.copyWith(
+                        color: AppColors.surface,
+                        fontSize: 28,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 6,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: <Widget>[
+                        _HeroMeta(
+                          icon: Icons.star_rounded,
+                          text: l10n.clinicHeroRatingReviews(
+                            clinic.averageRating.toStringAsFixed(1),
+                            l10n.reviewsCount(clinic.ratingsCount),
+                          ),
+                          iconColor: AppColors.gold,
+                        ),
+                        const Text(
+                          '|',
+                          style: TextStyle(color: AppColors.surface),
+                        ),
+                        _HeroMeta(
+                          icon: Icons.location_on_rounded,
+                          text: '${clinic.city},${clinic.area}',
+                          iconColor: AppColors.surface,
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
-            ),
-            Positioned(
-              top: 22,
-              right: 22,
-              child: FavoriteHeartButton(
-                isFavorite: clinic.isFavorite,
-                size: 22,
-                padding: const EdgeInsets.all(14),
-                backgroundColor: const Color(0xCCFFFFFF),
-                onToggle: (bool isCurrentlyFavorite) async {
-                  await context.read<FavoritesCubit>().toggleCenterFavorite(
-                    centerId: clinic.id,
-                    isCurrentlyFavorite: isCurrentlyFavorite,
-                  );
-                },
-              ),
-            ),
-            Positioned(
-              left: 24,
-              right: 24,
-              bottom: 22,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    clinic.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.headline.copyWith(
-                      color: AppColors.surface,
-                      fontSize: 28,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 6,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: <Widget>[
-                      _HeroMeta(
-                        icon: Icons.star_rounded,
-                        text: l10n.clinicHeroRatingReviews(
-                          clinic.averageRating.toStringAsFixed(1),
-                          l10n.reviewsCount(clinic.ratingsCount),
-                        ),
-                        iconColor: AppColors.gold,
-                      ),
-                      const Text(
-                        '|',
-                        style: TextStyle(color: AppColors.surface),
-                      ),
-                      _HeroMeta(
-                        icon: Icons.location_on_rounded,
-                        text: '${clinic.city},${clinic.area}',
-                        iconColor: AppColors.surface,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
-  }
-
-  String _mediaUrl(String? path) {
-    if (path == null || path.isEmpty) {
-      return '';
-    }
-    if (path.startsWith('http')) {
-      return path;
-    }
-    return ApiEndpoints.mediaUrl(path);
   }
 }
 

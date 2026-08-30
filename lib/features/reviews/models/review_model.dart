@@ -1,4 +1,3 @@
-import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:equatable/equatable.dart';
 
 class ReviewModel extends Equatable {
@@ -37,7 +36,7 @@ class ReviewModel extends Equatable {
       centerName: center['name'] as String?,
       serviceName: service['name'] as String?,
       employeeName: employee['name'] as String?,
-      centerImageUrl: ApiEndpoints.mediaUrl(center['cover_path'] as String?),
+      centerImageUrl: center['cover_url']?.toString().trim(),
       createdAt: json['created_at'] as String?,
       updatedAt: json['updated_at'] as String?,
     );

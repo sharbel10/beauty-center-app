@@ -1,4 +1,3 @@
-import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:equatable/equatable.dart';
 
 enum AppointmentStatus {
@@ -64,7 +63,7 @@ class AppointmentModel extends Equatable {
       time: startsAt == null ? '' : _formatTime(startsAt),
       status: status,
       statusLabel: _statusLabel(status, json['status'] as String?),
-      imageUrl: ApiEndpoints.mediaUrl(center['cover_path'] as String? ?? ''),
+      imageUrl: center['cover_url']?.toString().trim() ?? '',
       startsAt: startsAt,
       endsAt: endsAt,
       total: (json['total'] as num?)?.toDouble() ?? 0,

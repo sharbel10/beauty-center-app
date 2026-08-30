@@ -1,5 +1,4 @@
 import 'package:beauty_center_app/core/di/injection.dart';
-import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:beauty_center_app/core/router/route_names.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
@@ -503,9 +502,7 @@ class _FavoriteCenterCardState extends State<_FavoriteCenterCard> {
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
-                  ClinicNetworkImage(
-                    imageUrl: ApiEndpoints.mediaUrl(center.displayCoverUrl),
-                  ),
+                  ClinicNetworkImage(imageUrl: center.displayCoverUrl),
                   Positioned(
                     top: 8,
                     left: 8,

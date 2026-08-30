@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:beauty_center_app/core/di/injection.dart';
-import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:beauty_center_app/core/router/route_names.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
@@ -993,7 +992,7 @@ class _RecommendationImage extends StatelessWidget {
       width: double.infinity,
       height: height,
       child: Image.network(
-        ApiEndpoints.mediaUrl(url),
+        url,
         fit: BoxFit.cover,
         errorBuilder: (_, _, _) => const ColoredBox(
           color: AppColors.surfaceMuted,

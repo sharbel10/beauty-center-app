@@ -1,4 +1,3 @@
-import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/features/home/models/category.dart';
@@ -38,8 +37,8 @@ class HomeCategoryChips extends StatelessWidget {
           }
 
           final Category category = categories[index - 1];
-          final String? iconUrl = category.iconPath != null
-              ? ApiEndpoints.mediaUrl(category.iconPath)
+          final String? iconUrl = category.iconUrl?.trim().isNotEmpty == true
+              ? category.iconUrl!.trim()
               : null;
 
           return _CategoryChip(

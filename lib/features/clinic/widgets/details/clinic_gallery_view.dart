@@ -2,6 +2,7 @@ import 'package:beauty_center_app/core/di/injection.dart';
 import 'package:beauty_center_app/features/clinic/cubit/clinic_portfolio_cubit.dart';
 import 'package:beauty_center_app/features/clinic/cubit/clinic_portfolio_state.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_details_response.dart';
+import 'package:beauty_center_app/features/clinic/widgets/clinic_image_preview.dart';
 import 'package:beauty_center_app/features/clinic/widgets/clinic_network_image.dart'
     show ClinicNetworkImage;
 import 'package:beauty_center_app/features/clinic/widgets/clinic_section_title.dart';
@@ -82,8 +83,8 @@ class _DynamicTransformationsList extends StatelessWidget {
                     ? item.caption
                     : l10n.clinicGalleryDefaultTransformationCaption,
                 badge: l10n.clinicGalleryResultBadge,
-                beforeImage: item.beforeImagePath,
-                afterImage: item.afterImagePath,
+                beforeImage: item.beforeImageUrl,
+                afterImage: item.afterImageUrl,
               );
             },
           );
@@ -125,15 +126,18 @@ class _InteriorCollage extends StatelessWidget {
     const String fallbackShelf =
         'https://images.pexels.com/photos/16571739/pexels-photo-16571739.jpeg?auto=compress&cs=tinysrgb&w=700';
 
-    final String firstImage = images.isNotEmpty
-        ? images[0].imagePath
-        : fallbackReception;
-    final String secondImage = images.length > 1
-        ? images[1].imagePath
-        : fallbackTreatment;
-    final String thirdImage = images.length > 2
-        ? images[2].imagePath
-        : fallbackShelf;
+    final List<String> availableImages = images
+        .map((CenterImage image) => image.imageUrl.trim())
+        .where((String path) => path.isNotEmpty)
+        .toList();
+
+    final String? firstImage = availableImages.firstOrNull;
+    final String? secondImage = availableImages.length > 1
+        ? availableImages[1]
+        : null;
+    final String? thirdImage = availableImages.length > 2
+        ? availableImages[2]
+        : null;
 
     return SizedBox(
       height: 288,
@@ -142,9 +146,9 @@ class _InteriorCollage extends StatelessWidget {
         children: [
           Expanded(
             flex: 6,
-            child: ClinicNetworkImage(
+            child: _GalleryImage(
               imageUrl: firstImage,
-              placeholderIcon: Icons.storefront_outlined,
+              fallbackUrl: fallbackReception,
             ),
           ),
           const SizedBox(width: 14),
@@ -153,16 +157,16 @@ class _InteriorCollage extends StatelessWidget {
             child: Column(
               children: [
                 Expanded(
-                  child: ClinicNetworkImage(
+                  child: _GalleryImage(
                     imageUrl: secondImage,
-                    placeholderIcon: Icons.storefront_outlined,
+                    fallbackUrl: fallbackTreatment,
                   ),
                 ),
                 const SizedBox(height: 14),
                 Expanded(
-                  child: ClinicNetworkImage(
+                  child: _GalleryImage(
                     imageUrl: thirdImage,
-                    placeholderIcon: Icons.storefront_outlined,
+                    fallbackUrl: fallbackShelf,
                   ),
                 ),
               ],
@@ -170,6 +174,37 @@ class _InteriorCollage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _GalleryImage extends StatelessWidget {
+  const _GalleryImage({required this.imageUrl, required this.fallbackUrl});
+
+  final String? imageUrl;
+  final String fallbackUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    final bool hasImage = hasClinicImageUrl(imageUrl);
+
+    if (!hasImage) {
+      return ClinicNetworkImage(
+        imageUrl: fallbackUrl,
+        placeholderIcon: Icons.storefront_outlined,
+      );
+    }
+
+    final String loadedImageUrl = imageUrl!;
+    return ClinicPreviewableImage(
+      imageUrl: loadedImageUrl,
+      builder: (VoidCallback onLoaded, VoidCallback onError) =>
+          ClinicNetworkImage(
+            imageUrl: loadedImageUrl,
+            placeholderIcon: Icons.storefront_outlined,
+            onLoaded: onLoaded,
+            onError: onError,
+          ),
     );
   }
 }
@@ -261,37 +296,57 @@ class _TransformationImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: AspectRatio(
-        aspectRatio: 0.78,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            ClinicNetworkImage(imageUrl: imageUrl),
-            Positioned(
-              left: 8,
-              bottom: 8,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-                decoration: BoxDecoration(
-                  color: isAfter
-                      ? const Color(0xFFC9AD72)
-                      : const Color(0xFF29475B),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  label,
-                  style: AppTextStyles.smallCaps.copyWith(
-                    color: AppColors.surface,
-                    fontSize: 8,
+    final bool hasImage = hasClinicImageUrl(imageUrl);
+    Widget buildImage({VoidCallback? onLoaded, VoidCallback? onError}) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: AspectRatio(
+          aspectRatio: 0.78,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              ClinicNetworkImage(
+                imageUrl: imageUrl,
+                onLoaded: onLoaded,
+                onError: onError,
+              ),
+              Positioned(
+                left: 8,
+                bottom: 8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 9,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isAfter
+                        ? const Color(0xFFC9AD72)
+                        : const Color(0xFF29475B),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    label,
+                    style: AppTextStyles.smallCaps.copyWith(
+                      color: AppColors.surface,
+                      fontSize: 8,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
+      );
+    }
+
+    if (!hasImage) {
+      return buildImage();
+    }
+
+    return ClinicPreviewableImage(
+      imageUrl: imageUrl,
+      builder: (VoidCallback onLoaded, VoidCallback onError) =>
+          buildImage(onLoaded: onLoaded, onError: onError),
     );
   }
 }

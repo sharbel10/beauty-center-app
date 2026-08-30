@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:beauty_center_app/core/di/injection.dart';
 import 'package:beauty_center_app/core/localization/app_locale_controller.dart';
-import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:beauty_center_app/core/router/route_names.dart';
 import 'package:beauty_center_app/core/storage/preference_manager.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
@@ -23,12 +22,9 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 String? _profileAvatarUrl(Customer customer) {
-  final String? source = customer.avatarUrl?.trim().isNotEmpty == true
+  return customer.avatarUrl?.trim().isNotEmpty == true
       ? customer.avatarUrl!.trim()
-      : customer.avatarPath?.trim().isNotEmpty == true
-      ? customer.avatarPath!.trim()
       : null;
-  return source == null ? null : ApiEndpoints.mediaUrl(source);
 }
 
 class ProfileView extends StatefulWidget {
@@ -72,7 +68,6 @@ class _ProfileViewState extends State<ProfileView> {
   Future<void> _pickAndUploadAvatar(
     BuildContext context,
     bool isUpdating,
-    bool hasAvatar,
   ) async {
     if (isUpdating) return;
 
@@ -113,21 +108,6 @@ class _ProfileViewState extends State<ProfileView> {
                   }
                 },
               ),
-              if (hasAvatar)
-                ListTile(
-                  leading: const Icon(
-                    Icons.delete_outline_rounded,
-                    color: AppColors.danger,
-                  ),
-                  title: Text(
-                    l10n.removeAvatar,
-                    style: const TextStyle(color: AppColors.danger),
-                  ),
-                  onTap: () async {
-                    Navigator.pop(context);
-                    await _showDeleteAvatarDialog(this.context);
-                  },
-                ),
             ],
           ),
         );
@@ -205,32 +185,6 @@ class _ProfileViewState extends State<ProfileView> {
         );
       },
     );
-  }
-
-  Future<void> _showDeleteAvatarDialog(BuildContext context) async {
-    final AppLocalizations l10n = AppLocalizations.of(context);
-    final bool? confirmed = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text(l10n.removeAvatar),
-        content: Text(l10n.removeAvatarConfirm),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.danger),
-            child: Text(l10n.removeAvatar),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      await _profileCubit.deleteAvatar();
-    }
   }
 
   Future<void> _showLogoutDialog(BuildContext context) async {
@@ -700,10 +654,17 @@ class _ProfileViewState extends State<ProfileView> {
       ],
       child: BlocListener<AuthCubit, AuthState>(
         listenWhen: (AuthState previous, AuthState current) =>
-            previous.isAuthenticated != current.isAuthenticated &&
-            !current.isAuthenticated,
+            (previous.isAuthenticated != current.isAuthenticated &&
+                !current.isAuthenticated) ||
+            (previous.status != current.status &&
+                current.status == AuthStatus.failure),
         listener: (BuildContext context, AuthState state) {
-          context.goNamed(RouteNames.login);
+          if (!state.isAuthenticated) {
+            context.goNamed(RouteNames.login);
+          } else if (state.status == AuthStatus.failure &&
+              state.message != null) {
+            context.showSnackbar(state.message!, isError: true);
+          }
         },
         child: BlocConsumer<ProfileCubit, ProfileState>(
           listenWhen: (ProfileState previous, ProfileState current) =>
@@ -724,6 +685,9 @@ class _ProfileViewState extends State<ProfileView> {
             }
           },
           builder: (BuildContext context, ProfileState state) {
+            final bool isLoggingOut = context.select<AuthCubit, bool>(
+              (AuthCubit cubit) => cubit.state.isSubmitting,
+            );
             return RootExitGuard(
               child: Stack(
                 children: <Widget>[
@@ -735,13 +699,43 @@ class _ProfileViewState extends State<ProfileView> {
                     ),
                     body: SafeArea(
                       bottom: false,
-                      child: _buildBody(context, state),
+                      child: _buildBody(context, state, isLoggingOut),
                     ),
                   ),
-                  if (state.isUpdating)
-                    Container(
-                      color: Colors.black.withValues(alpha: 0.3),
-                      child: const Center(child: CircularProgressIndicator()),
+                  if (state.isUpdating || isLoggingOut)
+                    Positioned.fill(
+                      child: AbsorbPointer(
+                        child: ColoredBox(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          child: Center(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 20,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.surface,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  const CircularProgressIndicator(),
+                                  if (isLoggingOut) ...<Widget>[
+                                    const SizedBox(height: 14),
+                                    Text(
+                                      AppLocalizations.of(context).logout,
+                                      style: AppTextStyles.subtitle.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                 ],
               ),
@@ -752,7 +746,11 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  Widget _buildBody(BuildContext context, ProfileState state) {
+  Widget _buildBody(
+    BuildContext context,
+    ProfileState state,
+    bool isLoggingOut,
+  ) {
     final AppLocalizations l10n = AppLocalizations.of(context);
 
     if (state.isLoading && !state.hasCustomer) {
@@ -784,11 +782,8 @@ class _ProfileViewState extends State<ProfileView> {
           _ProfileHeroCard(
             customer: state.customer!,
             onAvatarTap: () => _showAvatarPreview(context, state.customer!),
-            onEditAvatarTap: () => _pickAndUploadAvatar(
-              context,
-              state.isUpdating,
-              _profileAvatarUrl(state.customer!) != null,
-            ),
+            onEditAvatarTap: () =>
+                _pickAndUploadAvatar(context, state.isUpdating),
             appointmentsTotal: state.stats != null
                 ? state.stats!.appointmentsTotal.toString()
                 : '0',
@@ -837,7 +832,8 @@ class _ProfileViewState extends State<ProfileView> {
             locationLabel: state.locationLabel(l10n),
             isLocationLoading: state.isLocationLoading,
             onLocationTap: _profileCubit.refreshLocation,
-            onLogout: () => _showLogoutDialog(context),
+            isLoggingOut: isLoggingOut,
+            onLogout: isLoggingOut ? null : () => _showLogoutDialog(context),
             onEditProfile: () => _showEditProfileDialog(
               context,
               state.customer!,
@@ -1232,6 +1228,7 @@ class _SettingsCard extends StatelessWidget {
     required this.locationLabel,
     required this.isLocationLoading,
     required this.onLocationTap,
+    required this.isLoggingOut,
     required this.onLogout,
     required this.onEditProfile,
     required this.onDeleteAccount,
@@ -1240,8 +1237,9 @@ class _SettingsCard extends StatelessWidget {
 
   final String locationLabel;
   final bool isLocationLoading;
+  final bool isLoggingOut;
   final VoidCallback onLocationTap;
-  final VoidCallback onLogout;
+  final VoidCallback? onLogout;
   final VoidCallback onEditProfile;
   final VoidCallback onDeleteAccount;
   final VoidCallback onChangePassword;
@@ -1604,10 +1602,17 @@ class _SettingsCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Icon(
-                      Icons.chevron_right_rounded,
-                      color: AppColors.danger.withValues(alpha: 0.6),
-                    ),
+                    if (isLoggingOut)
+                      const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    else
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        color: AppColors.danger.withValues(alpha: 0.6),
+                      ),
                   ],
                 ),
               ),

@@ -1,4 +1,3 @@
-import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/features/book_treatment/components/booking_step_title.dart';
@@ -356,7 +355,7 @@ class _SpecialistRow extends StatelessWidget {
               onTap: () => onChanged(employee.id),
               child: ClipOval(
                 child: Image.network(
-                  ApiEndpoints.mediaUrl(employee.avatarPath),
+                  employee.avatarUrl,
                   width: 56,
                   height: 56,
                   fit: BoxFit.cover,

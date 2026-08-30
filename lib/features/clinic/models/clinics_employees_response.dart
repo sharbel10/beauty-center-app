@@ -35,6 +35,7 @@ class ClinicEmployeeItem extends Equatable {
     required this.specialization,
     required this.bio,
     required this.avatarPath,
+    required this.avatarUrl,
     required this.isBookable,
   });
 
@@ -46,6 +47,7 @@ class ClinicEmployeeItem extends Equatable {
       specialization: json['specialization'] as String? ?? '',
       bio: json['bio'] as String? ?? '',
       avatarPath: json['avatar_path'] as String? ?? '',
+      avatarUrl: json['avatar_url'] as String? ?? '',
       isBookable: json['is_bookable'] as bool? ?? false,
     );
   }
@@ -56,6 +58,7 @@ class ClinicEmployeeItem extends Equatable {
   final String specialization;
   final String bio;
   final String avatarPath;
+  final String avatarUrl;
   final bool isBookable;
 
   @override
@@ -66,6 +69,7 @@ class ClinicEmployeeItem extends Equatable {
     specialization,
     bio,
     avatarPath,
+    avatarUrl,
     isBookable,
   ];
 }

@@ -34,7 +34,9 @@ class ClinicPortfolioItem extends Equatable {
     required this.serviceId,
     required this.employeeId,
     required this.beforeImagePath,
+    required this.beforeImageUrl,
     required this.afterImagePath,
+    required this.afterImageUrl,
     required this.caption,
   });
 
@@ -44,8 +46,10 @@ class ClinicPortfolioItem extends Equatable {
       centerId: json['center_id'] as int? ?? 0,
       serviceId: json['service_id'] as int? ?? 0,
       employeeId: json['employee_id'] as int? ?? 0,
-      beforeImagePath: json['before_image_path'] as String? ?? '',
-      afterImagePath: json['after_image_path'] as String? ?? '',
+      beforeImagePath: _readString(json['before_image_path']),
+      beforeImageUrl: _readString(json['before_image_url']),
+      afterImagePath: _readString(json['after_image_path']),
+      afterImageUrl: _readString(json['after_image_url']),
       caption: json['caption'] as String? ?? '',
     );
   }
@@ -55,7 +59,9 @@ class ClinicPortfolioItem extends Equatable {
   final int serviceId;
   final int employeeId;
   final String beforeImagePath;
+  final String beforeImageUrl;
   final String afterImagePath;
+  final String afterImageUrl;
   final String caption;
 
   @override
@@ -65,7 +71,11 @@ class ClinicPortfolioItem extends Equatable {
     serviceId,
     employeeId,
     beforeImagePath,
+    beforeImageUrl,
     afterImagePath,
+    afterImageUrl,
     caption,
   ];
 }
+
+String _readString(dynamic value) => value?.toString().trim() ?? '';

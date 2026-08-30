@@ -59,13 +59,24 @@ class ApiEndpoints {
   static const String storageUrl = 'https://lumina.kefanox.com/storage/';
 
   static String mediaUrl(String? path) {
-    if (path == null || path.isEmpty) {
+    final String value = path?.trim() ?? '';
+    if (value.isEmpty) {
       return '';
     }
-    if (path.startsWith('http')) {
-      final String serverUrl = storageUrl.replaceAll('/storage/', '');
-      return path.replaceAll('https://lumina.kefanox.com', serverUrl);
+
+    final Uri? uri = Uri.tryParse(value);
+    if (uri != null && uri.hasScheme) {
+      return value;
     }
-    return '$storageUrl$path';
+
+    // The API can return either "centers/image.jpg" or the already-prefixed
+    // "/storage/centers/image.jpg". Keep a single /storage/ segment in both
+    // cases so every feature resolves media in the same way.
+    String relativePath = value.replaceFirst(RegExp(r'^/+'), '');
+    if (relativePath.startsWith('storage/')) {
+      relativePath = relativePath.substring('storage/'.length);
+    }
+
+    return '$storageUrl$relativePath';
   }
 }

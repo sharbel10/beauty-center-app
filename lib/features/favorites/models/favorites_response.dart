@@ -137,10 +137,8 @@ class FavoriteCenter extends Equatable {
     return city ?? '';
   }
 
-  String get displayLogoUrl =>
-      logoUrl?.isNotEmpty == true ? logoUrl! : (logoPath ?? '');
-  String get displayCoverUrl =>
-      coverUrl?.isNotEmpty == true ? coverUrl! : (coverPath ?? '');
+  String get displayLogoUrl => logoUrl?.trim() ?? '';
+  String get displayCoverUrl => coverUrl?.trim() ?? '';
 
   String? get cityAreaLabel {
     final List<String> parts = <String>[
@@ -315,8 +313,7 @@ class FavoriteService extends Equatable {
   final ServiceCategory category;
   final FavoriteCenter? center;
 
-  String get displayImageUrl =>
-      imageUrl?.isNotEmpty == true ? imageUrl! : (imagePath ?? '');
+  String get displayImageUrl => imageUrl?.trim() ?? '';
 
   FavoriteService copyWith({
     int? id,
@@ -420,8 +417,7 @@ class ServiceCategory extends Equatable {
   final String? iconUrl;
   final int? servicesCount;
 
-  String get displayIconUrl =>
-      iconUrl?.isNotEmpty == true ? iconUrl! : (iconPath ?? '');
+  String get displayIconUrl => iconUrl?.trim() ?? '';
 
   @override
   List<Object?> get props => [

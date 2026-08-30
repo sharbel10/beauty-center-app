@@ -1,4 +1,3 @@
-import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:beauty_center_app/features/home/models/clinic_center.dart';
 import 'package:beauty_center_app/features/home/models/search_response.dart';
 import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
@@ -28,7 +27,7 @@ class HomeClinicUiModel {
   factory HomeClinicUiModel.fromCenter(ClinicCenter center) {
     return HomeClinicUiModel(
       id: center.id,
-      imageUrl: ApiEndpoints.mediaUrl(center.coverUrl ?? center.coverPath),
+      imageUrl: center.coverUrl?.trim() ?? '',
       name: center.name,
       location: center.locationLabel,
       distance: center.distance != null
@@ -53,7 +52,7 @@ class HomeClinicUiModel {
   factory HomeClinicUiModel.fromSearchCenter(CenterSearchResult center) {
     return HomeClinicUiModel(
       id: center.id,
-      imageUrl: ApiEndpoints.mediaUrl(center.coverUrl ?? center.coverPath),
+      imageUrl: center.coverUrl?.trim() ?? '',
       name: center.name,
       location: center.locationLabel,
       distance: center.distanceKm != null

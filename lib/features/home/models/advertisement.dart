@@ -6,6 +6,7 @@ class Advertisement extends Equatable {
     required this.title,
     this.body,
     this.imagePath,
+    this.imageUrl,
     this.linkUrl,
     this.placement,
   });
@@ -16,6 +17,7 @@ class Advertisement extends Equatable {
       title: json['title'] as String,
       body: json['body'] as String?,
       imagePath: json['image_path'] as String?,
+      imageUrl: json['image_url'] as String?,
       linkUrl: json['link_url'] as String?,
       placement: json['placement'] as String?,
     );
@@ -25,9 +27,18 @@ class Advertisement extends Equatable {
   final String title;
   final String? body;
   final String? imagePath;
+  final String? imageUrl;
   final String? linkUrl;
   final String? placement;
 
   @override
-  List<Object?> get props => [id, title, body, imagePath, linkUrl, placement];
+  List<Object?> get props => [
+    id,
+    title,
+    body,
+    imagePath,
+    imageUrl,
+    linkUrl,
+    placement,
+  ];
 }

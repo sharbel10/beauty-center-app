@@ -268,7 +268,7 @@ class _SpecialistsList extends StatelessWidget {
                 return _SpecialistCard(
                   name: employee.name,
                   specialization: employee.specialization,
-                  avatarUrl: employee.avatarPath,
+                  avatarUrl: employee.avatarUrl,
                 );
               },
             ),

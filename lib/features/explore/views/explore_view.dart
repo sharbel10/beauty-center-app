@@ -1,5 +1,4 @@
 import 'package:beauty_center_app/core/di/injection.dart';
-import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:beauty_center_app/core/services/location_service.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
@@ -522,7 +521,7 @@ class _ClinicCardState extends State<_ClinicCard> {
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
-                  ClinicNetworkImage(imageUrl: _mediaUrl(clinic.coverPath)),
+                  ClinicNetworkImage(imageUrl: clinic.coverUrl ?? ''),
                   Positioned(
                     top: 12,
                     left: 12,
@@ -642,16 +641,6 @@ class _ClinicCardState extends State<_ClinicCard> {
         ),
       ),
     );
-  }
-
-  String _mediaUrl(String? path) {
-    if (path == null || path.isEmpty) {
-      return '';
-    }
-    if (path.startsWith('http')) {
-      return path;
-    }
-    return ApiEndpoints.mediaUrl(path);
   }
 }
 

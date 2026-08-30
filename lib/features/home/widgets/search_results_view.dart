@@ -1,4 +1,3 @@
-import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/features/favorites/widgets/favorite_heart_button.dart';
@@ -204,8 +203,7 @@ class _SearchServiceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
-    final String imageUrl =
-        service.imageUrl ?? ApiEndpoints.mediaUrl(service.imagePath);
+    final String imageUrl = service.imageUrl?.trim() ?? '';
 
     return InkWell(
       onTap: onTap,
@@ -351,8 +349,7 @@ class _SearchCategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String iconUrl =
-        category.iconUrl ?? ApiEndpoints.mediaUrl(category.iconPath);
+    final String iconUrl = category.iconUrl?.trim() ?? '';
 
     return InkWell(
       onTap: onTap,
