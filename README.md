@@ -2,8 +2,6 @@
 
 Lumina is a Flutter mobile application for discovering beauty and wellness centers, exploring their services, and managing appointments from one place. It was developed as a graduation project with a focus on scalable architecture, reliable API integration, and production-style mobile features.
 
-> **Repository note:** the latest complete implementation is currently available on the [`develop`](https://github.com/sharbel10/beauty-center-app/tree/develop) branch.
-
 ## Key Features
 
 - Location-based discovery of nearby beauty and wellness centers
@@ -51,7 +49,6 @@ lib/
 ```bash
 git clone https://github.com/sharbel10/beauty-center-app.git
 cd beauty-center-app
-git checkout develop
 flutter pub get
 flutter run
 ```
@@ -60,4 +57,4 @@ Some integrations require environment-specific configuration such as Firebase an
 
 ## Author
 
-**Sharbel Al Mhanna** — Software Engineer & Flutter Developer
+**Sharbel ALMohana** — Software Engineer & Flutter Developer
