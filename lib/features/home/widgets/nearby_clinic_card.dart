@@ -2,8 +2,10 @@ import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/core/utils/extensions.dart';
 import 'package:beauty_center_app/core/utils/map_launcher.dart';
+import 'package:beauty_center_app/features/favorites/widgets/favorite_heart_button.dart';
 import 'package:beauty_center_app/features/home/models/home_clinic_ui.dart';
 import 'package:beauty_center_app/features/home/widgets/clinic_network_image.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class NearbyClinicCard extends StatefulWidget {
@@ -11,12 +13,14 @@ class NearbyClinicCard extends StatefulWidget {
     required this.clinic,
     this.onBookPressed,
     this.onCardTap,
+    this.onFavoriteToggle,
     super.key,
   });
 
   final HomeClinicUiModel clinic;
   final VoidCallback? onBookPressed;
   final VoidCallback? onCardTap;
+  final Future<void> Function(bool isCurrentlyFavorite)? onFavoriteToggle;
 
   static const double cardHeight = 188;
   static const double imageWidth = 108;
@@ -45,14 +49,14 @@ class _NearbyClinicCardState extends State<NearbyClinicCard> {
 
       if (!launched && mounted) {
         context.showSnackbar(
-          'Could not open maps for this location.',
+          AppLocalizations.of(context).couldNotOpenMapsForLocation,
           isError: true,
         );
       }
     } catch (_) {
       if (mounted) {
         context.showSnackbar(
-          'Could not open maps for this location.',
+          AppLocalizations.of(context).couldNotOpenMapsForLocation,
           isError: true,
         );
       }
@@ -62,7 +66,7 @@ class _NearbyClinicCardState extends State<NearbyClinicCard> {
   Future<void> _onNavigationPressed() async {
     if (!clinic.hasCoordinates) {
       context.showSnackbar(
-        'Location is not available for this clinic.',
+        AppLocalizations.of(context).locationUnavailableForClinic,
         isError: true,
       );
       return;
@@ -73,6 +77,7 @@ class _NearbyClinicCardState extends State<NearbyClinicCard> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final String? description = _shortDescription;
     final String? region = clinic.cityAreaLabel;
 
@@ -104,12 +109,15 @@ class _NearbyClinicCardState extends State<NearbyClinicCard> {
                   Positioned(
                     top: 8,
                     left: 8,
-                    child: _IconCircle(
-                      child: const Icon(
-                        Icons.favorite_rounded,
-                        color: Color(0xFFFF4D4D),
-                        size: 16,
-                      ),
+                    child: FavoriteHeartButton(
+                      isFavorite: clinic.isFavorite,
+                      size: 16,
+                      padding: const EdgeInsets.all(7),
+                      onToggle: (bool isCurrentlyFavorite) async {
+                        if (widget.onFavoriteToggle != null) {
+                          await widget.onFavoriteToggle!(isCurrentlyFavorite);
+                        }
+                      },
                     ),
                   ),
                   Positioned(
@@ -126,27 +134,16 @@ class _NearbyClinicCardState extends State<NearbyClinicCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Expanded(
-                          child: Text(
-                            clinic.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppTextStyles.title.copyWith(
-                              fontSize: 16,
-                              height: 1.2,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textDark,
-                            ),
-                          ),
-                        ),
-                        if (clinic.isFeatured) ...<Widget>[
-                          const SizedBox(width: 8),
-                          const _FeaturedBadge(),
-                        ],
-                      ],
+                    Text(
+                      clinic.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.title.copyWith(
+                        fontSize: 16,
+                        height: 1.2,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textDark,
+                      ),
                     ),
                     if (description != null) ...<Widget>[
                       const SizedBox(height: 4),
@@ -163,7 +160,7 @@ class _NearbyClinicCardState extends State<NearbyClinicCard> {
                     ],
                     const SizedBox(height: 6),
                     Text(
-                      clinic.reviewsLabel,
+                      clinic.reviewsLabel(l10n),
                       style: AppTextStyles.smallCaps.copyWith(
                         fontSize: 9,
                         color: AppColors.textMuted,
@@ -234,7 +231,7 @@ class _NearbyClinicCardState extends State<NearbyClinicCard> {
                             ),
                           ),
                           child: Text(
-                            'BOOK',
+                            l10n.book,
                             style: AppTextStyles.button.copyWith(
                               fontSize: 12,
                               color: AppColors.surface,
@@ -249,29 +246,6 @@ class _NearbyClinicCardState extends State<NearbyClinicCard> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _FeaturedBadge extends StatelessWidget {
-  const _FeaturedBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-      decoration: BoxDecoration(
-        color: AppColors.gold.withValues(alpha: 0.18),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        'TOP',
-        style: AppTextStyles.smallCaps.copyWith(
-          color: AppColors.primary,
-          fontSize: 8,
-          fontWeight: FontWeight.w700,
         ),
       ),
     );

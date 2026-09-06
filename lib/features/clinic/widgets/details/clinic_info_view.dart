@@ -1,4 +1,5 @@
 import 'package:beauty_center_app/features/clinic/models/clinics_details_response.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -32,34 +33,34 @@ class _HoursCard extends StatelessWidget {
 
   final List<WorkingHour> workingHours;
 
-  String _getDayName(int dayOfWeek, bool isToday) {
+  String _getDayName(AppLocalizations l10n, int dayOfWeek, bool isToday) {
     final String dayName;
     switch (dayOfWeek) {
       case 1:
-        dayName = 'Monday';
+        dayName = l10n.dayMonday;
         break;
       case 2:
-        dayName = 'Tuesday';
+        dayName = l10n.dayTuesday;
         break;
       case 3:
-        dayName = 'Wednesday';
+        dayName = l10n.dayWednesday;
         break;
       case 4:
-        dayName = 'Thursday';
+        dayName = l10n.dayThursday;
         break;
       case 5:
-        dayName = 'Friday';
+        dayName = l10n.dayFriday;
         break;
       case 6:
-        dayName = 'Saturday';
+        dayName = l10n.daySaturday;
         break;
       case 0:
-        dayName = 'Sunday';
+        dayName = l10n.daySunday;
         break;
       default:
-        dayName = 'Unknown';
+        dayName = l10n.dayUnknown;
     }
-    return isToday ? '$dayName\n(Today)' : dayName;
+    return isToday ? '$dayName\n${l10n.dayTodayMarker}' : dayName;
   }
 
   String _formatTime(String time) {
@@ -73,6 +74,7 @@ class _HoursCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final int currentWeekday = DateTime.now().weekday;
 
     final todayHours = workingHours.firstWhere(
@@ -86,8 +88,8 @@ class _HoursCard extends StatelessWidget {
     );
 
     final String statusText = todayHours.isClosed
-        ? 'Closed Today'
-        : 'Open Today | Until ${_formatTime(todayHours.closesAt)}';
+        ? l10n.clinicClosedToday
+        : l10n.clinicOpenTodayUntil(_formatTime(todayHours.closesAt));
 
     return Container(
       width: double.infinity,
@@ -103,7 +105,7 @@ class _HoursCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Clinic Hours',
+                  l10n.clinicHours,
                   style: AppTextStyles.title.copyWith(fontSize: 22),
                 ),
               ),
@@ -135,11 +137,11 @@ class _HoursCard extends StatelessWidget {
             ...workingHours.map((hour) {
               final bool isToday = hour.dayOfWeek == currentWeekday;
               final String timeDisplay = hour.isClosed
-                  ? 'CLOSED'
+                  ? l10n.clinicClosed
                   : '${_formatTime(hour.opensAt)} - ${_formatTime(hour.closesAt)}';
 
               return _HoursRow(
-                day: _getDayName(hour.dayOfWeek, isToday),
+                day: _getDayName(l10n, hour.dayOfWeek, isToday),
                 hours: timeDisplay,
                 isToday: isToday,
                 isClosed: hour.isClosed,
@@ -149,7 +151,7 @@ class _HoursCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: Text(
-                'No working hours provided.',
+                l10n.clinicNoWorkingHours,
                 style: AppTextStyles.subtitle.copyWith(fontSize: 13),
               ),
             ),
@@ -225,6 +227,8 @@ class _ContactCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -258,7 +262,7 @@ class _ContactCard extends StatelessWidget {
               const SizedBox(width: 14),
               Expanded(
                 child: Text(
-                  'Contact',
+                  l10n.clinicContact,
                   style: AppTextStyles.title.copyWith(fontSize: 19),
                 ),
               ),
@@ -266,22 +270,24 @@ class _ContactCard extends StatelessWidget {
           ),
           const SizedBox(height: 22),
           _ContactRow(
-            label: 'Phone',
-            value: clinic.phone.isNotEmpty ? clinic.phone : 'Not Available',
+            label: l10n.clinicPhone,
+            value: clinic.phone.isNotEmpty ? clinic.phone : l10n.notAvailable,
           ),
           const SizedBox(height: 14),
           _ContactRow(
-            label: 'Email',
-            value: clinic.email.isNotEmpty ? clinic.email : 'Not Available',
+            label: l10n.clinicEmail,
+            value: clinic.email.isNotEmpty ? clinic.email : l10n.notAvailable,
           ),
           const SizedBox(height: 14),
           _ContactRow(
-            label: 'Website',
-            value: clinic.website.isNotEmpty ? clinic.website : 'Not Available',
+            label: l10n.clinicWebsite,
+            value: clinic.website.isNotEmpty
+                ? clinic.website
+                : l10n.notAvailable,
           ),
           const SizedBox(height: 24),
           AppButton(
-            text: 'CALL NOW',
+            text: l10n.clinicCallNow,
             onPressed: clinic.phone.isNotEmpty ? _makeCall : null,
             height: 54,
           ),
@@ -336,21 +342,23 @@ class _CancellationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final String policyTypeFormatted = policy.type.isNotEmpty
         ? policy.type.toUpperCase()
-        : 'STANDARD';
+        : l10n.clinicPolicyStandard;
 
-    final String mainContent =
-        'We value your time and our practitioners\' expertise. '
-        'This center applies a $policyTypeFormatted cancellation policy.';
+    final String mainContent = l10n.clinicCancellationIntro(
+      policyTypeFormatted,
+    );
 
     final String dynamicSubContent;
     if (policy.feePercentage == 0 || policy.type.toLowerCase() == 'free') {
-      dynamicSubContent =
-          'Cancellations are completely free of charge if made at least ${policy.deadlineHours} hours prior to your appointment window.';
+      dynamicSubContent = l10n.clinicCancellationFree(policy.deadlineHours);
     } else {
-      dynamicSubContent =
-          'Late cancellations within ${policy.deadlineHours} hours are subject to a fee equal to ${policy.feePercentage}% of the scheduled service price. No-shows will be charged at 100%.';
+      dynamicSubContent = l10n.clinicCancellationFee(
+        policy.deadlineHours,
+        policy.feePercentage,
+      );
     }
     return Container(
       width: double.infinity,
@@ -377,7 +385,7 @@ class _CancellationCard extends StatelessWidget {
               const SizedBox(width: 16),
               Expanded(
                 child: Text(
-                  'Cancellation Policy',
+                  l10n.clinicCancellationPolicy,
                   style: AppTextStyles.title.copyWith(
                     color: AppColors.surface,
                     fontSize: 21,

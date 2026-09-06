@@ -9,6 +9,7 @@ class Offer extends Equatable {
     this.description,
     required this.discountType,
     required this.discountValue,
+    this.serviceId,
     this.startsAt,
     this.endsAt,
     this.center,
@@ -22,6 +23,7 @@ class Offer extends Equatable {
       description: json['description'] as String?,
       discountType: json['discount_type'] as String,
       discountValue: _toDouble(json['discount_value']) ?? 0,
+      serviceId: _extractServiceId(json),
       startsAt: json['starts_at'] as String?,
       endsAt: json['ends_at'] as String?,
       center: json['center'] != null
@@ -36,15 +38,14 @@ class Offer extends Equatable {
   final String? description;
   final String discountType;
   final double discountValue;
+  final int? serviceId;
   final String? startsAt;
   final String? endsAt;
   final ClinicCenter? center;
 
   String get discountLabel {
     if (discountType == 'percentage') {
-      return '${discountValue.toStringAsFixed(
-        discountValue.truncateToDouble() == discountValue ? 0 : 1,
-      )}% OFF';
+      return '${discountValue.toStringAsFixed(discountValue.truncateToDouble() == discountValue ? 0 : 1)}% OFF';
     }
     return '${discountValue.toStringAsFixed(0)} OFF';
   }
@@ -59,6 +60,59 @@ class Offer extends Equatable {
     return double.tryParse(value.toString());
   }
 
+  static int? _extractServiceId(Map<String, dynamic> json) {
+    for (final String key in const <String>[
+      'service_id',
+      'center_service_id',
+      'clinic_service_id',
+    ]) {
+      final int? id = _toInt(json[key]);
+      if (id != null) {
+        return id;
+      }
+    }
+
+    for (final String key in const <String>[
+      'service',
+      'center_service',
+      'clinic_service',
+    ]) {
+      final dynamic value = json[key];
+      if (value is Map<String, dynamic>) {
+        final int? id = _toInt(value['id']);
+        if (id != null) {
+          return id;
+        }
+      }
+    }
+
+    for (final String key in const <String>[
+      'services',
+      'center_services',
+      'clinic_services',
+    ]) {
+      final dynamic value = json[key];
+      if (value is List && value.isNotEmpty) {
+        final dynamic first = value.first;
+        if (first is Map<String, dynamic>) {
+          final int? id = _toInt(first['id']);
+          if (id != null) {
+            return id;
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+
+  static int? _toInt(dynamic value) {
+    if (value is num) {
+      return value.toInt();
+    }
+    return int.tryParse(value?.toString() ?? '');
+  }
+
   @override
   List<Object?> get props => [
     id,
@@ -67,6 +121,7 @@ class Offer extends Equatable {
     description,
     discountType,
     discountValue,
+    serviceId,
     startsAt,
     endsAt,
     center,

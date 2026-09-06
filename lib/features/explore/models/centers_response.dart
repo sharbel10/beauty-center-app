@@ -11,6 +11,9 @@ class CentersResponse extends Equatable {
 
   factory CentersResponse.fromJson(Map<String, dynamic> json) {
     final Map<String, dynamic>? data = json['data'] as Map<String, dynamic>?;
+    final Map<String, dynamic>? meta =
+        json['meta'] as Map<String, dynamic>? ??
+        data?['meta'] as Map<String, dynamic>?;
 
     return CentersResponse(
       success: json['success'] as bool? ?? true,
@@ -20,7 +23,7 @@ class CentersResponse extends Equatable {
                 ClinicCenter.fromJson(item as Map<String, dynamic>),
           )
           .toList(),
-      meta: PaginationMeta.fromJson(json['meta'] as Map<String, dynamic>?),
+      meta: PaginationMeta.fromJson(meta),
     );
   }
 

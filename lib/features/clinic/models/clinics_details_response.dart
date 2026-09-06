@@ -34,10 +34,13 @@ class ClinicCenterDetail extends Equatable {
     required this.latitude,
     required this.longitude,
     required this.logoPath,
+    required this.logoUrl,
     required this.coverPath,
+    required this.coverUrl,
     required this.averageRating,
     required this.ratingsCount,
     required this.isFeatured,
+    this.isFavorite = false,
     this.distance,
     required this.email,
     required this.website,
@@ -62,11 +65,14 @@ class ClinicCenterDetail extends Equatable {
       address: json['address'] as String? ?? '',
       latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
       longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
-      logoPath: json['logo_path'] as String? ?? '',
-      coverPath: json['cover_path'] as String? ?? '',
+      logoPath: _readString(json['logo_path']),
+      logoUrl: _readString(json['logo_url']),
+      coverPath: _readString(json['cover_path']),
+      coverUrl: _readString(json['cover_url']),
       averageRating: (json['average_rating'] as num?)?.toDouble() ?? 0.0,
       ratingsCount: json['ratings_count'] as int? ?? 0,
       isFeatured: json['is_featured'] as bool? ?? false,
+      isFavorite: json['is_favorite'] as bool? ?? false,
       distance: json['distance'],
       email: json['email'] as String? ?? '',
       website: json['website'] as String? ?? '',
@@ -103,11 +109,14 @@ class ClinicCenterDetail extends Equatable {
   final double latitude;
   final double longitude;
   final String logoPath;
+  final String logoUrl;
   final String coverPath;
+  final String coverUrl;
   final double averageRating;
   final int ratingsCount;
   final bool isFeatured;
-  final dynamic distance;
+  final bool isFavorite;
+  final double? distance;
   final String email;
   final String website;
   final String bookingConfirmationType;
@@ -130,10 +139,13 @@ class ClinicCenterDetail extends Equatable {
     latitude,
     longitude,
     logoPath,
+    logoUrl,
     coverPath,
+    coverUrl,
     averageRating,
     ratingsCount,
     isFeatured,
+    isFavorite,
     distance,
     email,
     website,
@@ -180,24 +192,29 @@ class CenterImage extends Equatable {
   const CenterImage({
     required this.id,
     required this.imagePath,
+    required this.imageUrl,
     required this.caption,
   });
 
   factory CenterImage.fromJson(Map<String, dynamic> json) {
     return CenterImage(
       id: json['id'] as int? ?? 0,
-      imagePath: json['image_path'] as String? ?? '',
+      imagePath: _readString(json['image_path']),
+      imageUrl: _readString(json['image_url']),
       caption: json['caption'] as String? ?? '',
     );
   }
 
   final int id;
   final String imagePath;
+  final String imageUrl;
   final String caption;
 
   @override
-  List<Object?> get props => [id, imagePath, caption];
+  List<Object?> get props => [id, imagePath, imageUrl, caption];
 }
+
+String _readString(dynamic value) => value?.toString().trim() ?? '';
 
 class WorkingHour extends Equatable {
   const WorkingHour({

@@ -1,27 +1,38 @@
 import 'package:beauty_center_app/core/di/injection.dart';
-import 'package:beauty_center_app/core/network/api_endpoints.dart';
-import 'package:beauty_center_app/core/router/route_names.dart';
+import 'package:beauty_center_app/core/services/location_service.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/core/utils/extensions.dart';
 import 'package:beauty_center_app/core/utils/map_launcher.dart';
 import 'package:beauty_center_app/core/widgets/app_bottom_navigation.dart';
 import 'package:beauty_center_app/core/widgets/app_button.dart';
+import 'package:beauty_center_app/core/widgets/center_card_skeleton.dart';
+import 'package:beauty_center_app/core/widgets/root_exit_guard.dart';
 import 'package:beauty_center_app/features/clinic/cubit/clinic_details_cubit.dart';
 import 'package:beauty_center_app/features/clinic/views/clinic_details_view.dart';
 import 'package:beauty_center_app/features/explore/cubit/explore_cubit.dart';
 import 'package:beauty_center_app/features/explore/cubit/explore_state.dart';
+import 'package:beauty_center_app/features/explore/models/center_filters.dart';
+import 'package:beauty_center_app/features/favorites/cubit/favorites_cubit.dart';
+import 'package:beauty_center_app/features/favorites/cubit/favorites_state.dart';
+import 'package:beauty_center_app/features/favorites/widgets/favorite_heart_button.dart';
 import 'package:beauty_center_app/features/home/models/category.dart';
 import 'package:beauty_center_app/features/home/models/clinic_center.dart';
 import 'package:beauty_center_app/features/home/widgets/clinic_network_image.dart';
+import 'package:beauty_center_app/features/home/widgets/home_category_chips.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class ExploreView extends StatefulWidget {
-  const ExploreView({required ExploreCubit cubit, super.key}) : _cubit = cubit;
+  const ExploreView({
+    required ExploreCubit cubit,
+    this.initialCategoryId,
+    super.key,
+  }) : _cubit = cubit;
 
   final ExploreCubit _cubit;
+  final int? initialCategoryId;
 
   @override
   State<ExploreView> createState() => _ExploreViewState();
@@ -30,20 +41,40 @@ class ExploreView extends StatefulWidget {
 class _ExploreViewState extends State<ExploreView> {
   final TextEditingController _searchController = TextEditingController();
 
+  // Captured once: the router's builder re-runs on every push/pop and
+  // creates a fresh ExploreCubit from getIt, which would otherwise replace
+  // the loaded one with an empty instance.
+  late final ExploreCubit _cubit;
+
   @override
   void initState() {
     super.initState();
-    widget._cubit.loadInitial();
+    _cubit = widget._cubit;
+    if (widget.initialCategoryId != null) {
+      _cubit.loadInitialWithCategory(widget.initialCategoryId);
+    } else {
+      _cubit.loadInitial();
+    }
+  }
+
+  @override
+  void didUpdateWidget(ExploreView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(widget._cubit, _cubit)) {
+      widget._cubit.close();
+    }
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _cubit.close();
     super.dispose();
   }
 
   Future<void> _submitSearch() async {
-    await widget._cubit.updateSearch(_searchController.text);
+    FocusScope.of(context).unfocus();
+    await _cubit.submitSearch(_searchController.text);
   }
 
   void _showFilters(BuildContext context) {
@@ -63,119 +94,184 @@ class _ExploreViewState extends State<ExploreView> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ExploreCubit>.value(
-      value: widget._cubit,
-      child: BlocConsumer<ExploreCubit, ExploreState>(
-        listenWhen: (ExploreState previous, ExploreState current) =>
-            previous.message != current.message &&
-            current.message != null &&
-            current.status == ExploreStatus.failure,
-        listener: (BuildContext context, ExploreState state) {
-          context.showSnackbar(state.message!, isError: true);
-        },
-        builder: (BuildContext context, ExploreState state) {
-          return Scaffold(
-            backgroundColor: AppColors.scaffold,
-            extendBody: true,
-            bottomNavigationBar: AppBottomNavigation(
-              currentItem: AppNavItem.explore,
-              onItemSelected: (AppNavItem item) {
-                if (item == AppNavItem.home) {
-                  context.goNamed(RouteNames.home);
-                }
-              },
-            ),
-            body: SafeArea(
-              bottom: false,
-              child: RefreshIndicator(
-                onRefresh: widget._cubit.refreshCenters,
-                child: CustomScrollView(
-                  slivers: <Widget>[
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 22, 24, 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            _SearchAndFilter(
-                              controller: _searchController,
-                              isLoading: state.isLoading,
-                              onSearch: _submitSearch,
-                              onFilter: () => _showFilters(context),
-                            ),
-                            const SizedBox(height: 14),
-                            _ActiveFilters(
-                              state: state,
-                              onClearCategory: () {
-                                widget._cubit.updateCategory(null);
-                              },
-                              onClearPrice: () {
-                                widget._cubit.resetPriceFilter();
-                              },
-                            ),
-                            const SizedBox(height: 24),
-                            Text(
-                              'All Clinics',
-                              style: AppTextStyles.headline.copyWith(
-                                fontSize: 24,
-                                height: 1.1,
+      value: _cubit,
+      child: BlocProvider<FavoritesCubit>(
+        create: (_) => getIt<FavoritesCubit>(),
+        child: BlocListener<FavoritesCubit, FavoritesState>(
+          listenWhen: (FavoritesState previous, FavoritesState current) {
+            return previous.message != current.message &&
+                current.message != null;
+          },
+          listener: (BuildContext context, FavoritesState state) {
+            if (state.message != null) {
+              context.showSnackbar(
+                state.message!,
+                isError: state.isMessageError,
+              );
+              context.read<FavoritesCubit>().clearMessage();
+            }
+          },
+          child: BlocConsumer<ExploreCubit, ExploreState>(
+            listenWhen: (ExploreState previous, ExploreState current) =>
+                previous.message != current.message &&
+                current.message != null &&
+                current.status == ExploreStatus.failure,
+            listener: (BuildContext context, ExploreState state) {
+              context.showSnackbar(state.message!, isError: true);
+            },
+            builder: (BuildContext context, ExploreState state) {
+              final AppLocalizations l10n = AppLocalizations.of(context);
+
+              return RootExitGuard(
+                child: Scaffold(
+                  backgroundColor: AppColors.scaffold,
+                  extendBody: true,
+                  bottomNavigationBar: const AppBottomNavigation(
+                    currentItem: AppNavItem.explore,
+                  ),
+                  body: SafeArea(
+                    bottom: false,
+                    child: RefreshIndicator(
+                      onRefresh: _cubit.refreshCenters,
+                      child: CustomScrollView(
+                        slivers: <Widget>[
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                24,
+                                22,
+                                24,
+                                20,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  _SearchAndFilter(
+                                    controller: _searchController,
+                                    isLoading: state.isLoading,
+                                    onSearch: _submitSearch,
+                                    onFilter: () => _showFilters(context),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  _ActiveFilters(
+                                    state: state,
+                                    onClearPrice: () {
+                                      _cubit.clearPrice();
+                                    },
+                                  ),
+                                  const SizedBox(height: 24),
+                                  Text(
+                                    l10n.allClinics,
+                                    style: AppTextStyles.headline.copyWith(
+                                      fontSize: 24,
+                                      height: 1.1,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  HomeCategoryChips(
+                                    categories: state.categories
+                                        .where(
+                                          (Category category) =>
+                                              category.isTopLevel,
+                                        )
+                                        .toList(),
+                                    selectedCategoryId:
+                                        state.filters.categoryId,
+                                    onCategorySelected: (int? categoryId) {
+                                      _cubit.applyFilters(
+                                        CenterFilters(
+                                          categoryId: categoryId,
+                                          governorate:
+                                              state.filters.governorate,
+                                          isFeatured: state.filters.isFeatured,
+                                          requiresDeposit:
+                                              state.filters.requiresDeposit,
+                                          minPrice: state.filters.minPrice,
+                                          maxPrice: state.filters.maxPrice,
+                                          latitude: state.filters.latitude,
+                                          longitude: state.filters.longitude,
+                                          sortBy: state.filters.sortBy,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  const SizedBox(height: 18),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 18),
-                          ],
-                        ),
+                          ),
+                          if (state.isLoading && !state.hasCenters)
+                            SliverPadding(
+                              padding: EdgeInsets.fromLTRB(
+                                24,
+                                0,
+                                24,
+                                24 +
+                                    AppBottomNavigation.contentOverlap(context),
+                              ),
+                              sliver: SliverList.separated(
+                                itemCount: 3,
+                                separatorBuilder:
+                                    (BuildContext context, int index) =>
+                                        const SizedBox(height: 16),
+                                itemBuilder:
+                                    (BuildContext context, int index) =>
+                                        const CenterCardSkeleton.expanded(),
+                              ),
+                            )
+                          else if (!state.hasCenters)
+                            SliverFillRemaining(
+                              hasScrollBody: false,
+                              child: _EmptyClinicsState(
+                                onRetry: _cubit.loadInitial,
+                              ),
+                            )
+                          else
+                            SliverPadding(
+                              padding: EdgeInsets.fromLTRB(
+                                24,
+                                0,
+                                24,
+                                96 +
+                                    AppBottomNavigation.contentOverlap(context),
+                              ),
+                              sliver: SliverList.separated(
+                                itemCount:
+                                    state.centers.length +
+                                    (state.canLoadMore ? 1 : 0),
+                                separatorBuilder:
+                                    (BuildContext context, int index) =>
+                                        const SizedBox(height: 16),
+                                itemBuilder: (BuildContext context, int index) {
+                                  if (index >= state.centers.length) {
+                                    return Center(
+                                      child: SizedBox(
+                                        width: 190,
+                                        child: AppButton(
+                                          text: l10n.loadMore,
+                                          isLoading: state.isLoadingMore,
+                                          onPressed: _cubit.loadMore,
+                                          height: 48,
+                                        ),
+                                      ),
+                                    );
+                                  }
+
+                                  return _ClinicCard(
+                                    clinic: state.centers[index],
+                                  );
+                                },
+                              ),
+                            ),
+                        ],
                       ),
                     ),
-                    if (state.isLoading && !state.hasCenters)
-                      const SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: Center(child: CircularProgressIndicator()),
-                      )
-                    else if (!state.hasCenters)
-                      SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: _EmptyClinicsState(
-                          onRetry: widget._cubit.loadInitial,
-                        ),
-                      )
-                    else
-                      SliverPadding(
-                        padding: EdgeInsets.fromLTRB(
-                          24,
-                          0,
-                          24,
-                          24 + AppBottomNavigation.contentOverlap(context),
-                        ),
-                        sliver: SliverList.separated(
-                          itemCount:
-                              state.centers.length +
-                              (state.canLoadMore ? 1 : 0),
-                          separatorBuilder: (_, __) =>
-                              const SizedBox(height: 16),
-                          itemBuilder: (BuildContext context, int index) {
-                            if (index >= state.centers.length) {
-                              return Center(
-                                child: SizedBox(
-                                  width: 190,
-                                  child: AppButton(
-                                    text: 'Load More',
-                                    isLoading: state.isLoadingMore,
-                                    onPressed: widget._cubit.loadMore,
-                                    height: 48,
-                                  ),
-                                ),
-                              );
-                            }
-
-                            return _ClinicCard(clinic: state.centers[index]);
-                          },
-                        ),
-                      ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          );
-        },
+              );
+            },
+          ),
+        ),
       ),
     );
   }
@@ -196,6 +292,8 @@ class _SearchAndFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Row(
       children: <Widget>[
         Expanded(
@@ -215,9 +313,9 @@ class _SearchAndFilter extends StatelessWidget {
             ),
             child: TextField(
               controller: controller,
-              enabled: !isLoading,
               textInputAction: TextInputAction.search,
-              onSubmitted: (_) => onSearch(),
+              maxLength: 255,
+              onSubmitted: isLoading ? null : (_) => onSearch(),
               style: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -228,7 +326,8 @@ class _SearchAndFilter extends StatelessWidget {
                   horizontal: 14,
                   vertical: 15,
                 ),
-                hintText: 'Search clinics...',
+                counterText: '',
+                hintText: l10n.searchClinics,
                 hintStyle: AppTextStyles.hint.copyWith(fontSize: 14),
                 prefixIcon: const Icon(
                   Icons.search_rounded,
@@ -254,7 +353,7 @@ class _SearchAndFilter extends StatelessWidget {
             onPressed: onFilter,
             icon: const Icon(Icons.tune_rounded, size: 18),
             label: Text(
-              'Filters',
+              l10n.filters,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.button.copyWith(fontSize: 12),
@@ -277,39 +376,33 @@ class _SearchAndFilter extends StatelessWidget {
 }
 
 class _ActiveFilters extends StatelessWidget {
-  const _ActiveFilters({
-    required this.state,
-    required this.onClearCategory,
-    required this.onClearPrice,
-  });
+  const _ActiveFilters({required this.state, required this.onClearPrice});
 
   final ExploreState state;
-  final VoidCallback onClearCategory;
   final VoidCallback onClearPrice;
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final List<Widget> chips = <Widget>[];
-    final int? selectedCategoryId = state.selectedCategoryId;
-
-    if (selectedCategoryId != null) {
-      Category? category;
-      for (final Category item in state.categories) {
-        if (item.id == selectedCategoryId) {
-          category = item;
-          break;
-        }
-      }
-      if (category != null) {
-        chips.add(_FilterChip(label: category.name, onClear: onClearCategory));
-      }
-    }
-
-    if (state.hasPriceFilter) {
+    final CenterFilters filters = state.filters;
+    if (filters.minPrice != null || filters.maxPrice != null) {
       chips.add(
         _FilterChip(
-          label: '\$${state.minPrice} - \$${state.maxPrice}',
+          label: '${filters.minPrice ?? 0}–${filters.maxPrice ?? '∞'}',
           onClear: onClearPrice,
+        ),
+      );
+    }
+
+    if (filters.governorate != null ||
+        filters.isFeatured != null ||
+        filters.requiresDeposit != null ||
+        filters.sortBy != 'rating') {
+      chips.add(
+        _FilterChip(
+          label: l10n.filters,
+          onClear: () => context.read<ExploreCubit>().resetFilters(),
         ),
       );
     }
@@ -381,11 +474,10 @@ class _ClinicCardState extends State<_ClinicCard> {
   ClinicCenter get clinic => widget.clinic;
 
   Future<void> _openMap() async {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     if (clinic.latitude == null || clinic.longitude == null) {
-      context.showSnackbar(
-        'Location is not available for this clinic.',
-        isError: true,
-      );
+      context.showSnackbar(l10n.locationUnavailableForClinic, isError: true);
       return;
     }
 
@@ -395,15 +487,16 @@ class _ClinicCardState extends State<_ClinicCard> {
     );
 
     if (!launched && mounted) {
-      context.showSnackbar('Could not open maps.', isError: true);
+      context.showSnackbar(l10n.couldNotOpenMaps, isError: true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final String description = clinic.description?.trim().isNotEmpty == true
         ? clinic.description!.trim()
-        : 'Clinic center';
+        : l10n.clinicCenter;
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -428,7 +521,24 @@ class _ClinicCardState extends State<_ClinicCard> {
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
-                  ClinicNetworkImage(imageUrl: _mediaUrl(clinic.coverPath)),
+                  ClinicNetworkImage(imageUrl: clinic.coverUrl ?? ''),
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: FavoriteHeartButton(
+                      isFavorite: clinic.isFavorite,
+                      size: 18,
+                      padding: const EdgeInsets.all(8),
+                      onToggle: (bool isCurrentlyFavorite) async {
+                        await context
+                            .read<FavoritesCubit>()
+                            .toggleCenterFavorite(
+                              centerId: clinic.id,
+                              isCurrentlyFavorite: isCurrentlyFavorite,
+                            );
+                      },
+                    ),
+                  ),
                   Align(
                     alignment: Alignment.topRight,
                     child: Container(
@@ -510,7 +620,7 @@ class _ClinicCardState extends State<_ClinicCard> {
                   _ClinicStats(clinic: clinic),
                   const SizedBox(height: 16),
                   AppButton(
-                    text: 'View & Book',
+                    text: l10n.viewAndBook,
                     icon: Icons.chevron_right_rounded,
                     height: 48,
                     onPressed: () {
@@ -532,16 +642,6 @@ class _ClinicCardState extends State<_ClinicCard> {
       ),
     );
   }
-
-  String _mediaUrl(String? path) {
-    if (path == null || path.isEmpty) {
-      return '';
-    }
-    if (path.startsWith('http')) {
-      return path;
-    }
-    return ApiEndpoints.mediaUrl(path);
-  }
 }
 
 class _ClinicStats extends StatelessWidget {
@@ -551,13 +651,14 @@ class _ClinicStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final String areaValue = clinic.area?.isNotEmpty == true
         ? clinic.area!
         : clinic.city?.isNotEmpty == true
         ? clinic.city!
         : clinic.isFeatured
-        ? 'Top Pick'
-        : 'Clinic';
+        ? l10n.topPick
+        : l10n.clinic;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -569,15 +670,15 @@ class _ClinicStats extends StatelessWidget {
       child: Row(
         children: <Widget>[
           Expanded(
-            child: _StatItem(label: 'AREA', value: areaValue),
+            child: _StatItem(label: l10n.area, value: areaValue),
           ),
           Container(width: 1, height: 30, color: AppColors.divider),
           Expanded(
             child: _StatItem(
-              label: 'DISTANCE',
+              label: l10n.distance,
               value: clinic.distance != null
                   ? '${clinic.distance!.toStringAsFixed(1)} km'
-                  : 'N/A',
+                  : l10n.notAvailable,
             ),
           ),
         ],
@@ -645,6 +746,8 @@ class _EmptyClinicsState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -656,11 +759,11 @@ class _EmptyClinicsState extends StatelessWidget {
             color: AppColors.textMuted,
           ),
           const SizedBox(height: 14),
-          Text('No clinics found.', style: AppTextStyles.titleMedium),
+          Text(l10n.noClinicsFound, style: AppTextStyles.titleMedium),
           const SizedBox(height: 18),
           SizedBox(
             width: 180,
-            child: AppButton(text: 'Retry', onPressed: onRetry, height: 48),
+            child: AppButton(text: l10n.retry, onPressed: onRetry, height: 48),
           ),
         ],
       ),
@@ -678,29 +781,48 @@ class _FilterBottomSheet extends StatefulWidget {
 class _FilterBottomSheetState extends State<_FilterBottomSheet> {
   bool _initialized = false;
   int? _selectedCategoryId;
-  late RangeValues _priceValues;
+  late TextEditingController _minPriceController;
+  late TextEditingController _maxPriceController;
+  String? _governorate;
+  bool? _isFeatured;
+  bool? _requiresDeposit;
+  String _sortBy = 'rating';
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   void _ensureInitialValues(ExploreState state) {
     if (_initialized) {
       return;
     }
-    _selectedCategoryId = state.selectedCategoryId;
-    _priceValues = RangeValues(
-      state.minPrice.toDouble(),
-      state.maxPrice.toDouble(),
+    final CenterFilters filters = state.filters;
+    _selectedCategoryId = filters.categoryId;
+    _minPriceController = TextEditingController(
+      text: _number(filters.minPrice),
     );
+    _maxPriceController = TextEditingController(
+      text: _number(filters.maxPrice),
+    );
+    _governorate = filters.governorate;
+    _isFeatured = filters.isFeatured;
+    _requiresDeposit = filters.requiresDeposit;
+    _sortBy = filters.sortBy;
     _initialized = true;
+  }
+
+  @override
+  void dispose() {
+    if (_initialized) {
+      _minPriceController.dispose();
+      _maxPriceController.dispose();
+    }
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ExploreCubit, ExploreState>(
       builder: (BuildContext context, ExploreState state) {
+        final AppLocalizations l10n = AppLocalizations.of(context);
         _ensureInitialValues(state);
-        final List<Category> topLevelCategories = state.categories
-            .where((Category category) => category.isTopLevel)
-            .toList();
-
         return Container(
           constraints: BoxConstraints(
             maxHeight: MediaQuery.sizeOf(context).height * 0.78,
@@ -709,135 +831,219 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
             color: AppColors.surface,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
-          child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(
-              22,
-              10,
-              22,
-              22 + MediaQuery.paddingOf(context).bottom,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Center(
-                  child: Container(
-                    width: 42,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: AppColors.divider,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 18),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Text(
-                        'Filters',
-                        style: AppTextStyles.title.copyWith(
-                          fontSize: 22,
-                          height: 1.1,
-                        ),
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(
+                22,
+                10,
+                22,
+                22 + MediaQuery.paddingOf(context).bottom,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Center(
+                    child: Container(
+                      width: 42,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AppColors.divider,
+                        borderRadius: BorderRadius.circular(999),
                       ),
                     ),
-                    _SheetIconButton(
-                      icon: Icons.close_rounded,
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 18),
-                _FilterSection(
-                  title: 'Categories',
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                  ),
+                  const SizedBox(height: 18),
+                  Row(
                     children: <Widget>[
-                      _FilterChoice(
-                        label: 'All',
-                        selected: _selectedCategoryId == null,
-                        onSelected: () {
-                          setState(() => _selectedCategoryId = null);
-                        },
-                      ),
-                      for (final Category category in topLevelCategories)
-                        _FilterChoice(
-                          label: category.name,
-                          selected: _selectedCategoryId == category.id,
-                          onSelected: () {
-                            setState(() => _selectedCategoryId = category.id);
-                          },
-                        ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 18),
-                _FilterSection(
-                  title: 'Pricing',
-                  child: _PriceRangeSlider(
-                    values: _priceValues,
-                    maxLimit: ExploreState.defaultMaxPrice,
-                    onChanged: (RangeValues values) {
-                      setState(() => _priceValues = values);
-                    },
-                  ),
-                ),
-                const SizedBox(height: 22),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedCategoryId = null;
-                            _priceValues = RangeValues(
-                              0.0,
-                              ExploreState.defaultMaxPrice.toDouble(),
-                            );
-                          });
-                        },
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(46),
-                          foregroundColor: AppColors.primary,
-                          side: const BorderSide(color: AppColors.divider),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                      Expanded(
+                        child: Text(
+                          l10n.filters,
+                          style: AppTextStyles.title.copyWith(
+                            fontSize: 22,
+                            height: 1.1,
                           ),
                         ),
-                        child: Text(
-                          'Reset',
-                          style: AppTextStyles.link.copyWith(fontSize: 13),
+                      ),
+                      _SheetIconButton(
+                        icon: Icons.close_rounded,
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+                  _FilterDropdown<String>(
+                    label: l10n.sortBy,
+                    value: _sortBy,
+                    items: centerSortOptions,
+                    itemLabel: (value) => _centerSortLabel(l10n, value),
+                    onChanged: (value) => setState(() => _sortBy = value!),
+                  ),
+                  _FilterDropdown<String?>(
+                    label: l10n.governorate,
+                    value: _governorate,
+                    items: <String?>[null, ...centerGovernorates],
+                    itemLabel: (value) => value == null
+                        ? l10n.anyOption
+                        : value.replaceAll('_', ' '),
+                    onChanged: (value) => setState(() => _governorate = value),
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: _FilterDropdown<bool?>(
+                          label: l10n.featuredOnly,
+                          value: _isFeatured,
+                          items: const <bool?>[null, true, false],
+                          itemLabel: (value) => value == null
+                              ? l10n.anyOption
+                              : value
+                              ? l10n.yesOption
+                              : l10n.noOption,
+                          onChanged: (value) =>
+                              setState(() => _isFeatured = value),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: AppButton(
-                        text: 'Apply',
-                        onPressed: () async {
-                          final ExploreCubit cubit = context
-                              .read<ExploreCubit>();
-                          Navigator.of(context).pop();
-                          await cubit.applyFilters(
-                            categoryId: _selectedCategoryId,
-                            minPrice: _priceValues.start.round(),
-                            maxPrice: _priceValues.end.round(),
-                          );
-                        },
-                        height: 46,
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _FilterDropdown<bool?>(
+                          label: l10n.requiresDeposit,
+                          value: _requiresDeposit,
+                          items: const <bool?>[null, true, false],
+                          itemLabel: (value) => value == null
+                              ? l10n.anyOption
+                              : value
+                              ? l10n.yesOption
+                              : l10n.noOption,
+                          onChanged: (value) =>
+                              setState(() => _requiresDeposit = value),
+                        ),
                       ),
+                    ],
+                  ),
+                  _FilterSection(
+                    title: l10n.priceRange,
+                    child: Column(
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: _FilterNumberField(
+                                label: l10n.minimumPrice,
+                                controller: _minPriceController,
+                                min: 0,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: _FilterNumberField(
+                                label: l10n.maximumPrice,
+                                controller: _maxPriceController,
+                                min: 0,
+                                validator: (_) => _validatePrices(l10n),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          l10n.currency,
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.textMuted,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(height: 18),
+                  const SizedBox(height: 22),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            context.read<ExploreCubit>().resetFilters();
+                          },
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(46),
+                            foregroundColor: AppColors.primary,
+                            side: const BorderSide(color: AppColors.divider),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          child: Text(
+                            l10n.reset,
+                            style: AppTextStyles.link.copyWith(fontSize: 13),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: AppButton(
+                          text: l10n.apply,
+                          onPressed: _apply,
+                          height: 46,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );
       },
     );
   }
+
+  String? _validatePrices(AppLocalizations l10n) {
+    final double? min = _parse(_minPriceController.text);
+    final double? max = _parse(_maxPriceController.text);
+    return min != null && max != null && max < min
+        ? l10n.invalidPriceRange
+        : null;
+  }
+
+  Future<void> _apply() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    double? latitude;
+    double? longitude;
+    if (_sortBy == 'nearest') {
+      final LocationResult result = await getIt<LocationService>()
+          .getCurrentLocation();
+      if (!mounted) return;
+      if (!result.isSuccess) {
+        context.showSnackbar(
+          AppLocalizations.of(context).locationPermissionRequired,
+          isError: true,
+        );
+        return;
+      }
+      latitude = result.location!.latitude;
+      longitude = result.location!.longitude;
+    }
+    final CenterFilters filters = CenterFilters(
+      categoryId: _selectedCategoryId,
+      governorate: _governorate,
+      isFeatured: _isFeatured,
+      requiresDeposit: _requiresDeposit,
+      minPrice: _parse(_minPriceController.text),
+      maxPrice: _parse(_maxPriceController.text),
+      latitude: latitude,
+      longitude: longitude,
+      sortBy: _sortBy,
+    );
+    if (!mounted) return;
+    final ExploreCubit cubit = context.read<ExploreCubit>();
+    Navigator.of(context).pop();
+    await cubit.applyFilters(filters);
+  }
+
+  static String _number(double? value) => value == null ? '' : value.toString();
+  static double? _parse(String value) =>
+      value.trim().isEmpty ? null : double.tryParse(value.trim());
 }
 
 class _FilterSection extends StatelessWidget {
@@ -875,141 +1081,85 @@ class _FilterSection extends StatelessWidget {
   }
 }
 
-class _PriceRangeSlider extends StatelessWidget {
-  const _PriceRangeSlider({
-    required this.values,
-    required this.maxLimit,
+class _FilterNumberField extends StatelessWidget {
+  const _FilterNumberField({
+    required this.label,
+    required this.controller,
+    required this.min,
+    this.validator,
+  });
+  final String label;
+  final TextEditingController controller;
+  final double min;
+  final FormFieldValidator<String>? validator;
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: TextFormField(
+      controller: controller,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+      ),
+      validator: (value) {
+        final String input = value?.trim() ?? '';
+        if (input.isNotEmpty) {
+          final double? number = double.tryParse(input);
+          if (number == null || number < min) {
+            return AppLocalizations.of(context).invalidFilterValue;
+          }
+        }
+        return validator?.call(value);
+      },
+    ),
+  );
+}
+
+class _FilterDropdown<T> extends StatelessWidget {
+  const _FilterDropdown({
+    required this.label,
+    required this.value,
+    required this.items,
+    required this.itemLabel,
     required this.onChanged,
   });
-
-  final RangeValues values;
-  final int maxLimit;
-  final ValueChanged<RangeValues> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final int min = values.start.round();
-    final int max = values.end.round();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: _PricePill(label: 'Min', value: min),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _PricePill(label: 'Max', value: max),
-            ),
-          ],
-        ),
-        const SizedBox(height: 14),
-        SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            activeTrackColor: AppColors.primary,
-            inactiveTrackColor: AppColors.divider,
-            thumbColor: AppColors.surface,
-            overlayColor: AppColors.primary.withValues(alpha: 0.12),
-            rangeThumbShape: const RoundRangeSliderThumbShape(
-              enabledThumbRadius: 10,
-              elevation: 3,
-            ),
-            rangeTrackShape: const RoundedRectRangeSliderTrackShape(),
-            trackHeight: 4,
-            valueIndicatorColor: AppColors.primary,
-            valueIndicatorTextStyle: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.surface,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          child: RangeSlider(
-            min: 0,
-            max: maxLimit.toDouble(),
-            divisions: maxLimit ~/ 50,
-            values: values,
-            labels: RangeLabels('\$$min', '\$$max'),
-            onChanged: onChanged,
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text('\$0', style: AppTextStyles.bodySmall),
-            Text('\$$maxLimit', style: AppTextStyles.bodySmall),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _PricePill extends StatelessWidget {
-  const _PricePill({required this.label, required this.value});
-
   final String label;
-  final int value;
-
+  final T value;
+  final List<T> items;
+  final String Function(T) itemLabel;
+  final ValueChanged<T?> onChanged;
   @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.divider),
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: DropdownButtonFormField<T>(
+      initialValue: value,
+      isExpanded: true,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              label,
-              style: AppTextStyles.smallCaps.copyWith(
-                fontSize: 9,
-                color: AppColors.textMuted,
-              ),
+      items: items
+          .map(
+            (item) => DropdownMenuItem<T>(
+              value: item,
+              child: Text(itemLabel(item), overflow: TextOverflow.ellipsis),
             ),
-            const SizedBox(height: 3),
-            Text('\$$value', style: AppTextStyles.link.copyWith(fontSize: 14)),
-          ],
-        ),
-      ),
-    );
-  }
+          )
+          .toList(),
+      onChanged: onChanged,
+    ),
+  );
 }
 
-class _FilterChoice extends StatelessWidget {
-  const _FilterChoice({
-    required this.label,
-    required this.selected,
-    required this.onSelected,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return ChoiceChip(
-      label: Text(label),
-      selected: selected,
-      onSelected: (_) => onSelected(),
-      showCheckmark: false,
-      labelStyle: AppTextStyles.bodySmall.copyWith(
-        color: selected ? AppColors.surface : AppColors.textSecondary,
-        fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-      ),
-      selectedColor: AppColors.primary,
-      backgroundColor: AppColors.surface,
-      side: BorderSide(color: selected ? AppColors.primary : AppColors.divider),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-    );
-  }
-}
+String _centerSortLabel(AppLocalizations l10n, String value) => switch (value) {
+  'nearest' => l10n.sortNearest,
+  'name' => l10n.sortName,
+  'latest' => l10n.sortLatest,
+  'price_asc' => l10n.sortPriceAsc,
+  'price_desc' => l10n.sortPriceDesc,
+  _ => l10n.sortRating,
+};
 
 class _SheetIconButton extends StatelessWidget {
   const _SheetIconButton({required this.icon, required this.onPressed});

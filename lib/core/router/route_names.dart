@@ -11,6 +11,12 @@ class RouteNames {
   static const String onboarding = 'onboarding';
   static const String home = 'home';
   static const String explore = 'explore';
+  static const String favorites = 'favorites';
+  static const String bookings = 'bookings';
+  static const String bookTreatment = 'bookTreatment';
+  static const String profile = 'profile';
+  static const String notifications = 'notifications';
+  static const String aiRecommendation = 'aiRecommendation';
 
   static const String splashPath = '/splash';
   static const String loginPath = '/login';
@@ -22,4 +28,10 @@ class RouteNames {
   static const String onboardingPath = '/onboarding';
   static const String homePath = '/home';
   static const String explorePath = '/explore';
+  static const String favoritesPath = '/favorites';
+  static const String bookingsPath = '/bookings';
+  static const String bookTreatmentPath = '/book-treatment';
+  static const String profilePath = '/profile';
+  static const String notificationsPath = '/notifications';
+  static const String aiRecommendationPath = '/ai-recommendation';
 }

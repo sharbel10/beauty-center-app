@@ -1,3 +1,4 @@
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -15,6 +16,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return FractionallySizedBox(
       heightFactor: 0.74,
       child: Container(
@@ -44,7 +47,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   children: [
                     Expanded(
                       child: Text(
-                        'Filters',
+                        l10n.filters,
                         style: AppTextStyles.headline.copyWith(fontSize: 34),
                       ),
                     ),
@@ -55,7 +58,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                         );
                       },
                       child: Text(
-                        'CLEAR ALL',
+                        l10n.clearAll,
                         style: AppTextStyles.smallCaps.copyWith(
                           color: const Color(0xFF7B5A21),
                           fontSize: 18,
@@ -65,25 +68,25 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   ],
                 ),
                 const SizedBox(height: 38),
-                const _FilterSectionTitle('Service Type'),
+                _FilterSectionTitle(l10n.filterServiceType),
                 const SizedBox(height: 24),
-                const Wrap(
+                Wrap(
                   spacing: 14,
                   runSpacing: 18,
                   children: [
                     _FilterOptionChip(
-                      label: 'Facial Treatment',
+                      label: l10n.filterFacialTreatment,
                       isSelected: true,
                       showClose: true,
                     ),
-                    _FilterOptionChip(label: 'Botox & Fillers'),
-                    _FilterOptionChip(label: 'Laser Hair Removal'),
-                    _FilterOptionChip(label: 'Body Contouring'),
-                    _FilterOptionChip(label: 'Chemical Peel'),
+                    _FilterOptionChip(label: l10n.filterBotoxFillers),
+                    _FilterOptionChip(label: l10n.filterLaserHairRemoval),
+                    _FilterOptionChip(label: l10n.filterBodyContouring),
+                    _FilterOptionChip(label: l10n.filterChemicalPeel),
                   ],
                 ),
                 const SizedBox(height: 48),
-                const _FilterSectionTitle('Price Range'),
+                _FilterSectionTitle(l10n.filterPriceRange),
                 const SizedBox(height: 42),
                 SliderTheme(
                   data: SliderTheme.of(context).copyWith(
@@ -103,8 +106,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     divisions: 20,
                     values: _priceRange,
                     labels: RangeLabels(
-                      '\$${_priceRange.start.round()}',
-                      '\$${_priceRange.end.round()}',
+                      l10n.priceUsd(_priceRange.start.round()),
+                      l10n.priceUsd(_priceRange.end.round()),
                     ),
                     onChanged: (values) {
                       setState(() => _priceRange = values);
@@ -116,28 +119,28 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _PriceBox(
-                      label: 'Min',
-                      value: '\$${_priceRange.start.round()}',
+                      label: l10n.min,
+                      value: l10n.priceUsd(_priceRange.start.round()),
                     ),
                     _PriceBox(
-                      label: 'Max',
-                      value: '\$${_priceRange.end.round()}',
+                      label: l10n.max,
+                      value: l10n.priceUsd(_priceRange.end.round()),
                     ),
                   ],
                 ),
                 const SizedBox(height: 48),
-                const _FilterSectionTitle('Location'),
+                _FilterSectionTitle(l10n.clinicLocation),
                 const SizedBox(height: 24),
-                const _LocationDropdown(label: 'Beverly Hills, CA'),
+                _LocationDropdown(label: l10n.filterLocationBeverlyHills),
                 const SizedBox(height: 18),
-                const Wrap(
+                Wrap(
                   spacing: 14,
                   runSpacing: 14,
                   children: [
-                    _LocationChip('Santa Monica'),
-                    _LocationChip('West Hollywood'),
-                    _LocationChip('Downtown LA'),
-                    _LocationChip('Malibu'),
+                    _LocationChip(l10n.filterLocationSantaMonica),
+                    _LocationChip(l10n.filterLocationWestHollywood),
+                    _LocationChip(l10n.filterLocationDowntownLa),
+                    _LocationChip(l10n.filterLocationMalibu),
                   ],
                 ),
               ],

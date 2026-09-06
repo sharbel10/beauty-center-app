@@ -13,10 +13,13 @@ class ClinicCenter extends Equatable {
     this.latitude,
     this.longitude,
     this.logoPath,
+    this.logoUrl,
     this.coverPath,
+    this.coverUrl,
     required this.averageRating,
     required this.ratingsCount,
     required this.isFeatured,
+    this.isFavorite = false,
     this.distance,
   });
 
@@ -33,11 +36,14 @@ class ClinicCenter extends Equatable {
       latitude: _toDouble(json['latitude']),
       longitude: _toDouble(json['longitude']),
       logoPath: json['logo_path'] as String?,
+      logoUrl: json['logo_url'] as String?,
       coverPath: json['cover_path'] as String?,
+      coverUrl: json['cover_url'] as String?,
       averageRating: _toDouble(json['average_rating']) ?? 0,
       ratingsCount: json['ratings_count'] as int? ?? 0,
       isFeatured: json['is_featured'] as bool? ?? false,
-      distance: _toDouble(json['distance']),
+      isFavorite: json['is_favorite'] as bool? ?? false,
+      distance: _toDouble(json['distance_km'] ?? json['distance']),
     );
   }
 
@@ -52,10 +58,13 @@ class ClinicCenter extends Equatable {
   final double? latitude;
   final double? longitude;
   final String? logoPath;
+  final String? logoUrl;
   final String? coverPath;
+  final String? coverUrl;
   final double averageRating;
   final int ratingsCount;
   final bool isFeatured;
+  final bool isFavorite;
   final double? distance;
 
   String get locationLabel {
@@ -88,10 +97,13 @@ class ClinicCenter extends Equatable {
     latitude,
     longitude,
     logoPath,
+    logoUrl,
     coverPath,
+    coverUrl,
     averageRating,
     ratingsCount,
     isFeatured,
+    isFavorite,
     distance,
   ];
 }

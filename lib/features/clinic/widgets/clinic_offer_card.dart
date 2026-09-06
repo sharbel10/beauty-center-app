@@ -1,4 +1,6 @@
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -11,6 +13,7 @@ class ClinicOfferCard extends StatelessWidget {
     required this.discountType,
     required this.endsAt,
     required this.isDark,
+    required this.onTap,
     super.key,
   });
 
@@ -20,67 +23,27 @@ class ClinicOfferCard extends StatelessWidget {
   final String discountType;
   final String endsAt;
   final bool isDark;
+  final VoidCallback onTap;
 
-  String _formatExpiryDate(String dateStr) {
-    if (dateStr.isEmpty) return 'Limited Time';
+  String _formatExpiryDate(BuildContext context, String dateStr) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    if (dateStr.isEmpty) return l10n.limitedTime;
+
     try {
-      final onlyDate = dateStr.split('T')[0];
-      final parts = onlyDate.split('-');
-      if (parts.length < 3) return onlyDate;
-
-      final year = parts[0];
-      final monthNum = parts[1];
-      final day = int.parse(parts[2]).toString();
-      final String monthName;
-      switch (monthNum) {
-        case '01':
-          monthName = 'Jan';
-          break;
-        case '02':
-          monthName = 'Feb';
-          break;
-        case '03':
-          monthName = 'Mar';
-          break;
-        case '04':
-          monthName = 'Apr';
-          break;
-        case '05':
-          monthName = 'May';
-          break;
-        case '06':
-          monthName = 'Jun';
-          break;
-        case '07':
-          monthName = 'Jul';
-          break;
-        case '08':
-          monthName = 'Aug';
-          break;
-        case '09':
-          monthName = 'Sep';
-          break;
-        case '10':
-          monthName = 'Oct';
-          break;
-        case '11':
-          monthName = 'Nov';
-          break;
-        case '12':
-          monthName = 'Dec';
-          break;
-        default:
-          monthName = 'Min';
-      }
-
-      return 'Until $monthName $day, $year';
+      final String onlyDate = dateStr.split('T').first;
+      final DateTime date = DateTime.parse(onlyDate);
+      final String formatted = DateFormat.yMMMd(
+        Localizations.localeOf(context),
+      ).format(date);
+      return l10n.offerUntilDate(formatted);
     } catch (_) {
-      return 'Limited time';
+      return l10n.limitedTimeLower;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final Color background = isDark ? AppColors.primary : AppColors.surface;
     final Color foreground = isDark ? AppColors.surface : AppColors.primary;
     final Color subText = isDark
@@ -88,12 +51,11 @@ class ClinicOfferCard extends StatelessWidget {
         : AppColors.primarySoft.withOpacity(0.7);
 
     final String discountBadgeText = discountType == 'percentage'
-        ? '$discountValue% OFF'
-        : 'SP$discountValue OFF';
+        ? l10n.offerDiscountPercent(discountValue)
+        : l10n.offerDiscountAmount(discountValue);
 
     return Container(
       width: 290,
-      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(24),
@@ -110,122 +72,128 @@ class ClinicOfferCard extends StatelessWidget {
                 ),
               ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
+      clipBehavior: Clip.antiAlias,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isDark ? AppColors.gold : AppColors.primary,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        discountBadgeText,
+                        style: AppTextStyles.smallCaps.copyWith(
+                          color: isDark ? AppColors.primary : AppColors.surface,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      isDark ? l10n.exclusive : l10n.hotDeal,
+                      style: AppTextStyles.smallCaps.copyWith(
+                        color: isDark
+                            ? AppColors.gold.withOpacity(0.8)
+                            : AppColors.gold,
+                        fontSize: 10,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
+                  ],
                 ),
-                decoration: BoxDecoration(
-                  color: isDark ? AppColors.gold : AppColors.primary,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  discountBadgeText,
-                  style: AppTextStyles.smallCaps.copyWith(
-                    color: isDark ? AppColors.primary : AppColors.surface,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w900,
+                const SizedBox(height: 14),
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.title.copyWith(
+                    color: foreground,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
-              ),
-              Text(
-                isDark ? 'EXCLUSIVE' : 'HOT DEAL',
-                style: AppTextStyles.smallCaps.copyWith(
-                  color: isDark
-                      ? AppColors.gold.withOpacity(0.8)
-                      : AppColors.gold,
-                  fontSize: 10,
-                  letterSpacing: 0.8,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-
-          Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.title.copyWith(
-              color: foreground,
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 4),
-
-          Expanded(
-            child: Text(
-              description,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.subtitle.copyWith(
-                color: subText,
-                fontSize: 12,
-                height: 1.3,
-              ),
-            ),
-          ),
-
-          Row(
-            children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.history_toggle_off_rounded,
-                      size: 14,
-                      color: isDark
-                          ? AppColors.gold.withOpacity(0.7)
-                          : AppColors.gold,
+                const SizedBox(height: 4),
+                Expanded(
+                  child: Text(
+                    description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.subtitle.copyWith(
+                      color: subText,
+                      fontSize: 12,
+                      height: 1.3,
                     ),
-                    const SizedBox(width: 6),
+                  ),
+                ),
+                Row(
+                  children: [
                     Expanded(
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.history_toggle_off_rounded,
+                            size: 14,
+                            color: isDark
+                                ? AppColors.gold.withOpacity(0.7)
+                                : AppColors.gold,
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              _formatExpiryDate(context, endsAt),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyles.subtitle.copyWith(
+                                color: isDark
+                                    ? AppColors.surface.withOpacity(0.8)
+                                    : AppColors.primary,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isDark ? AppColors.surface : AppColors.primary,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       child: Text(
-                        _formatExpiryDate(endsAt),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.subtitle.copyWith(
-                          color: isDark
-                              ? AppColors.surface.withOpacity(0.8)
-                              : AppColors.primary,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
+                        l10n.clinicOfferClaim,
+                        style: AppTextStyles.link.copyWith(
+                          color: isDark ? AppColors.primary : AppColors.surface,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(width: 8),
-
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: isDark ? AppColors.surface : AppColors.primary,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  'Claim',
-                  style: AppTextStyles.link.copyWith(
-                    color: isDark ? AppColors.primary : AppColors.surface,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ],
+        ),
       ),
     );
   }

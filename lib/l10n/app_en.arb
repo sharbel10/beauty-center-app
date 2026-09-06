@@ -1,0 +1,644 @@
+{
+  "@@locale": "en",
+  "appTitle": "Lumina App",
+  "lumina": "Lumina",
+  "login": "Login",
+  "register": "Register",
+  "retry": "Retry",
+  "apply": "Apply",
+  "reset": "Reset",
+  "all": "All",
+  "min": "Min",
+  "max": "Max",
+  "book": "BOOK",
+  "top": "TOP",
+  "home": "HOME",
+  "explore": "EXPLORE",
+  "bookings": "BOOKINGS",
+  "profile": "PROFILE",
+  "aiScan": "AI SCAN",
+  "emailAddress": "Email Address",
+  "emailHint": "name@example.com",
+  "password": "Password",
+  "confirmPassword": "Confirm Password",
+  "verificationCode": "Verification Code",
+  "backToLogin": "Back to Login",
+  "resendCode": "Resend code",
+  "checkEnteredData": "Check the entered data.",
+  "loginFailed": "Login failed",
+  "registrationFailed": "Registration failed",
+  "requestFailed": "Request failed",
+  "verificationFailed": "Verification failed",
+  "resetFailed": "Reset failed",
+  "emailRequiredToProceed": "Email is required to proceed.",
+  "emailNotFound": "Email not found",
+  "otpSentSuccessfully": "OTP sent successfully.",
+  "failedToResendOtp": "Failed to resend OTP.",
+  "signInToContinue": "Sign in to continue",
+  "accessYourLuminaAccount": "Access your Lumina account.",
+  "enterYourPassword": "Enter your password",
+  "forgotPasswordQuestion": "Forgot password?",
+  "rememberMe": "Remember me",
+  "dontHaveAccount": "Don't have an account? ",
+  "createAccount": "Create Account",
+  "joinLumina": "Join Lumina",
+  "fullName": "Full Name",
+  "fullNameHint": "Jane Doe",
+  "registerEmailHint": "jane@example.com",
+  "phoneNumber": "Phone Number",
+  "phoneHint": "+1 (555) 000-0000",
+  "createPassword": "Create a password",
+  "confirmYourPassword": "Confirm your password",
+  "alreadyHaveAccount": "Already have an account? ",
+  "forgotPassword": "Forgot Password",
+  "recoverYourAccount": "Recover your account",
+  "sendVerificationCode": "Send Verification Code",
+  "enterYourEmailAddress": "Enter your email address.",
+  "sendCode": "Send Code",
+  "otpVerification": "OTP Verification",
+  "secureAccountRecovery": "Secure account recovery",
+  "enterCode": "Enter Code",
+  "yourEmail": "your email",
+  "otpEmailMessage": "Enter the 6-digit code sent to {email}.",
+  "@otpEmailMessage": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyCode": "Verify Code",
+  "verifyAccount": "Verify Account",
+  "completeRegistration": "Complete your registration",
+  "registrationCode": "Registration Code",
+  "registrationCodeHelp": "Enter the 6-digit code sent after creating your account.",
+  "codeValidTenMinutes": "The code is valid for 10 minutes",
+  "resetPassword": "Reset Password",
+  "createNewPassword": "Create a new password",
+  "newPassword": "New Password",
+  "choosePasswordForAccount": "Choose a password for your account.",
+  "enterNewPassword": "Enter new password",
+  "confirmNewPassword": "Confirm new password",
+  "validationFullName": "Enter your full name.",
+  "validationEmailRequired": "Email address is required.",
+  "validationEmailInvalid": "Enter a valid email address.",
+  "validationPhoneRequired": "Phone number is required.",
+  "validationPhoneInvalid": "Enter a valid phone number.",
+  "validationEmailOrPhoneRequired": "Email or phone is required.",
+  "validationEmailOrPhoneInvalid": "Enter a valid email or phone number.",
+  "validationPasswordRequired": "Password is required.",
+  "validationPasswordLength": "Password must be at least 6 characters.",
+  "validationOtp": "Enter the 6-digit verification code.",
+  "validationConfirmPasswordRequired": "Confirm your password.",
+  "validationPasswordsDoNotMatch": "Passwords do not match.",
+  "onboardingDiscoverClinics": "Discover Clinics",
+  "onboardingDiscoverTitle": "Find trusted beauty centers near you.",
+  "onboardingDiscoverSubtitle": "Explore services, specialists, and available appointments from one place.",
+  "onboardingBookVisits": "Book Visits",
+  "onboardingBookTitle": "Schedule your care without extra calls.",
+  "onboardingBookSubtitle": "Choose your treatment, pick a time, and keep your booking details organized.",
+  "onboardingPersonalCare": "Personal Care",
+  "onboardingPersonalTitle": "Track your beauty journey clearly.",
+  "onboardingPersonalSubtitle": "Review appointments and follow-up notes in a simple patient experience.",
+  "skip": "Skip",
+  "next": "Next",
+  "getStarted": "Get Started",
+  "welcomeBack": "WELCOME BACK",
+  "guest": "Guest",
+  "changeLanguage": "Change language",
+  "languageEnglish": "English",
+  "languageArabic": "Arabic",
+  "logout": "Log out",
+  "settings": "Settings",
+  "searchClinicsOrTreatments": "Search clinics or treatments...",
+  "nearbyClinics": "Nearby Clinics",
+  "specialPromotions": "Special Promotions",
+  "discoverMoreClinics": "DISCOVER MORE CLINICS",
+  "unableToLoadHomeData": "Unable to load home data.",
+  "exclusive": "EXCLUSIVE",
+  "hotDeal": "HOT DEAL",
+  "claimOffer": "CLAIM OFFER",
+  "off": "OFF",
+  "reviewsCount": "{count, plural, =0{No reviews yet} one{1 review} other{{count} reviews}}",
+  "@reviewsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "couldNotOpenMapsForLocation": "Could not open maps for this location.",
+  "locationUnavailableForClinic": "Location is not available for this clinic.",
+  "allClinics": "All Clinics",
+  "loadMore": "Load More",
+  "searchClinics": "Search clinics...",
+  "filters": "Filters",
+  "priceRangeFilter": "${min} - ${max}",
+  "@priceRangeFilter": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "couldNotOpenMaps": "Could not open maps.",
+  "clinicCenter": "Clinic center",
+  "viewAndBook": "View & Book",
+  "clinicDetailsComingSoon": "Clinic details will be connected next.",
+  "topPick": "Top Pick",
+  "clinic": "Clinic",
+  "area": "AREA",
+  "distance": "DISTANCE",
+  "notAvailable": "N/A",
+  "noClinicsFound": "No clinics found.",
+  "categories": "Categories",
+  "pricing": "Pricing",
+  "priceRange": "Price range",
+  "minimumPrice": "Minimum price",
+  "maximumPrice": "Maximum price",
+  "clinicGalleryExperienceEyebrow": "THE EXPERIENCE",
+  "clinicGalleryInteriorTitle": "Clinic Interior",
+  "clinicGalleryNoInteriorPhotos": "No interior photos available",
+  "clinicGalleryResultsEyebrow": "REAL RESULTS",
+  "clinicGalleryTransformationsTitle": "Transformations",
+  "clinicGalleryDefaultTransformationCaption": "Clinical Transformation Result",
+  "clinicGalleryResultBadge": "RESULT",
+  "clinicGalleryBeforeLabel": "BEFORE",
+  "clinicGalleryAfterLabel": "AFTER",
+  "clinicGalleryNoTransformations": "No Transformations Logged Yet",
+  "clinicGalleryPrecisionEyebrow": "CLINICAL PRECISION",
+  "clinicGalleryProceduresTitle": "Skin Procedures",
+  "clinicGalleryNoProcedures": "No Procedures Available",
+  "clinicDetailsTitle": "Clinic Details",
+  "clinicDetailsLoadFailed": "Failed to load clinic details.",
+  "clinicTabOverview": "Overview",
+  "clinicTabServices": "Services",
+  "clinicTabGallery": "Gallery",
+  "clinicTabInfo": "Info",
+  "clinicTopRated": "TOP RATED",
+  "clinicHeroRatingReviews": "{rating} ({reviews})",
+  "@clinicHeroRatingReviews": {
+    "placeholders": {
+      "rating": {"type": "String"},
+      "reviews": {"type": "String"}
+    }
+  },
+  "clinicAbout": "About Clinic",
+  "clinicLocation": "Location",
+  "clinicSpecialOffers": "Special Offers",
+  "clinicOurSpecialists": "Our Specialists",
+  "clinicNoOffersTitle": "No Offers Available Right Now",
+  "clinicNoOffersSubtitle": "Stay tuned! Exclusive clinic discounts will appear here.",
+  "clinicNoSpecialists": "No specialists available right now.",
+  "clinicNoServices": "No services available for this center.",
+  "clinicServicesCount": "{count, plural, one{1 SERVICE} other{{count} SERVICES}}",
+  "@clinicServicesCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "clinicServiceBadgeOffer": "OFFER",
+  "clinicServiceBadgeBestSeller": "BEST SELLER",
+  "clinicServiceBadgeFeatured": "FEATURED",
+  "clinicBookAppointment": "BOOK APPOINTMENT",
+  "clinicInstantConfirmation": "Instant Confirmation",
+  "clinicRequiresApproval": "Requires Approval",
+  "clinicNoDepositRequired": "No Deposit Required",
+  "clinicDepositPercentage": "Required Deposit: {value}%",
+  "@clinicDepositPercentage": {
+    "placeholders": {
+      "value": {"type": "int"}
+    }
+  },
+  "clinicDepositAmount": "Deposit: ${value}",
+  "@clinicDepositAmount": {
+    "placeholders": {
+      "value": {"type": "int"}
+    }
+  },
+  "clinicHours": "Clinic Hours",
+  "clinicClosedToday": "Closed Today",
+  "clinicOpenTodayUntil": "Open Today | Until {time}",
+  "@clinicOpenTodayUntil": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "clinicClosed": "CLOSED",
+  "clinicNoWorkingHours": "No working hours provided.",
+  "dayMonday": "Monday",
+  "dayTuesday": "Tuesday",
+  "dayWednesday": "Wednesday",
+  "dayThursday": "Thursday",
+  "dayFriday": "Friday",
+  "daySaturday": "Saturday",
+  "daySunday": "Sunday",
+  "dayUnknown": "Unknown",
+  "dayTodayMarker": "(Today)",
+  "clinicContact": "Contact",
+  "clinicPhone": "Phone",
+  "clinicEmail": "Email",
+  "clinicWebsite": "Website",
+  "clinicCallNow": "CALL NOW",
+  "clinicCancellationPolicy": "Cancellation Policy",
+  "clinicCancellationIntro": "We value your time and our practitioners' expertise. This center applies a {policyType} cancellation policy.",
+  "@clinicCancellationIntro": {
+    "placeholders": {
+      "policyType": {"type": "String"}
+    }
+  },
+  "clinicCancellationFree": "Cancellations are completely free of charge if made at least {hours} hours prior to your appointment window.",
+  "@clinicCancellationFree": {
+    "placeholders": {
+      "hours": {"type": "int"}
+    }
+  },
+  "clinicCancellationFee": "Late cancellations within {hours} hours are subject to a fee equal to {percentage}% of the scheduled service price. No-shows will be charged at 100%.",
+  "@clinicCancellationFee": {
+    "placeholders": {
+      "hours": {"type": "int"},
+      "percentage": {"type": "int"}
+    }
+  },
+  "clinicPolicyStandard": "STANDARD",
+  "limitedTime": "Limited Time",
+  "limitedTimeLower": "Limited time",
+  "offerUntilDate": "Until {date}",
+  "@offerUntilDate": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "offerDiscountPercent": "{value}% OFF",
+  "@offerDiscountPercent": {
+    "placeholders": {
+      "value": {"type": "int"}
+    }
+  },
+  "offerDiscountAmount": "${value} OFF",
+  "@offerDiscountAmount": {
+    "placeholders": {
+      "value": {"type": "int"}
+    }
+  },
+  "clinicOfferClaim": "Claim",
+  "clinicDurationMinutes": "{minutes} min",
+  "@clinicDurationMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "clinicPrepMinutes": "+ {minutes} min prep",
+  "@clinicPrepMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "priceSp": "${price}",
+  "@priceSp": {
+    "placeholders": {
+      "price": {"type": "String"}
+    }
+  },
+  "clearAll": "CLEAR ALL",
+  "filterServiceType": "Service Type",
+  "filterPriceRange": "Price Range",
+  "filterFacialTreatment": "Facial Treatment",
+  "filterBotoxFillers": "Botox & Fillers",
+  "filterLaserHairRemoval": "Laser Hair Removal",
+  "filterBodyContouring": "Body Contouring",
+  "filterChemicalPeel": "Chemical Peel",
+  "filterLocationBeverlyHills": "Beverly Hills, CA",
+  "filterLocationSantaMonica": "Santa Monica",
+  "filterLocationWestHollywood": "West Hollywood",
+  "filterLocationDowntownLa": "Downtown LA",
+  "filterLocationMalibu": "Malibu",
+  "priceUsd": "${value}",
+  "@priceUsd": {
+    "placeholders": {
+      "value": {"type": "int"}
+    }
+  },
+  "profileTitle": "Profile",
+  "phone": "Phone",
+  "yourLocation": "YOUR LOCATION",
+  "verified": "Verified",
+  "unverified": "Unverified",
+  "active": "Active",
+  "inactive": "Inactive",
+  "unableToLoadProfile": "Unable to load profile.",
+  "noSpecialPromotionsTitle": "No special promotions right now",
+  "noSpecialPromotionsSubtitle": "Check back soon for exclusive offers from clinics near you.",
+  "findingYourLocation": "Finding your location...",
+  "locationServicesOff": "Location services off",
+  "enableLocation": "Enable location",
+  "locationUnavailable": "Location unavailable",
+  "myAppointments": "My Appointments",
+  "upcoming": "Upcoming",
+  "past": "Past",
+  "next30Days": "NEXT 30 DAYS",
+  "history": "HISTORY",
+  "noUpcomingAppointments": "No upcoming appointments.",
+  "noPastAppointments": "No past appointments.",
+  "cancelAppointment": "Cancel appointment?",
+  "cancelAppointmentConfirm": "Are you sure you want to cancel this appointment?",
+  "cancelAppointmentAction": "Cancel Appointment",
+  "keep": "Keep",
+  "clinicMissingForAppointment": "Clinic is missing for this appointment.",
+  "reschedule": "Reschedule",
+  "viewDetails": "View details",
+  "rebook": "Rebook",
+  "appointmentCancelled": "Appointment cancelled successfully.",
+  "emailOrPhone": "Email or Phone",
+  "emailOrPhoneHint": "Email or phone number",
+  "bookTreatment": "Book Treatment",
+  "selectService": "Select Service",
+  "selectServiceSubtitle": "Pick the treatment you want to book",
+  "chooseSpecialist": "Choose Specialist",
+  "chooseSpecialistSubtitle": "Optional — leave \"Any\" for the earliest availability",
+  "anySpecialist": "Any",
+  "anySpecialistName": "Any specialist",
+  "otherCategory": "Other",
+  "selectDate": "Select Date",
+  "selectDateSubtitle": "Choose a day for your appointment",
+  "calendarMonth": "Month",
+  "selectTime": "Select Time",
+  "changeDate": "Change date",
+  "couldNotLoadAvailableTimes": "Could not load available times.",
+  "noAvailableTimesOnDate": "No available times on this date.",
+  "specialistNoAvailability": "{name} has no availability on this date.",
+  "@specialistNoAvailability": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tryAnySpecialist": "Try any specialist",
+  "pickAnotherDate": "Pick another date",
+  "morningPeriod": "MORNING",
+  "afternoonPeriod": "AFTERNOON",
+  "bookingSummary": "Summary",
+  "serviceLabel": "Service",
+  "specialistLabel": "Specialist",
+  "dateLabel": "Date",
+  "timeLabel": "Time",
+  "paymentLabel": "Payment",
+  "paymentTitle": "Review & pay",
+  "paymentSubtitle": "Review your appointment details and complete your payment securely.",
+  "paymentBackendPendingTitle": "Backend connection pending",
+  "paymentBackendPendingBody": "The payment button will be enabled when the API returns a Stripe PaymentIntent client secret.",
+  "paymentSecureNotice": "Payment details are entered in Stripe's secure PaymentSheet and are never stored by Lumina.",
+  "amountDueNow": "Amount due now",
+  "payWithStripe": "Pay with Stripe",
+  "completePayment": "Complete payment",
+  "pendingPaymentNotice": "A deposit is required to keep this appointment. Complete payment before the booking expires.",
+  "pendingPaymentDeadline": "Complete payment by {deadline}. The appointment will be cancelled after this time.",
+  "@pendingPaymentDeadline": {
+    "placeholders": {
+      "deadline": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentNoLongerAvailable": "The payment window has ended or this appointment no longer requires payment.",
+  "checkPaymentStatus": "Check payment status",
+  "paymentFailed": "Stripe couldn't complete the payment. Please try again.",
+  "paymentVerificationPending": "Payment is still being verified. Tap the button to check again.",
+  "stripeNotConfigured": "The payment service is currently unavailable. Please try again later.",
+  "stripeGatewayUnavailable": "Stripe is not enabled for this center.",
+  "estimatedTotal": "Estimated Total",
+  "bookingTotal": "Total  {total}",
+  "@bookingTotal": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "chooseATime": "Choose a time",
+  "continueLabel": "Continue",
+  "confirmBooking": "Confirm Booking",
+  "confirmReschedule": "Confirm Reschedule",
+  "noServicesAvailable": "No services available for this clinic.",
+  "pleaseChooseServiceDateTime": "Please choose a service, date, and time.",
+  "appointmentBookedSuccessfully": "Appointment booked successfully.",
+  "appointmentDetails": "Appointment details",
+  "clinicLabel": "Clinic",
+  "depositLabel": "Deposit",
+  "notesLabel": "Notes",
+  "cancellationReasonLabel": "Cancellation reason",
+  "statusPending": "Pending",
+  "statusPendingPayment": "Payment required",
+  "statusConfirmed": "Confirmed",
+  "statusCompleted": "Completed",
+  "statusCancelled": "Cancelled",
+  "statusRejected": "Rejected",
+  "errorNoInternet": "No internet connection. Please check your network and try again.",
+  "errorServerUnavailable": "Can't reach the server. Please try again later.",
+  "errorUnexpected": "Something went wrong. Please try again.",
+  "editProfile": "Edit Profile",
+  "save": "Save",
+  "cancel": "Cancel",
+  "gender": "Gender",
+  "birthDate": "Birth Date",
+  "city": "City",
+  "address": "Address",
+  "notificationsEnabled": "Notifications Enabled",
+  "myStats": "My Stats",
+  "appointmentsTotal": "Total Appointments",
+  "appointmentsUpcoming": "Upcoming Appointments",
+  "appointmentsCompleted": "Completed Appointments",
+  "favoriteCenters": "Favorite Centers",
+  "favoriteServices": "Favorite Services",
+  "reviews": "Reviews",
+  "unreadNotifications": "Unread Notifications",
+  "profileUpdatedSuccessfully": "Profile updated successfully.",
+  "male": "Male",
+  "female": "Female",
+  "clinicEmail": "Email",
+  "changeAvatar": "Change Avatar",
+  "uploadAvatar": "Upload Avatar",
+  "avatarUpdatedSuccessfully": "Avatar updated successfully.",
+  "removeAvatar": "Remove photo",
+  "removeAvatarConfirm": "Are you sure you want to remove your profile photo?",
+  "avatarRemovedSuccessfully": "Profile photo removed successfully.",
+  "logoutConfirm": "Are you sure you want to log out?",
+  "deleteAccount": "Delete Account",
+  "deleteAccountConfirm": "Are you sure you want to delete your account? This action cannot be undone.",
+  "accountDeletedSuccessfully": "Account deleted successfully.",
+  "selectImage": "Select Image",
+  "camera": "Camera",
+  "gallery": "Gallery",
+  "changePassword": "Change Password",
+  "currentPassword": "Current Password",
+  "newPassword": "New Password",
+  "confirmPassword": "Confirm Password",
+  "passwordChangedSuccessfully": "Password changed successfully.",
+  "passwordChangedReLogin": "Password changed successfully. Please log in again.",
+  "passwordsDoNotMatch": "Passwords do not match.",
+  "currentPasswordRequired": "Current password is required.",
+  "newPasswordRequired": "New password is required.",
+  "confirmPasswordRequired": "Please confirm your password.",
+  "passwordTooShort": "Password must be at least 6 characters.",
+  "lastLogin": "Last Login",
+  "favorites": "Favorites",
+  "centers": "Centers",
+  "services": "Services",
+  "offers": "Offers",
+  "noFavoriteCenters": "No favorite centers",
+  "noFavoriteCentersSubtitle": "Start adding centers to your favorites to see them here.",
+  "noFavoriteServices": "No favorite services",
+  "noFavoriteServicesSubtitle": "Start adding services to your favorites to see them here.",
+  "exploreAndAddFavorites": "Explore and add to favorites",
+  "noResultsFound": "No results found",
+  "noResultsFor": "No results for",
+  "currency": "$",
+  "pressBackAgainToExit": "Press back again to exit the app",
+  "notifications": "Notifications",
+  "notificationsAll": "All",
+  "notificationsUnread": "Unread",
+  "noNotifications": "No notifications yet",
+  "noNotificationsSubtitle": "Booking updates and clinic alerts will appear here.",
+  "noUnreadNotifications": "You're all caught up",
+  "noUnreadNotificationsSubtitle": "You have no unread notifications.",
+  "markAllAsRead": "Mark all as read",
+  "deleteNotification": "Delete notification",
+  "deleteNotificationConfirm": "Are you sure you want to delete this notification?",
+  "unableToLoadNotifications": "Unable to load notifications",
+  "justNow": "Just now",
+  "yesterday": "Yesterday",
+  "minutesAgo": "{count}m ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count}h ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchType": "Result type",
+  "centers": "Centers",
+  "services": "Services",
+  "offers": "Offers",
+  "sortBy": "Sort by",
+  "sortRating": "Highest rating",
+  "sortNearest": "Nearest",
+  "sortName": "Name",
+  "sortLatest": "Latest",
+  "sortPriceAsc": "Price: low to high",
+  "sortPriceDesc": "Price: high to low",
+  "sortDuration": "Duration",
+  "centerFilter": "Center",
+  "anyOption": "Any",
+  "yesOption": "Yes",
+  "noOption": "No",
+  "minRating": "Minimum rating",
+  "radiusKm": "Radius (km)",
+  "resultsLimit": "Results limit",
+  "governorate": "Governorate",
+  "featuredOnly": "Featured only",
+  "requiresDeposit": "Requires deposit",
+  "maxDuration": "Maximum duration (minutes)",
+  "invalidPriceRange": "Maximum price cannot be lower than minimum price.",
+  "invalidFilterValue": "Enter a valid value within the allowed range.",
+  "locationPermissionRequired": "Location access is needed to sort by nearest. Choose another sort option or allow location access.",
+  "clearFilters": "Clear filters",
+  "daysAgo": "{count}d ago",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiBeautyAssistant": "AI BEAUTY ASSISTANT",
+  "personalRecommendation": "Your care, made personal",
+  "personalRecommendationSubtitle": "Tell us what you want to improve or let Lumina analyze your face to suggest suitable treatments.",
+  "describeYourNeeds": "Describe your needs",
+  "describeYourNeedsSubtitle": "Share your goals, concerns, and the result you have in mind.",
+  "scanYourFace": "Scan your face",
+  "scanYourFaceSubtitle": "Use a guided face scan for a more visual recommendation.",
+  "startWithDescription": "START WITH A DESCRIPTION",
+  "startFaceScan": "START FACE SCAN",
+  "yourBeautyGoals": "What would you like help with?",
+  "beautyGoalsHint": "For example: I want brighter skin and help with fine lines around my eyes...",
+  "continueToRecommendation": "GET MY RECOMMENDATION",
+  "uiPreviewNotice": "Recommendation results will be connected when the AI service is ready.",
+  "biometricAlignment": "BIOMETRIC ALIGNMENT",
+  "alignFaceWithinFrame": "Align your face within the frame",
+  "wellLitScanHint": "Make sure your face is visible in a well-lit environment for the most accurate analysis.",
+  "luminaIntelligence": "LUMINA INTELLIGENCE",
+  "scanAnalysisHint": "Ready to analyze skin texture and facial balance",
+  "scanFace": "SCAN FACE",
+  "clinicalPrivacyNotice": "YOUR IMAGE STAYS PRIVATE AND SECURE",
+  "cameraPreviewPlaceholder": "Camera preview",
+  "cameraUnavailable": "Camera is unavailable",
+  "cameraUnavailableHint": "Allow camera access in your device settings, then try again.",
+  "tryCameraAgain": "TRY AGAIN"
+  ,"switchCamera": "Switch camera"
+  ,"aiInputRequired": "Enter a description or take a face photo first."
+  ,"aiTextTooLong": "The description must not exceed 1000 characters."
+  ,"aiImageTooLarge": "The image must not exceed 5 MB."
+  ,"aiUnsupportedImage": "Use a JPG, PNG, or WebP image."
+  ,"aiImageMissing": "The captured image is no longer available. Please try again."
+  ,"aiCaptureFailed": "We couldn't capture the photo. Please try again."
+  ,"aiAnalyzingTitle": "Creating your recommendations"
+  ,"aiAnalyzingSubtitle": "Lumina is analyzing your request and matching it with available services."
+  ,"aiResultsTitle": "Recommended for you"
+  ,"aiResultsSubtitle": "Suggestions are ranked by how closely they match your request."
+  ,"aiSuggestedServices": "Suggested services"
+  ,"aiSuggestedCenters": "Suggested centers"
+  ,"aiMatchPercent": "{percent}% MATCH"
+  ,"@aiMatchPercent": {"placeholders": {"percent": {"type": "int"}}}
+  ,"aiNoRecommendations": "No matching recommendations found"
+  ,"aiNoRecommendationsSubtitle": "Try adding more detail or taking another photo in better lighting."
+  ,"aiNewRecommendation": "NEW RECOMMENDATION"
+  ,"aiBookService": "BOOK SERVICE"
+  ,"aiViewCenter": "VIEW CENTER"
+  ,"rate": "Rate"
+  ,"report": "Report"
+  ,"rateExperience": "Rate your experience"
+  ,"howWasAppointment": "How was your appointment at {clinicName}?"
+  ,"@howWasAppointment": {"placeholders": {"clinicName": {"type": "String"}}}
+  ,"addCommentOptional": "Add a comment (optional)"
+  ,"tellUsMore": "Tell us more about your experience..."
+  ,"submitReview": "Submit Review"
+  ,"submitting": "Submitting..."
+  ,"reviewSubmitted": "Review submitted successfully"
+  ,"reviewSubmitFailed": "Failed to submit review"
+  ,"missingAppointmentDetails": "Missing appointment details. Cannot submit review."
+  ,"ratingPoor": "Poor"
+  ,"ratingFair": "Fair"
+  ,"ratingAverage": "Average"
+  ,"ratingGood": "Good"
+  ,"ratingExcellent": "Excellent"
+  ,"reportIssue": "Report an issue"
+  ,"reportReasonQuestion": "What is the reason?"
+  ,"reportAdditionalDetails": "Additional details (optional)"
+  ,"reportProvideDetails": "Provide more details to help us investigate..."
+  ,"submitReport": "Submit Report"
+  ,"reportSubmitted": "Report submitted successfully"
+  ,"reportSubmitFailed": "Failed to submit report"
+  ,"selectReasonError": "Please select a reason."
+  ,"missingCenterDetails": "Missing center details. Cannot submit report."
+  ,"reportReasonWrongSchedule": "Wrong schedule"
+  ,"reportReasonPoorService": "Poor service quality"
+  ,"reportReasonUnhygienic": "Unhygienic environment"
+  ,"reportReasonRudeStaff": "Rude staff"
+  ,"reportReasonOvercharging": "Overcharging / Billing issue"
+  ,"reportReasonNoShow": "No-show by center"
+  ,"reportReasonOther": "Other"
+  ,"readMore": "Read more"
+  ,"readLess": "Read less"
+}

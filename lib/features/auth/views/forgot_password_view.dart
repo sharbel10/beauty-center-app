@@ -9,6 +9,7 @@ import 'package:beauty_center_app/features/auth/widgets/auth_card.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_feedback.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_header.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_validation.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -51,6 +52,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
       return;
     }
 
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final AuthState state = widget._cubit.state;
     if (state.status == AuthStatus.success) {
       showAuthSnackBar(context, message: state.message!);
@@ -60,13 +62,17 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
     } else if (state.status == AuthStatus.failure) {
       final String message = state.errors != null
           ? state.errors!.values.first.first as String
-          : state.message ?? 'Request failed';
+          : state.message ?? l10n.requestFailed;
       showAuthSnackBar(context, message: message, isError: true);
     }
   }
 
   bool _validate() {
-    final String? emailError = AuthValidation.email(_emailController.text);
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    final String? emailError = AuthValidation.email(
+      _emailController.text,
+      l10n,
+    );
 
     setState(() {
       _emailError = emailError;
@@ -82,6 +88,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return BlocProvider<AuthCubit>.value(
       value: widget._cubit,
       child: Scaffold(
@@ -102,9 +110,9 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                           return Column(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
-                              const AuthHeader(
-                                title: 'Forgot Password',
-                                subtitle: 'Recover your account',
+                              AuthHeader(
+                                title: l10n.forgotPassword,
+                                subtitle: l10n.recoverYourAccount,
                               ),
                               const SizedBox(height: 34),
                               AuthCard(
@@ -113,20 +121,20 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                       CrossAxisAlignment.stretch,
                                   children: <Widget>[
                                     Text(
-                                      'Send Verification Code',
+                                      l10n.sendVerificationCode,
                                       style: AppTextStyles.headlineSmall,
                                     ),
                                     const SizedBox(height: 10),
                                     Text(
-                                      'Enter your email address.',
+                                      l10n.enterYourEmailAddress,
                                       style: AppTextStyles.bodyMedium.copyWith(
                                         color: AppColors.textLight,
                                       ),
                                     ),
                                     const SizedBox(height: 28),
                                     AppTextField(
-                                      label: 'Email Address',
-                                      hintText: 'name@example.com',
+                                      label: l10n.emailAddress,
+                                      hintText: l10n.emailHint,
                                       controller: _emailController,
                                       prefixIcon: Icons.alternate_email_rounded,
                                       errorText: _emailError,
@@ -138,7 +146,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                     ),
                                     const SizedBox(height: 28),
                                     AppButton(
-                                      text: 'Send Code',
+                                      text: l10n.sendCode,
                                       isLoading: state.isSubmitting,
                                       onPressed: _submit,
                                     ),
@@ -151,7 +159,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                   _clearFields();
                                   context.goNamed(RouteNames.login);
                                 },
-                                child: const Text('Back to Login'),
+                                child: Text(l10n.backToLogin),
                               ),
                             ],
                           );

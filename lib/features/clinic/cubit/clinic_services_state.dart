@@ -1,31 +1,40 @@
+import 'package:beauty_center_app/features/clinic/models/clinic_service_filters.dart';
 import 'package:beauty_center_app/features/clinic/models/clinics_services_response.dart';
 import 'package:equatable/equatable.dart';
 
-abstract class ClinicServicesState extends Equatable {
-  const ClinicServicesState();
+enum ClinicServicesStatus { initial, loading, success, failure }
 
-  @override
-  List<Object?> get props => [];
-}
+class ClinicServicesState extends Equatable {
+  const ClinicServicesState({
+    this.status = ClinicServicesStatus.initial,
+    this.services = const <ClinicServiceItem>[],
+    this.filters = const ClinicServiceFilters(),
+    this.message,
+  });
 
-class ClinicServicesInitial extends ClinicServicesState {}
-
-class ClinicServicesLoading extends ClinicServicesState {}
-
-class ClinicServicesSuccess extends ClinicServicesState {
+  final ClinicServicesStatus status;
   final List<ClinicServiceItem> services;
+  final ClinicServiceFilters filters;
+  final String? message;
 
-  const ClinicServicesSuccess(this.services);
+  bool get isLoading => status == ClinicServicesStatus.loading;
+
+  ClinicServicesState copyWith({
+    ClinicServicesStatus? status,
+    List<ClinicServiceItem>? services,
+    ClinicServiceFilters? filters,
+    String? message,
+    bool clearServices = false,
+    bool clearMessage = false,
+  }) => ClinicServicesState(
+    status: status ?? this.status,
+    services: clearServices
+        ? const <ClinicServiceItem>[]
+        : services ?? this.services,
+    filters: filters ?? this.filters,
+    message: clearMessage ? null : message ?? this.message,
+  );
 
   @override
-  List<Object?> get props => [services];
-}
-
-class ClinicServicesFailure extends ClinicServicesState {
-  final String errorMessage;
-
-  const ClinicServicesFailure(this.errorMessage);
-
-  @override
-  List<Object?> get props => [errorMessage];
+  List<Object?> get props => <Object?>[status, services, filters, message];
 }

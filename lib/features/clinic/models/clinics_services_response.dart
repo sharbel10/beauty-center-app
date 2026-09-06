@@ -30,6 +30,7 @@ class ServiceCategory extends Equatable {
     required this.name,
     required this.slug,
     required this.iconPath,
+    required this.iconUrl,
   });
 
   factory ServiceCategory.fromJson(Map<String, dynamic> json) {
@@ -38,6 +39,7 @@ class ServiceCategory extends Equatable {
       name: json['name'] as String? ?? '',
       slug: json['slug'] as String? ?? '',
       iconPath: json['icon_path'] as String? ?? '',
+      iconUrl: json['icon_url'] as String? ?? '',
     );
   }
 
@@ -45,9 +47,10 @@ class ServiceCategory extends Equatable {
   final String name;
   final String slug;
   final String iconPath;
+  final String iconUrl;
 
   @override
-  List<Object?> get props => [id, name, slug, iconPath];
+  List<Object?> get props => [id, name, slug, iconPath, iconUrl];
 }
 
 class ClinicServiceItem extends Equatable {
@@ -61,7 +64,9 @@ class ClinicServiceItem extends Equatable {
     required this.durationMinutes,
     required this.preparationMinutes,
     required this.imagePath,
+    required this.imageUrl,
     required this.isFeatured,
+    this.isFavorite = false,
     required this.category,
   });
 
@@ -76,7 +81,9 @@ class ClinicServiceItem extends Equatable {
       durationMinutes: json['duration_minutes'] as int? ?? 0,
       preparationMinutes: json['preparation_minutes'] as int? ?? 0,
       imagePath: json['image_path'] as String? ?? '',
+      imageUrl: json['image_url'] as String? ?? '',
       isFeatured: json['is_featured'] as bool? ?? false,
+      isFavorite: json['is_favorite'] as bool? ?? false,
       category: ServiceCategory.fromJson(
         json['category'] as Map<String, dynamic>? ?? <String, dynamic>{},
       ),
@@ -92,7 +99,9 @@ class ClinicServiceItem extends Equatable {
   final int durationMinutes;
   final int preparationMinutes;
   final String imagePath;
+  final String imageUrl;
   final bool isFeatured;
+  final bool isFavorite;
   final ServiceCategory category;
 
   @override
@@ -105,7 +114,9 @@ class ClinicServiceItem extends Equatable {
     finalPrice,
     durationMinutes,
     imagePath,
+    imageUrl,
     isFeatured,
+    isFavorite,
     category,
   ];
 }

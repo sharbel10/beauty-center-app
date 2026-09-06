@@ -9,6 +9,7 @@ import 'package:beauty_center_app/features/auth/widgets/auth_card.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_feedback.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_header.dart';
 import 'package:beauty_center_app/features/auth/widgets/auth_validation.dart';
+import 'package:beauty_center_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -47,9 +48,10 @@ class _RegisterOtpViewState extends State<RegisterOtpView> {
       return;
     }
 
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final String? email = widget.email ?? widget._cubit.state.customer?.email;
     if (email == null) {
-      showAuthSnackBar(context, message: 'Email not found', isError: true);
+      showAuthSnackBar(context, message: l10n.emailNotFound, isError: true);
       return;
     }
 
@@ -57,35 +59,19 @@ class _RegisterOtpViewState extends State<RegisterOtpView> {
   }
 
   Future<void> _resendCode() async {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final String? email = widget.email ?? widget._cubit.state.customer?.email;
     if (email == null) {
-      showAuthSnackBar(context, message: 'Email not found', isError: true);
+      showAuthSnackBar(context, message: l10n.emailNotFound, isError: true);
       return;
     }
 
     await widget._cubit.resendOtp(email: email);
-
-    if (!mounted) {
-      return;
-    }
-
-    final AuthState state = widget._cubit.state;
-    if (state.status == AuthStatus.success) {
-      showAuthSnackBar(
-        context,
-        message: state.message ?? 'OTP sent successfully.',
-      );
-    } else if (state.status == AuthStatus.failure) {
-      showAuthSnackBar(
-        context,
-        message: state.message ?? 'Failed to resend OTP.',
-        isError: true,
-      );
-    }
   }
 
   bool _validate() {
-    final String? otpError = AuthValidation.otp(_otpController.text);
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    final String? otpError = AuthValidation.otp(_otpController.text, l10n);
 
     setState(() {
       _otpError = otpError;
@@ -101,13 +87,38 @@ class _RegisterOtpViewState extends State<RegisterOtpView> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+
     return BlocProvider<AuthCubit>.value(
       value: widget._cubit,
       child: BlocListener<AuthCubit, AuthState>(
         listenWhen: (previous, current) =>
-            previous.status != current.status ||
-            previous.isAuthenticated != current.isAuthenticated,
+            current.operation != AuthOperation.none &&
+            (previous.status != current.status ||
+                previous.operation != current.operation ||
+                previous.isAuthenticated != current.isAuthenticated),
         listener: (context, state) {
+          final AppLocalizations l10n = AppLocalizations.of(context);
+          if (state.operation == AuthOperation.resendOtp) {
+            if (state.status == AuthStatus.success) {
+              showAuthSnackBar(
+                context,
+                message: state.message ?? l10n.otpSentSuccessfully,
+              );
+            } else if (state.status == AuthStatus.failure) {
+              showAuthSnackBar(
+                context,
+                message: state.message ?? l10n.failedToResendOtp,
+                isError: true,
+              );
+            }
+            return;
+          }
+
+          if (state.operation != AuthOperation.verifyOtp) {
+            return;
+          }
+
           if (state.status == AuthStatus.success) {
             if (state.message != null) {
               showAuthSnackBar(context, message: state.message!);
@@ -119,7 +130,7 @@ class _RegisterOtpViewState extends State<RegisterOtpView> {
           } else if (state.status == AuthStatus.failure) {
             final String message = state.errors != null
                 ? state.errors!.values.first.first as String
-                : state.message ?? 'Verification failed';
+                : state.message ?? l10n.verificationFailed;
             showAuthSnackBar(context, message: message, isError: true);
           }
         },
@@ -143,9 +154,9 @@ class _RegisterOtpViewState extends State<RegisterOtpView> {
                             return Column(
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                const AuthHeader(
-                                  title: 'Verify Account',
-                                  subtitle: 'Complete your registration',
+                                AuthHeader(
+                                  title: l10n.verifyAccount,
+                                  subtitle: l10n.completeRegistration,
                                 ),
                                 const SizedBox(height: 34),
                                 AuthCard(
@@ -154,12 +165,12 @@ class _RegisterOtpViewState extends State<RegisterOtpView> {
                                         CrossAxisAlignment.stretch,
                                     children: <Widget>[
                                       Text(
-                                        'Registration Code',
+                                        l10n.registrationCode,
                                         style: AppTextStyles.headlineSmall,
                                       ),
                                       const SizedBox(height: 10),
                                       Text(
-                                        'Enter the 6-digit code sent after creating your account.',
+                                        l10n.registrationCodeHelp,
                                         style: AppTextStyles.bodyMedium
                                             .copyWith(
                                               color: AppColors.textLight,
@@ -167,7 +178,7 @@ class _RegisterOtpViewState extends State<RegisterOtpView> {
                                       ),
                                       const SizedBox(height: 28),
                                       AppTextField(
-                                        label: 'Verification Code',
+                                        label: l10n.verificationCode,
                                         hintText: '000000',
                                         controller: _otpController,
                                         prefixIcon:
@@ -187,7 +198,7 @@ class _RegisterOtpViewState extends State<RegisterOtpView> {
                                       const SizedBox(height: 10),
 
                                       Text(
-                                        'The code is valid for 10 minutes',
+                                        l10n.codeValidTenMinutes,
                                         style: AppTextStyles.bodyMedium
                                             .copyWith(
                                               color: AppColors.secondary,
@@ -196,7 +207,7 @@ class _RegisterOtpViewState extends State<RegisterOtpView> {
                                       const SizedBox(height: 28),
 
                                       AppButton(
-                                        text: 'Verify Account',
+                                        text: l10n.verifyAccount,
                                         isLoading: state.isSubmitting,
                                         onPressed: _submit,
                                       ),
@@ -205,7 +216,7 @@ class _RegisterOtpViewState extends State<RegisterOtpView> {
                                         onPressed: state.isSubmitting
                                             ? null
                                             : _resendCode,
-                                        child: const Text('Resend code'),
+                                        child: Text(l10n.resendCode),
                                       ),
                                     ],
                                   ),
@@ -216,7 +227,7 @@ class _RegisterOtpViewState extends State<RegisterOtpView> {
                                     _clearFields();
                                     context.goNamed(RouteNames.login);
                                   },
-                                  child: const Text('Back to Login'),
+                                  child: Text(l10n.backToLogin),
                                 ),
                               ],
                             );

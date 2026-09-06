@@ -1,0 +1,1602 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
+class AppLocalizationsEn extends AppLocalizations {
+  AppLocalizationsEn([String locale = 'en']) : super(locale);
+
+  @override
+  String get appTitle => 'Lumina App';
+
+  @override
+  String get lumina => 'Lumina';
+
+  @override
+  String get login => 'Login';
+
+  @override
+  String get register => 'Register';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get min => 'Min';
+
+  @override
+  String get max => 'Max';
+
+  @override
+  String get book => 'BOOK';
+
+  @override
+  String get top => 'TOP';
+
+  @override
+  String get home => 'HOME';
+
+  @override
+  String get explore => 'EXPLORE';
+
+  @override
+  String get bookings => 'BOOKINGS';
+
+  @override
+  String get profile => 'PROFILE';
+
+  @override
+  String get aiScan => 'AI SCAN';
+
+  @override
+  String get emailAddress => 'Email Address';
+
+  @override
+  String get emailHint => 'name@example.com';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get verificationCode => 'Verification Code';
+
+  @override
+  String get backToLogin => 'Back to Login';
+
+  @override
+  String get resendCode => 'Resend code';
+
+  @override
+  String get checkEnteredData => 'Check the entered data.';
+
+  @override
+  String get loginFailed => 'Login failed';
+
+  @override
+  String get registrationFailed => 'Registration failed';
+
+  @override
+  String get requestFailed => 'Request failed';
+
+  @override
+  String get verificationFailed => 'Verification failed';
+
+  @override
+  String get resetFailed => 'Reset failed';
+
+  @override
+  String get emailRequiredToProceed => 'Email is required to proceed.';
+
+  @override
+  String get emailNotFound => 'Email not found';
+
+  @override
+  String get otpSentSuccessfully => 'OTP sent successfully.';
+
+  @override
+  String get failedToResendOtp => 'Failed to resend OTP.';
+
+  @override
+  String get signInToContinue => 'Sign in to continue';
+
+  @override
+  String get accessYourLuminaAccount => 'Access your Lumina account.';
+
+  @override
+  String get enterYourPassword => 'Enter your password';
+
+  @override
+  String get forgotPasswordQuestion => 'Forgot password?';
+
+  @override
+  String get rememberMe => 'Remember me';
+
+  @override
+  String get dontHaveAccount => 'Don\'t have an account? ';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get joinLumina => 'Join Lumina';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get fullNameHint => 'Jane Doe';
+
+  @override
+  String get registerEmailHint => 'jane@example.com';
+
+  @override
+  String get phoneNumber => 'Phone Number';
+
+  @override
+  String get phoneHint => '+1 (555) 000-0000';
+
+  @override
+  String get createPassword => 'Create a password';
+
+  @override
+  String get confirmYourPassword => 'Confirm your password';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account? ';
+
+  @override
+  String get forgotPassword => 'Forgot Password';
+
+  @override
+  String get recoverYourAccount => 'Recover your account';
+
+  @override
+  String get sendVerificationCode => 'Send Verification Code';
+
+  @override
+  String get enterYourEmailAddress => 'Enter your email address.';
+
+  @override
+  String get sendCode => 'Send Code';
+
+  @override
+  String get otpVerification => 'OTP Verification';
+
+  @override
+  String get secureAccountRecovery => 'Secure account recovery';
+
+  @override
+  String get enterCode => 'Enter Code';
+
+  @override
+  String get yourEmail => 'your email';
+
+  @override
+  String otpEmailMessage(String email) {
+    return 'Enter the 6-digit code sent to $email.';
+  }
+
+  @override
+  String get verifyCode => 'Verify Code';
+
+  @override
+  String get verifyAccount => 'Verify Account';
+
+  @override
+  String get completeRegistration => 'Complete your registration';
+
+  @override
+  String get registrationCode => 'Registration Code';
+
+  @override
+  String get registrationCodeHelp =>
+      'Enter the 6-digit code sent after creating your account.';
+
+  @override
+  String get codeValidTenMinutes => 'The code is valid for 10 minutes';
+
+  @override
+  String get resetPassword => 'Reset Password';
+
+  @override
+  String get createNewPassword => 'Create a new password';
+
+  @override
+  String get newPassword => 'New Password';
+
+  @override
+  String get choosePasswordForAccount => 'Choose a password for your account.';
+
+  @override
+  String get enterNewPassword => 'Enter new password';
+
+  @override
+  String get confirmNewPassword => 'Confirm new password';
+
+  @override
+  String get validationFullName => 'Enter your full name.';
+
+  @override
+  String get validationEmailRequired => 'Email address is required.';
+
+  @override
+  String get validationEmailInvalid => 'Enter a valid email address.';
+
+  @override
+  String get validationPhoneRequired => 'Phone number is required.';
+
+  @override
+  String get validationPhoneInvalid => 'Enter a valid phone number.';
+
+  @override
+  String get validationEmailOrPhoneRequired => 'Email or phone is required.';
+
+  @override
+  String get validationEmailOrPhoneInvalid =>
+      'Enter a valid email or phone number.';
+
+  @override
+  String get validationPasswordRequired => 'Password is required.';
+
+  @override
+  String get validationPasswordLength =>
+      'Password must be at least 6 characters.';
+
+  @override
+  String get validationOtp => 'Enter the 6-digit verification code.';
+
+  @override
+  String get validationConfirmPasswordRequired => 'Confirm your password.';
+
+  @override
+  String get validationPasswordsDoNotMatch => 'Passwords do not match.';
+
+  @override
+  String get onboardingDiscoverClinics => 'Discover Clinics';
+
+  @override
+  String get onboardingDiscoverTitle => 'Find trusted beauty centers near you.';
+
+  @override
+  String get onboardingDiscoverSubtitle =>
+      'Explore services, specialists, and available appointments from one place.';
+
+  @override
+  String get onboardingBookVisits => 'Book Visits';
+
+  @override
+  String get onboardingBookTitle => 'Schedule your care without extra calls.';
+
+  @override
+  String get onboardingBookSubtitle =>
+      'Choose your treatment, pick a time, and keep your booking details organized.';
+
+  @override
+  String get onboardingPersonalCare => 'Personal Care';
+
+  @override
+  String get onboardingPersonalTitle => 'Track your beauty journey clearly.';
+
+  @override
+  String get onboardingPersonalSubtitle =>
+      'Review appointments and follow-up notes in a simple patient experience.';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get getStarted => 'Get Started';
+
+  @override
+  String get welcomeBack => 'WELCOME BACK';
+
+  @override
+  String get guest => 'Guest';
+
+  @override
+  String get changeLanguage => 'Change language';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageArabic => 'Arabic';
+
+  @override
+  String get logout => 'Log out';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get searchClinicsOrTreatments => 'Search clinics or treatments...';
+
+  @override
+  String get nearbyClinics => 'Nearby Clinics';
+
+  @override
+  String get specialPromotions => 'Special Promotions';
+
+  @override
+  String get discoverMoreClinics => 'DISCOVER MORE CLINICS';
+
+  @override
+  String get unableToLoadHomeData => 'Unable to load home data.';
+
+  @override
+  String get exclusive => 'EXCLUSIVE';
+
+  @override
+  String get hotDeal => 'HOT DEAL';
+
+  @override
+  String get claimOffer => 'CLAIM OFFER';
+
+  @override
+  String get off => 'OFF';
+
+  @override
+  String reviewsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reviews',
+      one: '1 review',
+      zero: 'No reviews yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get couldNotOpenMapsForLocation =>
+      'Could not open maps for this location.';
+
+  @override
+  String get locationUnavailableForClinic =>
+      'Location is not available for this clinic.';
+
+  @override
+  String get allClinics => 'All Clinics';
+
+  @override
+  String get loadMore => 'Load More';
+
+  @override
+  String get searchClinics => 'Search clinics...';
+
+  @override
+  String get filters => 'Filters';
+
+  @override
+  String priceRangeFilter(int min, int max) {
+    return '\$$min - \$$max';
+  }
+
+  @override
+  String get couldNotOpenMaps => 'Could not open maps.';
+
+  @override
+  String get clinicCenter => 'Clinic center';
+
+  @override
+  String get viewAndBook => 'View & Book';
+
+  @override
+  String get clinicDetailsComingSoon =>
+      'Clinic details will be connected next.';
+
+  @override
+  String get topPick => 'Top Pick';
+
+  @override
+  String get clinic => 'Clinic';
+
+  @override
+  String get area => 'AREA';
+
+  @override
+  String get distance => 'DISTANCE';
+
+  @override
+  String get notAvailable => 'N/A';
+
+  @override
+  String get noClinicsFound => 'No clinics found.';
+
+  @override
+  String get categories => 'Categories';
+
+  @override
+  String get pricing => 'Pricing';
+
+  @override
+  String get priceRange => 'Price range';
+
+  @override
+  String get minimumPrice => 'Minimum price';
+
+  @override
+  String get maximumPrice => 'Maximum price';
+
+  @override
+  String get clinicGalleryExperienceEyebrow => 'THE EXPERIENCE';
+
+  @override
+  String get clinicGalleryInteriorTitle => 'Clinic Interior';
+
+  @override
+  String get clinicGalleryNoInteriorPhotos => 'No interior photos available';
+
+  @override
+  String get clinicGalleryResultsEyebrow => 'REAL RESULTS';
+
+  @override
+  String get clinicGalleryTransformationsTitle => 'Transformations';
+
+  @override
+  String get clinicGalleryDefaultTransformationCaption =>
+      'Clinical Transformation Result';
+
+  @override
+  String get clinicGalleryResultBadge => 'RESULT';
+
+  @override
+  String get clinicGalleryBeforeLabel => 'BEFORE';
+
+  @override
+  String get clinicGalleryAfterLabel => 'AFTER';
+
+  @override
+  String get clinicGalleryNoTransformations => 'No Transformations Logged Yet';
+
+  @override
+  String get clinicGalleryPrecisionEyebrow => 'CLINICAL PRECISION';
+
+  @override
+  String get clinicGalleryProceduresTitle => 'Skin Procedures';
+
+  @override
+  String get clinicGalleryNoProcedures => 'No Procedures Available';
+
+  @override
+  String get clinicDetailsTitle => 'Clinic Details';
+
+  @override
+  String get clinicDetailsLoadFailed => 'Failed to load clinic details.';
+
+  @override
+  String get clinicTabOverview => 'Overview';
+
+  @override
+  String get clinicTabServices => 'Services';
+
+  @override
+  String get clinicTabGallery => 'Gallery';
+
+  @override
+  String get clinicTabInfo => 'Info';
+
+  @override
+  String get clinicTopRated => 'TOP RATED';
+
+  @override
+  String clinicHeroRatingReviews(String rating, String reviews) {
+    return '$rating ($reviews)';
+  }
+
+  @override
+  String get clinicAbout => 'About Clinic';
+
+  @override
+  String get clinicLocation => 'Location';
+
+  @override
+  String get clinicSpecialOffers => 'Special Offers';
+
+  @override
+  String get clinicOurSpecialists => 'Our Specialists';
+
+  @override
+  String get clinicNoOffersTitle => 'No Offers Available Right Now';
+
+  @override
+  String get clinicNoOffersSubtitle =>
+      'Stay tuned! Exclusive clinic discounts will appear here.';
+
+  @override
+  String get clinicNoSpecialists => 'No specialists available right now.';
+
+  @override
+  String get clinicNoServices => 'No services available for this center.';
+
+  @override
+  String clinicServicesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count SERVICES',
+      one: '1 SERVICE',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get clinicServiceBadgeOffer => 'OFFER';
+
+  @override
+  String get clinicServiceBadgeBestSeller => 'BEST SELLER';
+
+  @override
+  String get clinicServiceBadgeFeatured => 'FEATURED';
+
+  @override
+  String get clinicBookAppointment => 'BOOK APPOINTMENT';
+
+  @override
+  String get clinicInstantConfirmation => 'Instant Confirmation';
+
+  @override
+  String get clinicRequiresApproval => 'Requires Approval';
+
+  @override
+  String get clinicNoDepositRequired => 'No Deposit Required';
+
+  @override
+  String clinicDepositPercentage(int value) {
+    return 'Required Deposit: $value%';
+  }
+
+  @override
+  String clinicDepositAmount(int value) {
+    return 'Deposit: \$$value';
+  }
+
+  @override
+  String get clinicHours => 'Clinic Hours';
+
+  @override
+  String get clinicClosedToday => 'Closed Today';
+
+  @override
+  String clinicOpenTodayUntil(String time) {
+    return 'Open Today | Until $time';
+  }
+
+  @override
+  String get clinicClosed => 'CLOSED';
+
+  @override
+  String get clinicNoWorkingHours => 'No working hours provided.';
+
+  @override
+  String get dayMonday => 'Monday';
+
+  @override
+  String get dayTuesday => 'Tuesday';
+
+  @override
+  String get dayWednesday => 'Wednesday';
+
+  @override
+  String get dayThursday => 'Thursday';
+
+  @override
+  String get dayFriday => 'Friday';
+
+  @override
+  String get daySaturday => 'Saturday';
+
+  @override
+  String get daySunday => 'Sunday';
+
+  @override
+  String get dayUnknown => 'Unknown';
+
+  @override
+  String get dayTodayMarker => '(Today)';
+
+  @override
+  String get clinicContact => 'Contact';
+
+  @override
+  String get clinicPhone => 'Phone';
+
+  @override
+  String get clinicEmail => 'Email';
+
+  @override
+  String get clinicWebsite => 'Website';
+
+  @override
+  String get clinicCallNow => 'CALL NOW';
+
+  @override
+  String get clinicCancellationPolicy => 'Cancellation Policy';
+
+  @override
+  String clinicCancellationIntro(String policyType) {
+    return 'We value your time and our practitioners\' expertise. This center applies a $policyType cancellation policy.';
+  }
+
+  @override
+  String clinicCancellationFree(int hours) {
+    return 'Cancellations are completely free of charge if made at least $hours hours prior to your appointment window.';
+  }
+
+  @override
+  String clinicCancellationFee(int hours, int percentage) {
+    return 'Late cancellations within $hours hours are subject to a fee equal to $percentage% of the scheduled service price. No-shows will be charged at 100%.';
+  }
+
+  @override
+  String get clinicPolicyStandard => 'STANDARD';
+
+  @override
+  String get limitedTime => 'Limited Time';
+
+  @override
+  String get limitedTimeLower => 'Limited time';
+
+  @override
+  String offerUntilDate(String date) {
+    return 'Until $date';
+  }
+
+  @override
+  String offerDiscountPercent(int value) {
+    return '$value% OFF';
+  }
+
+  @override
+  String offerDiscountAmount(int value) {
+    return '\$$value OFF';
+  }
+
+  @override
+  String get clinicOfferClaim => 'Claim';
+
+  @override
+  String clinicDurationMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String clinicPrepMinutes(int minutes) {
+    return '+ $minutes min prep';
+  }
+
+  @override
+  String priceSp(String price) {
+    return '\$$price';
+  }
+
+  @override
+  String get clearAll => 'CLEAR ALL';
+
+  @override
+  String get filterServiceType => 'Service Type';
+
+  @override
+  String get filterPriceRange => 'Price Range';
+
+  @override
+  String get filterFacialTreatment => 'Facial Treatment';
+
+  @override
+  String get filterBotoxFillers => 'Botox & Fillers';
+
+  @override
+  String get filterLaserHairRemoval => 'Laser Hair Removal';
+
+  @override
+  String get filterBodyContouring => 'Body Contouring';
+
+  @override
+  String get filterChemicalPeel => 'Chemical Peel';
+
+  @override
+  String get filterLocationBeverlyHills => 'Beverly Hills, CA';
+
+  @override
+  String get filterLocationSantaMonica => 'Santa Monica';
+
+  @override
+  String get filterLocationWestHollywood => 'West Hollywood';
+
+  @override
+  String get filterLocationDowntownLa => 'Downtown LA';
+
+  @override
+  String get filterLocationMalibu => 'Malibu';
+
+  @override
+  String priceUsd(int value) {
+    return '\$$value';
+  }
+
+  @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get yourLocation => 'YOUR LOCATION';
+
+  @override
+  String get verified => 'Verified';
+
+  @override
+  String get unverified => 'Unverified';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get inactive => 'Inactive';
+
+  @override
+  String get unableToLoadProfile => 'Unable to load profile.';
+
+  @override
+  String get noSpecialPromotionsTitle => 'No special promotions right now';
+
+  @override
+  String get noSpecialPromotionsSubtitle =>
+      'Check back soon for exclusive offers from clinics near you.';
+
+  @override
+  String get findingYourLocation => 'Finding your location...';
+
+  @override
+  String get locationServicesOff => 'Location services off';
+
+  @override
+  String get enableLocation => 'Enable location';
+
+  @override
+  String get locationUnavailable => 'Location unavailable';
+
+  @override
+  String get myAppointments => 'My Appointments';
+
+  @override
+  String get upcoming => 'Upcoming';
+
+  @override
+  String get past => 'Past';
+
+  @override
+  String get next30Days => 'NEXT 30 DAYS';
+
+  @override
+  String get history => 'HISTORY';
+
+  @override
+  String get noUpcomingAppointments => 'No upcoming appointments.';
+
+  @override
+  String get noPastAppointments => 'No past appointments.';
+
+  @override
+  String get cancelAppointment => 'Cancel appointment?';
+
+  @override
+  String get cancelAppointmentConfirm =>
+      'Are you sure you want to cancel this appointment?';
+
+  @override
+  String get cancelAppointmentAction => 'Cancel Appointment';
+
+  @override
+  String get keep => 'Keep';
+
+  @override
+  String get clinicMissingForAppointment =>
+      'Clinic is missing for this appointment.';
+
+  @override
+  String get reschedule => 'Reschedule';
+
+  @override
+  String get viewDetails => 'View details';
+
+  @override
+  String get rebook => 'Rebook';
+
+  @override
+  String get appointmentCancelled => 'Appointment cancelled successfully.';
+
+  @override
+  String get emailOrPhone => 'Email or Phone';
+
+  @override
+  String get emailOrPhoneHint => 'Email or phone number';
+
+  @override
+  String get bookTreatment => 'Book Treatment';
+
+  @override
+  String get selectService => 'Select Service';
+
+  @override
+  String get selectServiceSubtitle => 'Pick the treatment you want to book';
+
+  @override
+  String get chooseSpecialist => 'Choose Specialist';
+
+  @override
+  String get chooseSpecialistSubtitle =>
+      'Optional — leave \"Any\" for the earliest availability';
+
+  @override
+  String get anySpecialist => 'Any';
+
+  @override
+  String get anySpecialistName => 'Any specialist';
+
+  @override
+  String get otherCategory => 'Other';
+
+  @override
+  String get selectDate => 'Select Date';
+
+  @override
+  String get selectDateSubtitle => 'Choose a day for your appointment';
+
+  @override
+  String get calendarMonth => 'Month';
+
+  @override
+  String get selectTime => 'Select Time';
+
+  @override
+  String get changeDate => 'Change date';
+
+  @override
+  String get couldNotLoadAvailableTimes => 'Could not load available times.';
+
+  @override
+  String get noAvailableTimesOnDate => 'No available times on this date.';
+
+  @override
+  String specialistNoAvailability(String name) {
+    return '$name has no availability on this date.';
+  }
+
+  @override
+  String get tryAnySpecialist => 'Try any specialist';
+
+  @override
+  String get pickAnotherDate => 'Pick another date';
+
+  @override
+  String get morningPeriod => 'MORNING';
+
+  @override
+  String get afternoonPeriod => 'AFTERNOON';
+
+  @override
+  String get bookingSummary => 'Summary';
+
+  @override
+  String get serviceLabel => 'Service';
+
+  @override
+  String get specialistLabel => 'Specialist';
+
+  @override
+  String get dateLabel => 'Date';
+
+  @override
+  String get timeLabel => 'Time';
+
+  @override
+  String get paymentLabel => 'Payment';
+
+  @override
+  String get paymentTitle => 'Review & pay';
+
+  @override
+  String get paymentSubtitle =>
+      'Review your appointment details and complete your payment securely.';
+
+  @override
+  String get paymentBackendPendingTitle => 'Backend connection pending';
+
+  @override
+  String get paymentBackendPendingBody =>
+      'The payment button will be enabled when the API returns a Stripe PaymentIntent client secret.';
+
+  @override
+  String get paymentSecureNotice =>
+      'Payment details are entered in Stripe\'s secure PaymentSheet and are never stored by Lumina.';
+
+  @override
+  String get amountDueNow => 'Amount due now';
+
+  @override
+  String get payWithStripe => 'Pay with Stripe';
+
+  @override
+  String get completePayment => 'Complete payment';
+
+  @override
+  String get pendingPaymentNotice =>
+      'A deposit is required to keep this appointment. Complete payment before the booking expires.';
+
+  @override
+  String pendingPaymentDeadline(String deadline) {
+    return 'Complete payment by $deadline. The appointment will be cancelled after this time.';
+  }
+
+  @override
+  String get paymentNoLongerAvailable =>
+      'The payment window has ended or this appointment no longer requires payment.';
+
+  @override
+  String get checkPaymentStatus => 'Check payment status';
+
+  @override
+  String get paymentFailed =>
+      'Stripe couldn\'t complete the payment. Please try again.';
+
+  @override
+  String get paymentVerificationPending =>
+      'Payment is still being verified. Tap the button to check again.';
+
+  @override
+  String get stripeNotConfigured =>
+      'The payment service is currently unavailable. Please try again later.';
+
+  @override
+  String get stripeGatewayUnavailable =>
+      'Stripe is not enabled for this center.';
+
+  @override
+  String get estimatedTotal => 'Estimated Total';
+
+  @override
+  String bookingTotal(String total) {
+    return 'Total  $total';
+  }
+
+  @override
+  String get chooseATime => 'Choose a time';
+
+  @override
+  String get continueLabel => 'Continue';
+
+  @override
+  String get confirmBooking => 'Confirm Booking';
+
+  @override
+  String get confirmReschedule => 'Confirm Reschedule';
+
+  @override
+  String get noServicesAvailable => 'No services available for this clinic.';
+
+  @override
+  String get pleaseChooseServiceDateTime =>
+      'Please choose a service, date, and time.';
+
+  @override
+  String get appointmentBookedSuccessfully =>
+      'Appointment booked successfully.';
+
+  @override
+  String get appointmentDetails => 'Appointment details';
+
+  @override
+  String get clinicLabel => 'Clinic';
+
+  @override
+  String get depositLabel => 'Deposit';
+
+  @override
+  String get notesLabel => 'Notes';
+
+  @override
+  String get cancellationReasonLabel => 'Cancellation reason';
+
+  @override
+  String get statusPending => 'Pending';
+
+  @override
+  String get statusPendingPayment => 'Payment required';
+
+  @override
+  String get statusConfirmed => 'Confirmed';
+
+  @override
+  String get statusCompleted => 'Completed';
+
+  @override
+  String get statusCancelled => 'Cancelled';
+
+  @override
+  String get statusRejected => 'Rejected';
+
+  @override
+  String get errorNoInternet =>
+      'No internet connection. Please check your network and try again.';
+
+  @override
+  String get errorServerUnavailable =>
+      'Can\'t reach the server. Please try again later.';
+
+  @override
+  String get errorUnexpected => 'Something went wrong. Please try again.';
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get birthDate => 'Birth Date';
+
+  @override
+  String get city => 'City';
+
+  @override
+  String get address => 'Address';
+
+  @override
+  String get notificationsEnabled => 'Notifications Enabled';
+
+  @override
+  String get myStats => 'My Stats';
+
+  @override
+  String get appointmentsTotal => 'Total Appointments';
+
+  @override
+  String get appointmentsUpcoming => 'Upcoming Appointments';
+
+  @override
+  String get appointmentsCompleted => 'Completed Appointments';
+
+  @override
+  String get favoriteCenters => 'Favorite Centers';
+
+  @override
+  String get favoriteServices => 'Favorite Services';
+
+  @override
+  String get reviews => 'Reviews';
+
+  @override
+  String get unreadNotifications => 'Unread Notifications';
+
+  @override
+  String get profileUpdatedSuccessfully => 'Profile updated successfully.';
+
+  @override
+  String get male => 'Male';
+
+  @override
+  String get female => 'Female';
+
+  @override
+  String get changeAvatar => 'Change Avatar';
+
+  @override
+  String get uploadAvatar => 'Upload Avatar';
+
+  @override
+  String get avatarUpdatedSuccessfully => 'Avatar updated successfully.';
+
+  @override
+  String get removeAvatar => 'Remove photo';
+
+  @override
+  String get removeAvatarConfirm =>
+      'Are you sure you want to remove your profile photo?';
+
+  @override
+  String get avatarRemovedSuccessfully => 'Profile photo removed successfully.';
+
+  @override
+  String get logoutConfirm => 'Are you sure you want to log out?';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirm =>
+      'Are you sure you want to delete your account? This action cannot be undone.';
+
+  @override
+  String get accountDeletedSuccessfully => 'Account deleted successfully.';
+
+  @override
+  String get selectImage => 'Select Image';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get gallery => 'Gallery';
+
+  @override
+  String get changePassword => 'Change Password';
+
+  @override
+  String get currentPassword => 'Current Password';
+
+  @override
+  String get passwordChangedSuccessfully => 'Password changed successfully.';
+
+  @override
+  String get passwordChangedReLogin =>
+      'Password changed successfully. Please log in again.';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match.';
+
+  @override
+  String get currentPasswordRequired => 'Current password is required.';
+
+  @override
+  String get newPasswordRequired => 'New password is required.';
+
+  @override
+  String get confirmPasswordRequired => 'Please confirm your password.';
+
+  @override
+  String get passwordTooShort => 'Password must be at least 6 characters.';
+
+  @override
+  String get lastLogin => 'Last Login';
+
+  @override
+  String get favorites => 'Favorites';
+
+  @override
+  String get centers => 'Centers';
+
+  @override
+  String get services => 'Services';
+
+  @override
+  String get offers => 'Offers';
+
+  @override
+  String get noFavoriteCenters => 'No favorite centers';
+
+  @override
+  String get noFavoriteCentersSubtitle =>
+      'Start adding centers to your favorites to see them here.';
+
+  @override
+  String get noFavoriteServices => 'No favorite services';
+
+  @override
+  String get noFavoriteServicesSubtitle =>
+      'Start adding services to your favorites to see them here.';
+
+  @override
+  String get exploreAndAddFavorites => 'Explore and add to favorites';
+
+  @override
+  String get noResultsFound => 'No results found';
+
+  @override
+  String get noResultsFor => 'No results for';
+
+  @override
+  String get currency => '\$';
+
+  @override
+  String get pressBackAgainToExit => 'Press back again to exit the app';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get notificationsAll => 'All';
+
+  @override
+  String get notificationsUnread => 'Unread';
+
+  @override
+  String get noNotifications => 'No notifications yet';
+
+  @override
+  String get noNotificationsSubtitle =>
+      'Booking updates and clinic alerts will appear here.';
+
+  @override
+  String get noUnreadNotifications => 'You\'re all caught up';
+
+  @override
+  String get noUnreadNotificationsSubtitle =>
+      'You have no unread notifications.';
+
+  @override
+  String get markAllAsRead => 'Mark all as read';
+
+  @override
+  String get deleteNotification => 'Delete notification';
+
+  @override
+  String get deleteNotificationConfirm =>
+      'Are you sure you want to delete this notification?';
+
+  @override
+  String get unableToLoadNotifications => 'Unable to load notifications';
+
+  @override
+  String get justNow => 'Just now';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String minutesAgo(int count) {
+    return '${count}m ago';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '${count}h ago';
+  }
+
+  @override
+  String get searchType => 'Result type';
+
+  @override
+  String get sortBy => 'Sort by';
+
+  @override
+  String get sortRating => 'Highest rating';
+
+  @override
+  String get sortNearest => 'Nearest';
+
+  @override
+  String get sortName => 'Name';
+
+  @override
+  String get sortLatest => 'Latest';
+
+  @override
+  String get sortPriceAsc => 'Price: low to high';
+
+  @override
+  String get sortPriceDesc => 'Price: high to low';
+
+  @override
+  String get sortDuration => 'Duration';
+
+  @override
+  String get centerFilter => 'Center';
+
+  @override
+  String get anyOption => 'Any';
+
+  @override
+  String get yesOption => 'Yes';
+
+  @override
+  String get noOption => 'No';
+
+  @override
+  String get minRating => 'Minimum rating';
+
+  @override
+  String get radiusKm => 'Radius (km)';
+
+  @override
+  String get resultsLimit => 'Results limit';
+
+  @override
+  String get governorate => 'Governorate';
+
+  @override
+  String get featuredOnly => 'Featured only';
+
+  @override
+  String get requiresDeposit => 'Requires deposit';
+
+  @override
+  String get maxDuration => 'Maximum duration (minutes)';
+
+  @override
+  String get invalidPriceRange =>
+      'Maximum price cannot be lower than minimum price.';
+
+  @override
+  String get invalidFilterValue =>
+      'Enter a valid value within the allowed range.';
+
+  @override
+  String get locationPermissionRequired =>
+      'Location access is needed to sort by nearest. Choose another sort option or allow location access.';
+
+  @override
+  String get clearFilters => 'Clear filters';
+
+  @override
+  String daysAgo(int count) {
+    return '${count}d ago';
+  }
+
+  @override
+  String get aiBeautyAssistant => 'AI BEAUTY ASSISTANT';
+
+  @override
+  String get personalRecommendation => 'Your care, made personal';
+
+  @override
+  String get personalRecommendationSubtitle =>
+      'Tell us what you want to improve or let Lumina analyze your face to suggest suitable treatments.';
+
+  @override
+  String get describeYourNeeds => 'Describe your needs';
+
+  @override
+  String get describeYourNeedsSubtitle =>
+      'Share your goals, concerns, and the result you have in mind.';
+
+  @override
+  String get scanYourFace => 'Scan your face';
+
+  @override
+  String get scanYourFaceSubtitle =>
+      'Use a guided face scan for a more visual recommendation.';
+
+  @override
+  String get startWithDescription => 'START WITH A DESCRIPTION';
+
+  @override
+  String get startFaceScan => 'START FACE SCAN';
+
+  @override
+  String get yourBeautyGoals => 'What would you like help with?';
+
+  @override
+  String get beautyGoalsHint =>
+      'For example: I want brighter skin and help with fine lines around my eyes...';
+
+  @override
+  String get continueToRecommendation => 'GET MY RECOMMENDATION';
+
+  @override
+  String get uiPreviewNotice =>
+      'Recommendation results will be connected when the AI service is ready.';
+
+  @override
+  String get biometricAlignment => 'BIOMETRIC ALIGNMENT';
+
+  @override
+  String get alignFaceWithinFrame => 'Align your face within the frame';
+
+  @override
+  String get wellLitScanHint =>
+      'Make sure your face is visible in a well-lit environment for the most accurate analysis.';
+
+  @override
+  String get luminaIntelligence => 'LUMINA INTELLIGENCE';
+
+  @override
+  String get scanAnalysisHint =>
+      'Ready to analyze skin texture and facial balance';
+
+  @override
+  String get scanFace => 'SCAN FACE';
+
+  @override
+  String get clinicalPrivacyNotice => 'YOUR IMAGE STAYS PRIVATE AND SECURE';
+
+  @override
+  String get cameraPreviewPlaceholder => 'Camera preview';
+
+  @override
+  String get cameraUnavailable => 'Camera is unavailable';
+
+  @override
+  String get cameraUnavailableHint =>
+      'Allow camera access in your device settings, then try again.';
+
+  @override
+  String get tryCameraAgain => 'TRY AGAIN';
+
+  @override
+  String get switchCamera => 'Switch camera';
+
+  @override
+  String get aiInputRequired =>
+      'Enter a description or take a face photo first.';
+
+  @override
+  String get aiTextTooLong =>
+      'The description must not exceed 1000 characters.';
+
+  @override
+  String get aiImageTooLarge => 'The image must not exceed 5 MB.';
+
+  @override
+  String get aiUnsupportedImage => 'Use a JPG, PNG, or WebP image.';
+
+  @override
+  String get aiImageMissing =>
+      'The captured image is no longer available. Please try again.';
+
+  @override
+  String get aiCaptureFailed =>
+      'We couldn\'t capture the photo. Please try again.';
+
+  @override
+  String get aiAnalyzingTitle => 'Creating your recommendations';
+
+  @override
+  String get aiAnalyzingSubtitle =>
+      'Lumina is analyzing your request and matching it with available services.';
+
+  @override
+  String get aiResultsTitle => 'Recommended for you';
+
+  @override
+  String get aiResultsSubtitle =>
+      'Suggestions are ranked by how closely they match your request.';
+
+  @override
+  String get aiSuggestedServices => 'Suggested services';
+
+  @override
+  String get aiSuggestedCenters => 'Suggested centers';
+
+  @override
+  String aiMatchPercent(int percent) {
+    return '$percent% MATCH';
+  }
+
+  @override
+  String get aiNoRecommendations => 'No matching recommendations found';
+
+  @override
+  String get aiNoRecommendationsSubtitle =>
+      'Try adding more detail or taking another photo in better lighting.';
+
+  @override
+  String get aiNewRecommendation => 'NEW RECOMMENDATION';
+
+  @override
+  String get aiBookService => 'BOOK SERVICE';
+
+  @override
+  String get aiViewCenter => 'VIEW CENTER';
+
+  @override
+  String get rate => 'Rate';
+
+  @override
+  String get report => 'Report';
+
+  @override
+  String get rateExperience => 'Rate your experience';
+
+  @override
+  String howWasAppointment(String clinicName) {
+    return 'How was your appointment at $clinicName?';
+  }
+
+  @override
+  String get addCommentOptional => 'Add a comment (optional)';
+
+  @override
+  String get tellUsMore => 'Tell us more about your experience...';
+
+  @override
+  String get submitReview => 'Submit Review';
+
+  @override
+  String get submitting => 'Submitting...';
+
+  @override
+  String get reviewSubmitted => 'Review submitted successfully';
+
+  @override
+  String get reviewSubmitFailed => 'Failed to submit review';
+
+  @override
+  String get missingAppointmentDetails =>
+      'Missing appointment details. Cannot submit review.';
+
+  @override
+  String get ratingPoor => 'Poor';
+
+  @override
+  String get ratingFair => 'Fair';
+
+  @override
+  String get ratingAverage => 'Average';
+
+  @override
+  String get ratingGood => 'Good';
+
+  @override
+  String get ratingExcellent => 'Excellent';
+
+  @override
+  String get reportIssue => 'Report an issue';
+
+  @override
+  String get reportReasonQuestion => 'What is the reason?';
+
+  @override
+  String get reportAdditionalDetails => 'Additional details (optional)';
+
+  @override
+  String get reportProvideDetails =>
+      'Provide more details to help us investigate...';
+
+  @override
+  String get submitReport => 'Submit Report';
+
+  @override
+  String get reportSubmitted => 'Report submitted successfully';
+
+  @override
+  String get reportSubmitFailed => 'Failed to submit report';
+
+  @override
+  String get selectReasonError => 'Please select a reason.';
+
+  @override
+  String get missingCenterDetails =>
+      'Missing center details. Cannot submit report.';
+
+  @override
+  String get reportReasonWrongSchedule => 'Wrong schedule';
+
+  @override
+  String get reportReasonPoorService => 'Poor service quality';
+
+  @override
+  String get reportReasonUnhygienic => 'Unhygienic environment';
+
+  @override
+  String get reportReasonRudeStaff => 'Rude staff';
+
+  @override
+  String get reportReasonOvercharging => 'Overcharging / Billing issue';
+
+  @override
+  String get reportReasonNoShow => 'No-show by center';
+
+  @override
+  String get reportReasonOther => 'Other';
+
+  @override
+  String get readMore => 'Read more';
+
+  @override
+  String get readLess => 'Read less';
+}

@@ -3,10 +3,13 @@ import 'package:equatable/equatable.dart';
 
 enum AuthStatus { initial, submitting, success, failure }
 
+enum AuthOperation { none, register, verifyOtp, resendOtp, login }
+
 class AuthState extends Equatable {
   const AuthState({
     required this.isAuthenticated,
     this.status = AuthStatus.initial,
+    this.operation = AuthOperation.none,
     this.customer,
     this.token,
     this.message,
@@ -15,6 +18,7 @@ class AuthState extends Equatable {
 
   final bool isAuthenticated;
   final AuthStatus status;
+  final AuthOperation operation;
   final Customer? customer;
   final String? token;
   final String? message;
@@ -25,6 +29,7 @@ class AuthState extends Equatable {
   AuthState copyWith({
     bool? isAuthenticated,
     AuthStatus? status,
+    AuthOperation? operation,
     Customer? customer,
     String? token,
     String? message,
@@ -37,6 +42,7 @@ class AuthState extends Equatable {
     return AuthState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       status: status ?? this.status,
+      operation: operation ?? this.operation,
       customer: clearCustomer ? null : (customer ?? this.customer),
       token: clearToken ? null : (token ?? this.token),
       message: clearMessage ? null : (message ?? this.message),
@@ -48,6 +54,7 @@ class AuthState extends Equatable {
   List<Object?> get props => [
     isAuthenticated,
     status,
+    operation,
     customer,
     token,
     message,

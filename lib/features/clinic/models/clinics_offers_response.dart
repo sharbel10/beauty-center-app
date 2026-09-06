@@ -28,6 +28,7 @@ class ClinicOffer extends Equatable {
   const ClinicOffer({
     required this.id,
     required this.centerId,
+    required this.serviceId,
     required this.title,
     required this.description,
     required this.discountType,
@@ -41,6 +42,7 @@ class ClinicOffer extends Equatable {
     return ClinicOffer(
       id: json['id'] as int? ?? 0,
       centerId: json['center_id'] as int? ?? 0,
+      serviceId: _extractServiceId(json),
       title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? '',
       discountType: json['discount_type'] as String? ?? '',
@@ -53,6 +55,7 @@ class ClinicOffer extends Equatable {
 
   final int id;
   final int centerId;
+  final int? serviceId;
   final String title;
   final String description;
   final String discountType;
@@ -72,6 +75,7 @@ class ClinicOffer extends Equatable {
   List<Object?> get props => [
     id,
     centerId,
+    serviceId,
     title,
     description,
     discountType,
@@ -80,4 +84,49 @@ class ClinicOffer extends Equatable {
     endsAt,
     center,
   ];
+
+  static int? _extractServiceId(Map<String, dynamic> json) {
+    for (final String key in const <String>[
+      'service_id',
+      'center_service_id',
+      'clinic_service_id',
+    ]) {
+      final int? id = _toInt(json[key]);
+      if (id != null) return id;
+    }
+
+    for (final String key in const <String>[
+      'service',
+      'center_service',
+      'clinic_service',
+    ]) {
+      final dynamic value = json[key];
+      if (value is Map<String, dynamic>) {
+        final int? id = _toInt(value['id']);
+        if (id != null) return id;
+      }
+    }
+
+    for (final String key in const <String>[
+      'services',
+      'center_services',
+      'clinic_services',
+    ]) {
+      final dynamic value = json[key];
+      if (value is List && value.isNotEmpty) {
+        final dynamic first = value.first;
+        if (first is Map<String, dynamic>) {
+          final int? id = _toInt(first['id']);
+          if (id != null) return id;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  static int? _toInt(dynamic value) {
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '');
+  }
 }

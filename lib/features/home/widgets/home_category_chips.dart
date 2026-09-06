@@ -1,4 +1,3 @@
-import 'package:beauty_center_app/core/network/api_endpoints.dart';
 import 'package:beauty_center_app/core/theme/app_colors.dart';
 import 'package:beauty_center_app/core/theme/app_text_styles.dart';
 import 'package:beauty_center_app/features/home/models/category.dart';
@@ -38,8 +37,8 @@ class HomeCategoryChips extends StatelessWidget {
           }
 
           final Category category = categories[index - 1];
-          final String? iconUrl = category.iconPath != null
-              ? ApiEndpoints.mediaUrl(category.iconPath)
+          final String? iconUrl = category.iconUrl?.trim().isNotEmpty == true
+              ? category.iconUrl!.trim()
               : null;
 
           return _CategoryChip(
@@ -95,11 +94,7 @@ class _CategoryChip extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              _ChipIcon(
-                isActive: isActive,
-                icon: icon,
-                iconUrl: iconUrl,
-              ),
+              _ChipIcon(isActive: isActive, icon: icon, iconUrl: iconUrl),
               const SizedBox(width: 6),
               Text(
                 label,
@@ -118,11 +113,7 @@ class _CategoryChip extends StatelessWidget {
 }
 
 class _ChipIcon extends StatelessWidget {
-  const _ChipIcon({
-    required this.isActive,
-    this.icon,
-    this.iconUrl,
-  });
+  const _ChipIcon({required this.isActive, this.icon, this.iconUrl});
 
   final bool isActive;
   final IconData? icon;
@@ -139,22 +130,15 @@ class _ChipIcon extends StatelessWidget {
         height: 15,
         fit: BoxFit.contain,
         errorBuilder:
-            (
-              BuildContext context,
-              Object error,
-              StackTrace? stackTrace,
-            ) => Icon(
-              icon ?? Icons.category_outlined,
-              color: iconColor,
-              size: 15,
-            ),
+            (BuildContext context, Object error, StackTrace? stackTrace) =>
+                Icon(
+                  icon ?? Icons.category_outlined,
+                  color: iconColor,
+                  size: 15,
+                ),
       );
     }
 
-    return Icon(
-      icon ?? Icons.category_outlined,
-      color: iconColor,
-      size: 15,
-    );
+    return Icon(icon ?? Icons.category_outlined, color: iconColor, size: 15);
   }
 }
